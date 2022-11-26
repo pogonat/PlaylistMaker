@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="font_size">22sp</dimen>
+    <dimen name="title_marginTop">14dp</dimen>
+    <dimen name="title_marginHorizontal">16dp</dimen>
+    <dimen name="title_marginBottom">24dp</dimen>
+    <dimen name="button_paddingStart">17dp</dimen>
+    <dimen name="button_paddingEnd">15dp</dimen>
+    <dimen name="button_padding_vertical">8dp</dimen>
+    <dimen name="icon_padding">10dp</dimen>
+    <dimen name="button_radius">16dp</dimen>
+</resources>
