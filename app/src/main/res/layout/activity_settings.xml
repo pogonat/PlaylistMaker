@@ -30,23 +30,103 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="24dp"
+        android:paddingStart="@dimen/menu_paddingStart"
+        android:paddingTop="@dimen/menu_paddingVertical"
+        android:paddingBottom="@dimen/menu_paddingVertical"
+        android:paddingEnd="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             android:text="@string/dark_theme"
-            android:textSize="16sp"
-            android:textColor="@color/black"/>
+            android:textSize="@dimen/text_size_menu"
+            android:textColor="@color/settings_text"/>
 
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"/>
 
+    </FrameLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/menu_paddingStart"
+        android:paddingTop="@dimen/menu_paddingVertical"
+        android:paddingBottom="@dimen/menu_paddingVertical"
+        android:paddingEnd="18dp">
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/share"
+            android:textSize="@dimen/text_size_menu"
+            android:textColor="@color/settings_text"/>
 
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="18dp"
+            android:layout_gravity="end"
+            android:src="@drawable/share_icon"
+            app:tint="@color/settings_icons" />
 
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/menu_paddingStart"
+        android:paddingTop="@dimen/menu_paddingVertical"
+        android:paddingBottom="@dimen/menu_paddingVertical"
+        android:paddingEnd="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/support"
+            android:textSize="@dimen/text_size_menu"
+            android:textColor="@color/settings_text"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:src="@drawable/support_light_mode"
+            app:tint="@color/settings_icons"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/menu_paddingStart"
+        android:paddingTop="@dimen/menu_paddingVertical"
+        android:paddingBottom="@dimen/menu_paddingVertical"
+        android:paddingEnd="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/agreement"
+            android:textSize="@dimen/text_size_menu"
+            android:textColor="@color/settings_text"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:src="@drawable/arrow_forward_icon"
+            app:tint="@color/settings_icons"/>
+
+    </FrameLayout>
 
 </LinearLayout>

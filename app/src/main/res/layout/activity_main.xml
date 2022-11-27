@@ -62,7 +62,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
-            android:text="@string/settings_button"
+            android:text="@string/settings"
             android:textSize="@dimen/font_size"
             android:textColor="@color/button_name"
             android:textAllCaps="false"

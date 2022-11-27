@@ -9,4 +9,7 @@
     <dimen name="button_padding_vertical">8dp</dimen>
     <dimen name="icon_padding">10dp</dimen>
     <dimen name="button_radius">16dp</dimen>
+    <dimen name="text_size_menu">16sp</dimen>
+    <dimen name="menu_paddingStart">16dp</dimen>
+    <dimen name="menu_paddingVertical">21dp</dimen>
 </resources>
