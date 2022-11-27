@@ -96,8 +96,8 @@
             android:textColor="@color/settings_text"/>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="end"
             android:src="@drawable/support_light_mode"
             app:tint="@color/settings_icons"/>
@@ -121,8 +121,8 @@
             android:textColor="@color/settings_text"/>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="8dp"
+            android:layout_height="14dp"
             android:layout_gravity="end"
             android:src="@drawable/arrow_forward_icon"
             app:tint="@color/settings_icons"/>
