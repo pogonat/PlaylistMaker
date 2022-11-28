@@ -25,27 +25,20 @@
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:text="@string/settings"
-            android:textColor="@color/button_name"
-            android:textSize="@dimen/font_size" />
+            android:textColor="@color/settings_title"
+            android:textSize="@dimen/font_size"
+            style="@style/TitleText"/>
 
     </LinearLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:paddingStart="@dimen/menu_paddingStart"
-        android:paddingTop="@dimen/menu_paddingVertical"
         android:paddingEnd="8dp"
-        android:paddingBottom="@dimen/menu_paddingVertical">
+        style="@style/SettingsMenuLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
             android:text="@string/dark_theme"
-            android:textColor="@color/settings_text"
-            android:textSize="@dimen/text_size_menu" />
+            style="@style/SettingsMenuText" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -55,77 +48,50 @@
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/menu_paddingStart"
-        android:paddingTop="@dimen/menu_paddingVertical"
         android:paddingEnd="18dp"
-        android:paddingBottom="@dimen/menu_paddingVertical">
+        style="@style/SettingsMenuLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
             android:text="@string/share"
-            android:textColor="@color/settings_text"
-            android:textSize="@dimen/text_size_menu" />
+            style="@style/SettingsMenuText"/>
 
         <ImageView
             android:layout_width="16dp"
             android:layout_height="18dp"
-            android:layout_gravity="end"
             android:src="@drawable/share_icon"
-            app:tint="@color/settings_icons" />
+            style="@style/SettingsMenuIcons"/>
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/menu_paddingStart"
-        android:paddingTop="@dimen/menu_paddingVertical"
         android:paddingEnd="12dp"
-        android:paddingBottom="@dimen/menu_paddingVertical">
+        style="@style/SettingsMenuLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
             android:text="@string/support"
-            android:textColor="@color/settings_text"
-            android:textSize="@dimen/text_size_menu" />
+            style="@style/SettingsMenuText" />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="end"
             android:src="@drawable/support_light_mode"
-            app:tint="@color/settings_icons" />
+            style="@style/SettingsMenuIcons"/>
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/menu_paddingStart"
-        android:paddingTop="@dimen/menu_paddingVertical"
         android:paddingEnd="20dp"
-        android:paddingBottom="@dimen/menu_paddingVertical">
+        style="@style/SettingsMenuLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
             android:text="@string/agreement"
-            android:textColor="@color/settings_text"
-            android:textSize="@dimen/text_size_menu" />
+            style="@style/SettingsMenuText" />
 
         <ImageView
             android:layout_width="8dp"
             android:layout_height="14dp"
-            android:layout_gravity="end"
             android:src="@drawable/arrow_forward_icon"
-            app:tint="@color/settings_icons" />
+            style="@style/SettingsMenuIcons"/>
 
     </FrameLayout>
 
