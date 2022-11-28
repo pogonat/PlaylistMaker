@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/settings_background"
     android:orientation="vertical"
-    tools:context=".SettingsActivity">
+    tools:context=".SettingsActivity"
+    style="@style/SettingsBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,8 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_margin="20dp"
-            android:src="@drawable/arrow_back_icon" />
+            android:src="@drawable/arrow_back_icon"
+            style="@style/ArrowBack"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -25,9 +26,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:text="@string/settings"
-            android:textColor="@color/settings_title"
-            android:textSize="@dimen/font_size"
-            style="@style/TitleText"/>
+            style="@style/SettingsTitle"/>
 
     </LinearLayout>
 
