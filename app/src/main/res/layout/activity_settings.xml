@@ -48,6 +48,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/shareButton"
         style="@style/SettingsMenuLayout"
         android:paddingEnd="18dp">
 
@@ -64,6 +65,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/supportButton"
         style="@style/SettingsMenuLayout"
         android:paddingEnd="12dp">
 
@@ -80,6 +82,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/agreementButton"
         style="@style/SettingsMenuLayout"
         android:paddingEnd="20dp">
 
