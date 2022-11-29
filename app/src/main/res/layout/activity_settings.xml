@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/SettingsBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SettingsActivity"
-    style="@style/SettingsBackground">
+    tools:context=".SettingsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,11 +14,11 @@
         android:orientation="horizontal">
 
         <ImageView
+            style="@style/ArrowBack"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_margin="20dp"
-            android:src="@drawable/arrow_back_icon"
-            style="@style/ArrowBack"/>
+            android:src="@drawable/arrow_back_icon" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,18 +26,19 @@
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:text="@string/settings"
-            style="@style/SettingsTitle"/>
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="@dimen/font_size" />
 
     </LinearLayout>
 
     <FrameLayout
+        style="@style/SettingsMenuLayout"
         android:layout_marginTop="24dp"
-        android:paddingEnd="8dp"
-        style="@style/SettingsMenuLayout">
+        android:paddingEnd="8dp">
 
         <TextView
-            android:text="@string/dark_theme"
-            style="@style/SettingsMenuText" />
+            style="@style/SettingsMenuText"
+            android:text="@string/dark_theme" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -47,50 +48,50 @@
     </FrameLayout>
 
     <FrameLayout
-        android:paddingEnd="18dp"
-        style="@style/SettingsMenuLayout">
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="18dp">
 
         <TextView
-            android:text="@string/share"
-            style="@style/SettingsMenuText"/>
+            style="@style/SettingsMenuText"
+            android:text="@string/share" />
 
         <ImageView
+            style="@style/SettingsMenuIcons"
             android:layout_width="16dp"
             android:layout_height="18dp"
-            android:src="@drawable/share_icon"
-            style="@style/SettingsMenuIcons"/>
+            android:src="@drawable/share_icon" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:paddingEnd="12dp"
-        style="@style/SettingsMenuLayout">
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="12dp">
 
         <TextView
-            android:text="@string/support"
-            style="@style/SettingsMenuText" />
+            style="@style/SettingsMenuText"
+            android:text="@string/support" />
 
         <ImageView
+            style="@style/SettingsMenuIcons"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/support_light_mode"
-            style="@style/SettingsMenuIcons"/>
+            android:src="@drawable/support_light_mode" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:paddingEnd="20dp"
-        style="@style/SettingsMenuLayout">
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="20dp">
 
         <TextView
-            android:text="@string/agreement"
-            style="@style/SettingsMenuText" />
+            style="@style/SettingsMenuText"
+            android:text="@string/agreement" />
 
         <ImageView
+            style="@style/SettingsMenuIcons"
             android:layout_width="8dp"
             android:layout_height="14dp"
-            android:src="@drawable/arrow_forward_icon"
-            style="@style/SettingsMenuIcons"/>
+            android:src="@drawable/arrow_forward_icon" />
 
     </FrameLayout>
 
