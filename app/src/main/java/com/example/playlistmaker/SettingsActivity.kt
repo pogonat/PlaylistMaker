@@ -17,17 +17,17 @@ class SettingsActivity : AppCompatActivity() {
         val readAgreement = findViewById<FrameLayout>(R.id.agreementButton)
 
         share.setOnClickListener {
-            val link = R.string.share_link
+            val link = getString(R.string.share_link)
             val sendIntent = Intent(Intent.ACTION_SEND)
-            sendIntent.data = Uri.parse(link.toString())
+            sendIntent.data = Uri.parse(link)
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
 
         support.setOnClickListener {
-            val message = R.string.support_message
-            val email = R.string.support_email
-            val emailSubject = R.string.support_subject
+            val message = getString(R.string.support_message)
+            val email = getString(R.string.support_email)
+            val emailSubject = getString(R.string.support_subject)
             val sendIntent = Intent(Intent.ACTION_SEND)
             sendIntent.data = Uri.parse("mailto:")
             sendIntent.putExtra(Intent.EXTRA_TEXT, message)
@@ -38,9 +38,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         readAgreement.setOnClickListener {
-            val link = R.string.agreement_link
+            val link = getString(R.string.agreement_link)
             val readIntent = Intent(Intent.ACTION_SEND)
-            readIntent.data = Uri.parse(link.toString())
+            readIntent.data = Uri.parse(link)
             val readAgreementIntent = Intent.createChooser(readIntent, null)
             startActivity(readAgreementIntent)
         }
