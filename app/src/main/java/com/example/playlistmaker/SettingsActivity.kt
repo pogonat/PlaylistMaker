@@ -19,7 +19,8 @@ class SettingsActivity : AppCompatActivity() {
         share.setOnClickListener {
             val link = getString(R.string.share_link)
             val sendIntent = Intent(Intent.ACTION_SEND)
-            sendIntent.data = Uri.parse(link)
+            sendIntent.type = "text/plain"
+            sendIntent.putExtra(Intent.EXTRA_TEXT, link)
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
