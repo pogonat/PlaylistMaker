@@ -17,17 +17,17 @@ class SettingsActivity : AppCompatActivity() {
         val readAgreement = findViewById<FrameLayout>(R.id.agreementButton)
 
         share.setOnClickListener {
-            val link = "https://practicum.yandex.ru/profile/android-developer/"
+            val link = R.string.share_link
             val sendIntent = Intent(Intent.ACTION_SEND)
-            sendIntent.data = Uri.parse(link)
+            sendIntent.data = Uri.parse(link.toString())
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
 
         support.setOnClickListener {
-            val message = "Спасибо разработчикам и разработчицам за крутое приложение!"
-            val email = "pogorelskayanat@yandex.ru"
-            val emailSubject = "Сообщение разработчикам и разработчицам приложения Playlist Maker"
+            val message = R.string.support_message
+            val email = R.string.support_email
+            val emailSubject = R.string.support_subject
             val sendIntent = Intent(Intent.ACTION_SEND)
             sendIntent.data = Uri.parse("mailto:")
             sendIntent.putExtra(Intent.EXTRA_TEXT, message)
@@ -38,9 +38,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         readAgreement.setOnClickListener {
-            val link = "https://yandex.ru/legal/practicum_offer/"
+            val link = R.string.agreement_link
             val readIntent = Intent(Intent.ACTION_SEND)
-            readIntent.data = Uri.parse(link)
+            readIntent.data = Uri.parse(link.toString())
             val readAgreementIntent = Intent.createChooser(readIntent, null)
             startActivity(readAgreementIntent)
         }
