@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/returnButton"
+            android:id="@+id/arrow_return"
             style="@style/ArrowBack"
             android:layout_width="16dp"
             android:layout_height="16dp"
@@ -32,6 +32,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/container"
         style="@style/SearchBox"
         android:layout_width="match_parent"
         android:layout_height="36dp"
@@ -49,6 +50,7 @@
             android:src="@drawable/search_icon" />
 
         <EditText
+            android:id="@+id/inputEditText"
             style="@style/SearchBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -57,7 +59,10 @@
             android:hint="@string/search"
             android:inputType="text"
             android:maxLength="30"
-            android:maxLines="1" />
+            android:maxLines="1">
+
+            <requestFocus />
+        </EditText>
 
         <ImageView
             android:id="@+id/clearIcon"

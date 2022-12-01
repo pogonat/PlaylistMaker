@@ -14,6 +14,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/arrow_return"
             style="@style/ArrowBack"
             android:layout_width="16dp"
             android:layout_height="16dp"
