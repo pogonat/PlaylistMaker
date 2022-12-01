@@ -12,6 +12,9 @@ import android.widget.EditText
 import android.widget.ImageView
 
 class SearchActivity : AppCompatActivity() {
+
+    private var userInputSearchText = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -22,8 +25,9 @@ class SearchActivity : AppCompatActivity() {
             val returnIntent = Intent(this, MainActivity::class.java)
             startActivity(returnIntent)
         }
-        
+
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
+        inputEditText.setText(userInputSearchText)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
 
         clearButton.setOnClickListener {
@@ -39,12 +43,28 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
+                userInputSearchText = s.toString()
+                inputEditText.setText(userInputSearchText)
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
         }
         inputEditText.addTextChangedListener(searchTextWatcher)
+    }
+
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT, userInputSearchText)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        userInputSearchText = savedInstanceState.getString(SEARCH_TEXT, "")
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
