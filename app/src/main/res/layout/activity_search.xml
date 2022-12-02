@@ -14,8 +14,8 @@
         <ImageView
             android:id="@+id/arrow_return"
             style="@style/ArrowBack"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/arrow_back_size"
+            android:layout_height="@dimen/arrow_back_size"
             android:layout_margin="20dp"
             android:src="@drawable/arrow_back_icon" />
 
@@ -42,8 +42,8 @@
 
         <ImageView
             style="@style/SearchBox"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/search_icon_size"
+            android:layout_height="@dimen/search_icon_size"
             android:layout_gravity="center"
             android:layout_marginStart="13dp"
             android:layout_marginEnd="9dp"
@@ -67,8 +67,8 @@
         <ImageView
             android:id="@+id/clearIcon"
             style="@style/SearchBox"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
+            android:layout_width="@dimen/clear_icon_size"
+            android:layout_height="@dimen/clear_icon_size"
             android:layout_gravity="center"
             android:layout_marginEnd="12dp"
             android:src="@drawable/close_clear_cancel_icon"

@@ -40,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
 
         readAgreement.setOnClickListener {
             val link = getString(R.string.agreement_link)
-            val readIntent = Intent(Intent.ACTION_SEND)
+            val readIntent = Intent(Intent.ACTION_VIEW)
             readIntent.data = Uri.parse(link)
             val readAgreementIntent = Intent.createChooser(readIntent, null)
             startActivity(readAgreementIntent)
