@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 class SearchActivity : AppCompatActivity() {
 
@@ -57,7 +58,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(searchTextWatcher)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_items)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -72,6 +73,9 @@ class SearchActivity : AppCompatActivity() {
                 trackTime.text = model.trackTime
                 Glide.with(artworkUrl100)
                     .load(model.artworkUrl100)
+                    .centerCrop()
+                    .transform(RoundedCorners(5))
+                    .placeholder(R.drawable.placeholder_image)
                     .into(artworkUrl100)
             }
 
@@ -154,10 +158,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     class Track(
-        val trackName: String, // Название композиции
-        val artistName: String, // Имя исполнителя
-        val trackTime: String, // Продолжительность трека
-        val artworkUrl100: String // Ссылка на изображение обложки
+        val trackName: String,
+        val artistName: String,
+        val trackTime: String,
+        val artworkUrl100: String
     )
 
 }

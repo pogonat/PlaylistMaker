@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    context=".SearchActivity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true"
+    android:backgroundTint="?attr/colorSecondary"
     android:paddingVertical="8dp"
     android:paddingStart="13dp"
     android:paddingEnd="20dp"
-    context=".SearchActivity">
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,9 +23,7 @@
             android:layout_marginVertical="8dp"
             android:layout_marginStart="13dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/placeholder_image"
-            android:contentDescription="@string/album_artwork"
-            app:cardCornerRadius="2dp" />
+            android:contentDescription="@string/album_artwork" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -35,6 +34,7 @@
 
             <TextView
                 android:id="@+id/source_track_name"
+                style="@style/SearchTrackNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/track_1_trackName" />
@@ -46,11 +46,13 @@
 
                 <TextView
                     android:id="@+id/source_artist_name"
+                    style="@style/SearchItemSecondLineText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/track_1_artistName" />
 
                 <ImageView
+                    style="@style/SearchItemIcon"
                     android:layout_width="3dp"
                     android:layout_height="3dp"
                     android:layout_gravity="center"
@@ -60,6 +62,7 @@
 
                 <TextView
                     android:id="@+id/source_track_duration"
+                    style="@style/SearchItemSecondLineText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/track_1_trackTime" />
@@ -67,6 +70,7 @@
         </LinearLayout>
 
         <ImageView
+            style="@style/SearchItemIcon"
             android:layout_width="8dp"
             android:layout_height="14dp"
             android:layout_gravity="center"
