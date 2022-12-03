@@ -72,5 +72,40 @@ class SearchActivity : AppCompatActivity() {
             View.VISIBLE
         }
     }
+
+    class Track (
+        val trackName: String, // Название композиции
+        val artistName: String, // Имя исполнителя
+        val trackTime: String, // Продолжительность трека
+        val artworkUrl100: String // Ссылка на изображение обложки
+    )
+
+    val trackList: ArrayList<Track> = arrayListOf(
+        Track(
+            getString(R.string.track_1_trackName),
+            getString(R.string.track_1_artistName),
+            getString(R.string.track_1_trackTime),
+            getString(R.string.track_1_artworkUrl100)),
+        Track(getString(R.string.track_2_trackName),
+            getString(R.string.track_2_artistName),
+            getString(R.string.track_2_trackTime),
+            getString(R.string.track_2_artworkUrl100)),
+        Track(getString(R.string.track_3_trackName),
+            getString(R.string.track_3_artistName),
+            getString(R.string.track_3_trackTime),
+            getString(R.string.track_3_artworkUrl100)),
+        Track(getString(R.string.track_4_trackName),
+            getString(R.string.track_4_artistName),
+            getString(R.string.track_4_trackTime),
+            getString(R.string.track_4_artworkUrl100)),
+        Track(getString(R.string.track_5_trackName),
+            getString(R.string.track_5_artistName),
+            getString(R.string.track_5_trackTime),
+            getString(R.string.track_5_artworkUrl100)
+        )
+    )
+
+
+
 }
 
