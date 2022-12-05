@@ -12,5 +12,9 @@
     <string name="support_email">pogorelskayanat@yandex.ru</string>
     <string name="support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="clear_icon">Clear Input</string>
     <string name="arrow_back">Return</string>
+    <string name="album_artwork">Album Artwork</string>
+    <string name="ellipse_icon">Small ellipse icon</string>
+    <string name="arrow_forward">More</string>
 </resources>
