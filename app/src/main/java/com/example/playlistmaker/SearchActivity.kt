@@ -79,16 +79,18 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (searchInput.text.isNotEmpty()) {
                     iTunesSearch()
+
                 }
+                true
             }
             false
         }
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                placeholderMessage.visibility = View.GONE
-                placeholderImage.visibility = View.GONE
-                renewButton.visibility = View.GONE
+//                placeholderMessage.visibility = View.GONE
+//                placeholderImage.visibility = View.GONE
+//                renewButton.visibility = View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
