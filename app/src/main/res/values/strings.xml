@@ -17,4 +17,6 @@
     <string name="album_artwork">Album Artwork</string>
     <string name="ellipse_icon">Small ellipse icon</string>
     <string name="arrow_forward">More</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="no_connection">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
 </resources>
