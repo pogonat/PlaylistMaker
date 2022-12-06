@@ -82,24 +82,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="110dp"
-        android:orientation="vertical"
         android:gravity="center"
-        android:visibility="visible">
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <ImageView
             android:id="@+id/placeholderErrorImage"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginBottom="16dp"
-            tools:src="@drawable/nothing_found"/>
+            android:layout_marginBottom="16dp" />
+
         <TextView
             android:id="@+id/placeholderMessage"
+            style="@style/ErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/renewButton"
+            style="@style/RenewButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            tools:text="@string/no_connection"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_marginTop="24dp"
+            android:text="@string/renew"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

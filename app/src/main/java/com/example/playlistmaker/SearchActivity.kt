@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -43,6 +44,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderImage: ImageView
+    private lateinit var clearButton: ImageView
+    private lateinit var renewButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +58,11 @@ class SearchActivity : AppCompatActivity() {
             startActivity(returnIntent)
         }
 
-        searchInput = findViewById<EditText>(R.id.inputEditText)
+        searchInput = findViewById(R.id.inputEditText)
         placeholderMessage = findViewById(R.id.placeholderMessage)
         placeholderImage = findViewById(R.id.placeholderErrorImage)
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
+        renewButton = findViewById(R.id.renewButton)
+        clearButton = findViewById(R.id.clearIcon)
 
         clearButton.setOnClickListener {
             searchInput.setText("")
@@ -67,40 +71,24 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
         }
 
+        renewButton.setOnClickListener {
+            iTunesSearch()
+        }
+
         searchInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (searchInput.text.isNotEmpty()) {
-                    itunesService
-                        .search(searchInput.text.toString())
-                        .enqueue(object : Callback<TracksResponse> {
-                            override fun onResponse(
-                                call: Call<TracksResponse>,
-                                response: Response<TracksResponse>
-                            ) {
-                                if (response.code() == 200) {
-                                    tracksList.clear()
-                                    if (response.body()?.searchResults?.isNotEmpty() == true) {
-                                        tracksList.addAll(response.body()?.searchResults!!)
-                                        trackAdapter.notifyDataSetChanged()
-                                    }
-                                }
-                                if (tracksList.isEmpty()) {
-                                    negativeResultMessage(1)
-                                }
-                            }
-
-                            override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                                TODO("Not yet implemented")
-                            }
-                        }
+                    iTunesSearch()
                 }
-                true
             }
             false
         }
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                placeholderMessage.visibility = View.GONE
+                placeholderImage.visibility = View.GONE
+                renewButton.visibility = View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -122,6 +110,35 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
 
+    private fun iTunesSearch() {
+        itunesService
+            .search(searchInput.text.toString())
+            .enqueue(object : Callback<TracksResponse> {
+
+                override fun onResponse(
+                    call: Call<TracksResponse>,
+                    response: Response<TracksResponse>
+                ) {
+                    if (response.code() == 200) {
+                        tracksList.clear()
+                        if (response.body()?.searchResults?.isNotEmpty() == true) {
+                            tracksList.addAll(response.body()?.searchResults!!)
+                            trackAdapter.notifyDataSetChanged()
+                        }
+                        if (tracksList.isEmpty()) {
+                            negativeResultMessage(1)
+                        } else {
+                            negativeResultMessage(2)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                    negativeResultMessage(2)
+                }
+            })
+    }
+
     private fun negativeResultMessage(errorCode: Int) {
         placeholderMessage.visibility = View.VISIBLE
         placeholderImage.visibility = View.VISIBLE
@@ -139,6 +156,7 @@ class SearchActivity : AppCompatActivity() {
                 Glide.with(placeholderImage)
                     .load(R.drawable.no_connection)
                     .into(placeholderImage)
+                renewButton.visibility = View.VISIBLE
             }
         }
     }
