@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,7 @@ class SearchActivity : AppCompatActivity() {
     private val trackAdapter = TrackAdapter()
 
     private lateinit var searchInput: EditText
+    private lateinit var errorPlaceholder: LinearLayout
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderImage: ImageView
     private lateinit var clearButton: ImageView
@@ -59,6 +61,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchInput = findViewById(R.id.inputEditText)
+        errorPlaceholder = findViewById(R.id.errorPlaceholder)
         placeholderMessage = findViewById(R.id.placeholderMessage)
         placeholderImage = findViewById(R.id.placeholderErrorImage)
         renewButton = findViewById(R.id.renewButton)
@@ -79,7 +82,6 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (searchInput.text.isNotEmpty()) {
                     iTunesSearch()
-
                 }
                 true
             }
@@ -88,9 +90,8 @@ class SearchActivity : AppCompatActivity() {
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//                placeholderMessage.visibility = View.GONE
-//                placeholderImage.visibility = View.GONE
-//                renewButton.visibility = View.GONE
+                errorPlaceholder.visibility = View.GONE
+                renewButton.visibility = View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -102,6 +103,8 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchInput.addTextChangedListener(searchTextWatcher)
+
+        trackAdapter.tracks = tracksList
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_items)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -129,9 +132,9 @@ class SearchActivity : AppCompatActivity() {
                         }
                         if (tracksList.isEmpty()) {
                             negativeResultMessage(1)
-                        } else {
-                            negativeResultMessage(2)
                         }
+                    } else {
+                        negativeResultMessage(2)
                     }
                 }
 
@@ -142,8 +145,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun negativeResultMessage(errorCode: Int) {
-        placeholderMessage.visibility = View.VISIBLE
-        placeholderImage.visibility = View.VISIBLE
+        errorPlaceholder.visibility = View.VISIBLE
         tracksList.clear()
         trackAdapter.notifyDataSetChanged()
         when (errorCode) {
