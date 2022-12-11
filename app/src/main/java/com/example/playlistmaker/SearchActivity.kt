@@ -48,24 +48,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderImage: ImageView
     private lateinit var clearButton: ImageView
     private lateinit var renewButton: Button
+    private lateinit var arrowReturn: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val arrowReturn = findViewById<ImageView>(R.id.arrow_return)
+        initView()
 
         arrowReturn.setOnClickListener {
             val returnIntent = Intent(this, MainActivity::class.java)
             startActivity(returnIntent)
         }
-
-        searchInput = findViewById(R.id.inputEditText)
-        errorPlaceholder = findViewById(R.id.errorPlaceholder)
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        placeholderImage = findViewById(R.id.placeholderErrorImage)
-        renewButton = findViewById(R.id.renewButton)
-        clearButton = findViewById(R.id.clearIcon)
 
         clearButton.setOnClickListener {
             searchInput.setText("")
@@ -83,7 +77,6 @@ class SearchActivity : AppCompatActivity() {
                 if (searchInput.text.isNotEmpty()) {
                     iTunesSearch()
                 }
-                true
             }
             false
         }
@@ -111,6 +104,16 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.adapter = trackAdapter
     }
 
+    private fun initView() {
+        arrowReturn = findViewById(R.id.arrow_return)
+        searchInput = findViewById(R.id.inputEditText)
+        errorPlaceholder = findViewById(R.id.errorPlaceholder)
+        placeholderMessage = findViewById(R.id.placeholderMessage)
+        placeholderImage = findViewById(R.id.placeholderErrorImage)
+        renewButton = findViewById(R.id.renewButton)
+        clearButton = findViewById(R.id.clearIcon)
+    }
+
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
@@ -131,31 +134,36 @@ class SearchActivity : AppCompatActivity() {
                             trackAdapter.notifyDataSetChanged()
                         }
                         if (tracksList.isEmpty()) {
-                            negativeResultMessage(1)
+                            negativeResultMessage(NegativeResultMessage.NOTHING_FOUND)
                         }
                     } else {
-                        negativeResultMessage(2)
+                        negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
                     }
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    negativeResultMessage(2)
+                    negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
                 }
             })
     }
 
-    private fun negativeResultMessage(errorCode: Int) {
+    enum class NegativeResultMessage {
+        NOTHING_FOUND,
+        ERROR_CONNECTION
+    }
+
+    private fun negativeResultMessage(errorCode: NegativeResultMessage) {
         errorPlaceholder.visibility = View.VISIBLE
         tracksList.clear()
         trackAdapter.notifyDataSetChanged()
         when (errorCode) {
-            1 -> {
+            NegativeResultMessage.NOTHING_FOUND -> {
                 placeholderMessage.text = getString(R.string.nothing_found)
                 Glide.with(placeholderImage)
                     .load(R.drawable.nothing_found)
                     .into(placeholderImage)
             }
-            2 -> {
+            NegativeResultMessage.ERROR_CONNECTION -> {
                 placeholderMessage.text = getString(R.string.no_connection)
                 Glide.with(placeholderImage)
                     .load(R.drawable.no_connection)
