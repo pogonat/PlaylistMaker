@@ -66,9 +66,13 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
+            tracksList.clear()
+            trackAdapter.notifyDataSetChanged()
         }
 
         renewButton.setOnClickListener {
+            errorPlaceholder.visibility = View.GONE
+            renewButton.visibility = View.GONE
             iTunesSearch()
         }
 
