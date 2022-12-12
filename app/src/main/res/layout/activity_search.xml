@@ -17,8 +17,8 @@
             android:layout_width="@dimen/arrow_back_size"
             android:layout_height="@dimen/arrow_back_size"
             android:layout_margin="20dp"
-            android:src="@drawable/arrow_back_icon"
-            android:contentDescription="@string/arrow_back" />
+            android:contentDescription="@string/arrow_back"
+            android:src="@drawable/arrow_back_icon" />
 
         <TextView
             style="@style/SecondaryTitle"
@@ -48,8 +48,8 @@
             android:layout_gravity="center"
             android:layout_marginStart="13dp"
             android:layout_marginEnd="9dp"
-            android:src="@drawable/search_icon"
-            android:contentDescription="@string/search" />
+            android:contentDescription="@string/search"
+            android:src="@drawable/search_icon" />
 
         <EditText
             android:id="@+id/inputEditText"
@@ -59,10 +59,11 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:hint="@string/search"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:maxLength="30"
-            android:maxLines="1">
-        </EditText>
+            android:maxLines="1"
+            android:singleLine="true" />
 
         <ImageView
             android:id="@+id/clearIcon"
@@ -71,9 +72,41 @@
             android:layout_height="@dimen/clear_icon_size"
             android:layout_gravity="center"
             android:layout_marginEnd="12dp"
+            android:contentDescription="@string/clear_icon"
             android:src="@drawable/close_clear_cancel_icon"
-            android:visibility="gone"
-            android:contentDescription="@string/clear_icon" />
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/errorPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/placeholderErrorImage"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/placeholderMessage"
+            style="@style/ErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/renewButton"
+            style="@style/RenewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/renew"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -81,6 +114,6 @@
         android:id="@+id/recycler_view_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>
