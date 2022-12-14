@@ -38,9 +38,11 @@ class SearchActivity : AppCompatActivity() {
 
     private val itunesService = retrofit.create(ITunesSearchApi::class.java)
 
-    private val tracksList = ArrayList<Track>()
+    private val resultsTracksList = ArrayList<Track>()
+    private val historyTracksList = ArrayList<Track>()
 
-    private val trackAdapter = TrackAdapter()
+    private val resultsTrackAdapter = TrackAdapter()
+    private val historyTrackAdapter = TrackAdapter()
 
     private lateinit var searchInput: EditText
     private lateinit var errorPlaceholder: LinearLayout
@@ -49,12 +51,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearButton: ImageView
     private lateinit var renewButton: Button
     private lateinit var arrowReturn: ImageView
+    private lateinit var searchHistoryViewGroup: LinearLayout
+    private lateinit var recyclerHistoryTrackList: RecyclerView
+    private lateinit var recyclerResultsTrackList: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        initView()
+
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
+        initViews()
 
         arrowReturn.setOnClickListener {
             val returnIntent = Intent(this, MainActivity::class.java)
@@ -66,8 +74,8 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
-            tracksList.clear()
-            trackAdapter.notifyDataSetChanged()
+            resultsTracksList.clear()
+            resultsTrackAdapter.notifyDataSetChanged()
         }
 
         renewButton.setOnClickListener {
@@ -94,6 +102,8 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
                 userInputSearchText = s.toString()
+                searchHistoryViewGroup.visibility =
+                    if (searchInput.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -101,25 +111,48 @@ class SearchActivity : AppCompatActivity() {
         }
         searchInput.addTextChangedListener(searchTextWatcher)
 
-        trackAdapter.tracks = tracksList
+        searchInput.setOnFocusChangeListener { view, hasFocus ->
+            searchHistoryViewGroup.visibility =
+                if (hasFocus && searchInput.text.isEmpty()) View.VISIBLE else View.GONE
+        }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_items)
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = trackAdapter
+        resultsTrackAdapter.tracks = resultsTracksList
+
+        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
+        recyclerResultsTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerResultsTrackList.adapter = resultsTrackAdapter
+
+
+
+        historyTrackAdapter.tracks = historyTracksList
+
+        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
+        recyclerHistoryTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerHistoryTrackList.adapter = historyTrackAdapter
+
+        recyclerResultsTrackList.setOnClickListener{
+
+        }
+
     }
 
-    private fun initView() {
-        arrowReturn = findViewById(R.id.arrow_return)
+    private fun initViews() {
+        arrowReturn = findViewById(R.id.arrowReturn)
         searchInput = findViewById(R.id.inputEditText)
         errorPlaceholder = findViewById(R.id.errorPlaceholder)
         placeholderMessage = findViewById(R.id.placeholderMessage)
         placeholderImage = findViewById(R.id.placeholderErrorImage)
         renewButton = findViewById(R.id.renewButton)
         clearButton = findViewById(R.id.clearIcon)
+        searchHistoryViewGroup = findViewById(R.id.searchHistory)
     }
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
+        const val SEARCH_HISTORY_KEY = "key_for_search_history"
     }
 
     private fun iTunesSearch() {
@@ -132,12 +165,12 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<TracksResponse>
                 ) {
                     if (response.code() == 200) {
-                        tracksList.clear()
+                        resultsTracksList.clear()
                         if (response.body()?.searchResults?.isNotEmpty() == true) {
-                            tracksList.addAll(response.body()?.searchResults!!)
-                            trackAdapter.notifyDataSetChanged()
+                            resultsTracksList.addAll(response.body()?.searchResults!!)
+                            resultsTrackAdapter.notifyDataSetChanged()
                         }
-                        if (tracksList.isEmpty()) {
+                        if (resultsTracksList.isEmpty()) {
                             negativeResultMessage(NegativeResultMessage.NOTHING_FOUND)
                         }
                     } else {
@@ -158,8 +191,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun negativeResultMessage(errorCode: NegativeResultMessage) {
         errorPlaceholder.visibility = View.VISIBLE
-        tracksList.clear()
-        trackAdapter.notifyDataSetChanged()
+        resultsTracksList.clear()
+        resultsTrackAdapter.notifyDataSetChanged()
         when (errorCode) {
             NegativeResultMessage.NOTHING_FOUND -> {
                 placeholderMessage.text = getString(R.string.nothing_found)
