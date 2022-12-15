@@ -6,8 +6,17 @@ import com.example.playlistmaker.adapters.Track
 class SearchHistory(val sharedPrefs: SharedPreferences) {
     val tracksHistory = ArrayList<Track>()
 
-    fun saveItem(track: Track) {
-        tracksHistory.add(track)
+    fun saveItem(newTrack: Track) {
+        for (track in tracksHistory) {
+            if (track.trackId == newTrack.trackId) {
+                tracksHistory.remove(track)
+                break
+            }
+        }
+        tracksHistory.add(0, newTrack)
+        if (tracksHistory.size > SEARCH_HISTORY_SIZE) {
+            tracksHistory.removeLast()
+        }
     }
 
     fun deleteItems() {
@@ -27,4 +36,9 @@ class SearchHistory(val sharedPrefs: SharedPreferences) {
         fun remove(observer: Observer)
         fun notifyObservers(track: Track)
     }
+
+    companion object {
+        const val SEARCH_HISTORY_SIZE = 10
+    }
+
 }

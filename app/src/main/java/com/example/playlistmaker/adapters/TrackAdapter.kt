@@ -23,7 +23,7 @@ class TrackAdapter(val searchHistory: SearchHistory) : RecyclerView.Adapter<Trac
         holder.itemView.setOnClickListener {
 
             searchHistory.saveItem(tracks[position])
-
+            val a = searchHistory.tracksHistory
         }
 
     }

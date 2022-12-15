@@ -39,7 +39,7 @@ class SearchActivity : AppCompatActivity() {
     private val itunesService = retrofit.create(ITunesSearchApi::class.java)
 
     private val resultsTracksList = ArrayList<Track>()
-    private val historyTracksList = ArrayList<Track>()
+//    private val historyTracksList = ArrayList<Track>()
 
     private lateinit var resultsTrackAdapter: TrackAdapter
     private lateinit var historyTrackAdapter: TrackAdapter
@@ -79,6 +79,7 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
             resultsTracksList.clear()
             resultsTrackAdapter.notifyDataSetChanged()
+            historyTrackAdapter.notifyDataSetChanged()
         }
 
         renewButton.setOnClickListener {
@@ -128,7 +129,7 @@ class SearchActivity : AppCompatActivity() {
 
 
 
-        historyTrackAdapter.tracks = historyTracksList
+        historyTrackAdapter.tracks = searchHistory.tracksHistory
 
         recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
         recyclerHistoryTrackList.layoutManager =
