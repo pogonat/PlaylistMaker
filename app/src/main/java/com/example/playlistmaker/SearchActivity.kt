@@ -41,8 +41,9 @@ class SearchActivity : AppCompatActivity() {
     private val resultsTracksList = ArrayList<Track>()
     private val historyTracksList = ArrayList<Track>()
 
-    private val resultsTrackAdapter = TrackAdapter()
-    private val historyTrackAdapter = TrackAdapter()
+    private lateinit var resultsTrackAdapter: TrackAdapter
+    private lateinit var historyTrackAdapter: TrackAdapter
+
 
     private lateinit var searchInput: EditText
     private lateinit var errorPlaceholder: LinearLayout
@@ -59,8 +60,10 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPrefs)
+        resultsTrackAdapter = TrackAdapter(searchHistory)
+        historyTrackAdapter = TrackAdapter(searchHistory)
 
         initViews()
 

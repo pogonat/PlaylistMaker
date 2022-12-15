@@ -1,12 +1,13 @@
 package com.example.playlistmaker.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.SearchHistory
+import kotlin.collections.ArrayList
 
-class TrackAdapter() : RecyclerView.Adapter<TracksViewHolder>() {
+class TrackAdapter(val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -19,6 +20,12 @@ class TrackAdapter() : RecyclerView.Adapter<TracksViewHolder>() {
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(tracks[position])
+        holder.itemView.setOnClickListener {
+
+            searchHistory.saveItem(tracks[position])
+
+        }
+
     }
 
     override fun getItemCount(): Int {
