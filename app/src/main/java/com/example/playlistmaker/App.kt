@@ -1,0 +1,50 @@
+package com.example.playlistmaker
+
+import android.app.Application
+import android.content.res.Configuration
+import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
+import com.example.playlistmaker.SettingsActivity.Companion.THEME_SWITCHER
+
+class App : Application() {
+
+    var darkTheme = false
+
+    override fun onCreate() {
+        super.onCreate()
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
+        if (sharedPrefs.getString(THEME_SWITCHER, "") == "") {
+            when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    switchTheme(true)
+                }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    switchTheme(false)
+                }
+                Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    switchTheme(darkTheme)
+                }
+            }
+        } else {
+            darkTheme = (sharedPrefs.getString(THEME_SWITCHER, "") == DARK_THEME_SWITCHER_ON)
+            switchTheme(darkTheme)
+        }
+
+    }
+
+    fun switchTheme(darkThemeEnabled: Boolean) {
+        darkTheme = darkThemeEnabled
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
+    }
+
+    companion object {
+        const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
+    }
+}

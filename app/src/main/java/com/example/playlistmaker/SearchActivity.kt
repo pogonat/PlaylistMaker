@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
 import com.example.playlistmaker.adapters.Track
 import com.example.playlistmaker.adapters.TrackAdapter
 import retrofit2.Call
@@ -168,7 +169,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
+
         const val SEARCH_HISTORY_KEY = "key_for_search_history"
     }
 
