@@ -39,7 +39,6 @@ class SearchActivity : AppCompatActivity() {
     private val itunesService = retrofit.create(ITunesSearchApi::class.java)
 
     private val resultsTracksList = ArrayList<Track>()
-//    private val historyTracksList = ArrayList<Track>()
 
     private lateinit var resultsTrackAdapter: TrackAdapter
     private lateinit var historyTrackAdapter: TrackAdapter
@@ -53,6 +52,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var renewButton: Button
     private lateinit var arrowReturn: ImageView
     private lateinit var searchHistoryViewGroup: LinearLayout
+    private lateinit var clearHistoryButton: Button
     private lateinit var recyclerHistoryTrackList: RecyclerView
     private lateinit var recyclerResultsTrackList: RecyclerView
 
@@ -62,8 +62,28 @@ class SearchActivity : AppCompatActivity() {
 
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         val searchHistory = SearchHistory(sharedPrefs)
+
         resultsTrackAdapter = TrackAdapter(searchHistory)
+        resultsTrackAdapter.tracks = resultsTracksList
+
+        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
+        recyclerResultsTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerResultsTrackList.adapter = resultsTrackAdapter
+
+
         historyTrackAdapter = TrackAdapter(searchHistory)
+        searchHistory.loadTracksFromJson()
+        historyTrackAdapter.tracks = searchHistory.tracksHistory
+
+        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+        }
+
+        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
+        recyclerHistoryTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerHistoryTrackList.adapter = historyTrackAdapter
 
         initViews()
 
@@ -79,7 +99,7 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
             resultsTracksList.clear()
             resultsTrackAdapter.notifyDataSetChanged()
-            historyTrackAdapter.notifyDataSetChanged()
+
         }
 
         renewButton.setOnClickListener {
@@ -107,7 +127,11 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.visibility = clearButtonVisibility(s)
                 userInputSearchText = s.toString()
                 searchHistoryViewGroup.visibility =
-                    if (searchInput.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
+                    if (
+                        searchInput.hasFocus() &&
+                        s?.isEmpty() == true &&
+                        searchHistory.tracksHistory.isNotEmpty()
+                    ) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -117,29 +141,17 @@ class SearchActivity : AppCompatActivity() {
 
         searchInput.setOnFocusChangeListener { view, hasFocus ->
             searchHistoryViewGroup.visibility =
-                if (hasFocus && searchInput.text.isEmpty()) View.VISIBLE else View.GONE
+                if (
+                    hasFocus &&
+                    searchInput.text.isEmpty() &&
+                    searchHistory.tracksHistory.isNotEmpty()
+                ) View.VISIBLE else View.GONE
         }
 
-        resultsTrackAdapter.tracks = resultsTracksList
-
-        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
-        recyclerResultsTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerResultsTrackList.adapter = resultsTrackAdapter
-
-
-
-        historyTrackAdapter.tracks = searchHistory.tracksHistory
-
-        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
-        recyclerHistoryTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerHistoryTrackList.adapter = historyTrackAdapter
-
-        recyclerResultsTrackList.setOnClickListener{
-
+        clearHistoryButton.setOnClickListener {
+            searchHistory.deleteItems()
+            searchHistoryViewGroup.visibility = View.GONE
         }
-
     }
 
     private fun initViews() {
@@ -151,6 +163,7 @@ class SearchActivity : AppCompatActivity() {
         renewButton = findViewById(R.id.renewButton)
         clearButton = findViewById(R.id.clearIcon)
         searchHistoryViewGroup = findViewById(R.id.searchHistory)
+        clearHistoryButton = findViewById(R.id.clearHistoryButton)
     }
 
     companion object {
@@ -231,5 +244,6 @@ class SearchActivity : AppCompatActivity() {
             View.VISIBLE
         }
     }
+
 }
 

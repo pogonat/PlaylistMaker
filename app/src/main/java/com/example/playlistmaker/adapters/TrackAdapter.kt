@@ -7,7 +7,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.SearchHistory
 import kotlin.collections.ArrayList
 
-class TrackAdapter(val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
+class TrackAdapter(private val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -16,14 +16,13 @@ class TrackAdapter(val searchHistory: SearchHistory) : RecyclerView.Adapter<Trac
             .inflate(R.layout.track_view, parent, false)
 
         return TracksViewHolder(view)
+
     }
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener {
-
             searchHistory.saveItem(tracks[position])
-            val a = searchHistory.tracksHistory
         }
 
     }
