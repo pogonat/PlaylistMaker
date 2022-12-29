@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.app.Application
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
@@ -8,11 +9,15 @@ import com.example.playlistmaker.SettingsActivity.Companion.THEME_SWITCHER
 
 class App : Application() {
 
+    lateinit var sharedPrefs: SharedPreferences
+        private set
+
     var darkTheme = false
 
     override fun onCreate() {
         super.onCreate()
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        instance = this
+        sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
 
         if (sharedPrefs.getString(THEME_SWITCHER, "") == "") {
             when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
@@ -46,5 +51,7 @@ class App : Application() {
 
     companion object {
         const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
+        lateinit var instance: App
+            private set
     }
 }

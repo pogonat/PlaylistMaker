@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginHorizontal="16dp"
+        android:paddingHorizontal="16dp"
         android:text="@string/dark_theme"
         app:thumbTint="@color/yp_text_gray"
         app:trackTint="@color/yp_light_gray"/>

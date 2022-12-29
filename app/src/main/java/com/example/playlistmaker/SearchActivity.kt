@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -61,30 +62,13 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = App.instance.sharedPrefs
         val searchHistory = SearchHistory(sharedPrefs)
 
-        resultsTrackAdapter = TrackAdapter(searchHistory)
-        resultsTrackAdapter.tracks = resultsTracksList
-
-        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
-        recyclerResultsTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerResultsTrackList.adapter = resultsTrackAdapter
+        setSearchResultsRecycler(searchHistory)
 
 
-        historyTrackAdapter = TrackAdapter(searchHistory)
-        searchHistory.loadTracksFromJson()
-        historyTrackAdapter.tracks = searchHistory.tracksHistory
-
-        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
-        }
-
-        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
-        recyclerHistoryTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerHistoryTrackList.adapter = historyTrackAdapter
+        setSearchHistoryRecycler(searchHistory, sharedPrefs)
 
         initViews()
 
@@ -153,6 +137,34 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.deleteItems()
             searchHistoryViewGroup.visibility = View.GONE
         }
+    }
+
+    private fun setSearchHistoryRecycler(
+        searchHistory: SearchHistory,
+        sharedPrefs: SharedPreferences
+    ) {
+        historyTrackAdapter = TrackAdapter(searchHistory)
+        searchHistory.loadTracksFromJson()
+        historyTrackAdapter.tracks = searchHistory.tracksHistory
+
+        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+        }
+
+        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
+        recyclerHistoryTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerHistoryTrackList.adapter = historyTrackAdapter
+    }
+
+    private fun setSearchResultsRecycler(searchHistory: SearchHistory) {
+        resultsTrackAdapter = TrackAdapter(searchHistory)
+        resultsTrackAdapter.tracks = resultsTracksList
+
+        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
+        recyclerResultsTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerResultsTrackList.adapter = resultsTrackAdapter
     }
 
     private fun initViews() {
