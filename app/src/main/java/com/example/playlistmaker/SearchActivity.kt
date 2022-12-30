@@ -45,6 +45,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var resultsTrackAdapter: TrackAdapter
     private lateinit var historyTrackAdapter: TrackAdapter
 
+    private lateinit var sharedPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
 
     private lateinit var searchInput: EditText
     private lateinit var errorPlaceholder: LinearLayout
@@ -147,6 +148,10 @@ class SearchActivity : AppCompatActivity() {
         searchHistory.loadTracksFromJson()
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
+//        sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener{ _, key ->
+//            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+//        }
+//        sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
         sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
             if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
         }
