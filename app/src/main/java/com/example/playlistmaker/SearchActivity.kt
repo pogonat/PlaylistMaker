@@ -74,8 +74,7 @@ class SearchActivity : AppCompatActivity() {
         initViews()
 
         arrowReturn.setOnClickListener {
-            val returnIntent = Intent(this, MainActivity::class.java)
-            startActivity(returnIntent)
+            finish()
         }
 
         clearButton.setOnClickListener {
@@ -148,13 +147,10 @@ class SearchActivity : AppCompatActivity() {
         searchHistory.loadTracksFromJson()
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
-//        sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener{ _, key ->
-//            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
-//        }
-//        sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
-        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
+        sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener{ _, key ->
             if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
         }
+        sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
 
         recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
         recyclerHistoryTrackList.layoutManager =
