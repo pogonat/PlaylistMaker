@@ -115,28 +115,28 @@
         <item name="tint">?attr/colorSecondaryVariant</item>
     </style>
 
-    <style name="TrackNameMedia">
+    <style name="TrackNamePlayer">
         <item name="android:textSize">22sp</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="fontWeight">400</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 
-    <style name="ArtistNameMedia">
+    <style name="ArtistNamePlayer">
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="fontWeight">400</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 
-    <style name="MediaTrackText">
+    <style name="PlayerTrackText">
         <item name="android:textSize">13sp</item>
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
         <item name="android:textColor">@color/yp_text_gray</item>
     </style>
 
-    <style name="MediaTrackValues">
+    <style name="PlayerTrackValues">
         <item name="android:textSize">13sp</item>
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
