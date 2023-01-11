@@ -21,38 +21,25 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var arrowReturn: ImageView
     private lateinit var genre: TextView
     private lateinit var country: TextView
+    private lateinit var playlistButton: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        initViews()
-
-        arrowReturn.setOnClickListener {
-            finish()
-        }
+        val gson = App.instance.gson
 
         val extras = intent.extras
         val stringTrack = extras?.getString(KEY_BUNDLE, "")
 
-        val gson = App.instance.gson
-
         val track = gson.fromJson(stringTrack, Track::class.java)
 
-        trackTitle.text = track.trackName
-        artistName.text = track.artistName
-        duration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
-        timeRemained.text = duration.text
-        albumCollection.text = track.collectionName
-        year.text = track.releaseDate
-        genre.text = track.primaryGenreName
-        country.text = track.country
-        Glide.with(artwork)
-            .load(track.getCoverArtwork())
-            .centerCrop()
-            .transform(RoundedCorners(5))
-            .placeholder(R.drawable.placeholder_image)
-            .into(artwork)
+        initViews()
+        fillViews(track)
+
+        arrowReturn.setOnClickListener {
+            finish()
+        }
 
     }
 
@@ -67,8 +54,31 @@ class PlayerActivity : AppCompatActivity() {
         year = findViewById(R.id.year)
         genre = findViewById(R.id.genre)
         country = findViewById(R.id.country)
+        playlistButton = findViewById(R.id.playlist_button)
     }
 
+    private fun fillViews(track: Track) {
+        trackTitle.text = track.trackName
+        artistName.text = track.artistName
+        duration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
+        timeRemained.text = duration.text
+        albumCollection.text = track.collectionName
+        year.text = getYear(track.releaseDate)
+        genre.text = track.primaryGenreName
+        country.text = track.country
+        Glide.with(artwork)
+            .load(track.getCoverArtwork())
+            .centerCrop()
+            .transform(RoundedCorners(5))
+            .placeholder(R.drawable.placeholder_image)
+            .into(artwork)
+    }
+
+    private fun getYear(releaseDate: String): String {
+        return if (releaseDate.isNotEmpty()) {
+            releaseDate.substring(0,4)
+        } else ""
+    }
 
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
