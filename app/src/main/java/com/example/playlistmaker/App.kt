@@ -6,10 +6,14 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
 import com.example.playlistmaker.SettingsActivity.Companion.THEME_SWITCHER
+import com.google.gson.Gson
 
 class App : Application() {
 
     lateinit var sharedPrefs: SharedPreferences
+        private set
+
+    lateinit var gson: Gson
         private set
 
     var darkTheme = false
@@ -18,6 +22,8 @@ class App : Application() {
         super.onCreate()
         instance = this
         sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
+        gson = Gson()
 
         if (sharedPrefs.getString(THEME_SWITCHER, "") == "") {
             when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {

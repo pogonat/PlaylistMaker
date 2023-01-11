@@ -7,7 +7,7 @@ import com.google.gson.Gson
 class SearchHistory(private val sharedPrefs: SharedPreferences) {
 
     var tracksHistory = ArrayList<Track>()
-    private val gson = Gson()
+    private val gson = App.instance.gson
 
     fun loadTracksFromJson() {
         val json = sharedPrefs.getString(SearchActivity.SEARCH_HISTORY_KEY, "")
