@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,7 +17,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
 import com.example.playlistmaker.adapters.Track
 import com.example.playlistmaker.adapters.TrackAdapter
 import retrofit2.Call
@@ -67,7 +65,6 @@ class SearchActivity : AppCompatActivity() {
         val searchHistory = SearchHistory(sharedPrefs)
 
         setSearchResultsRecycler(searchHistory)
-
 
         setSearchHistoryRecycler(searchHistory, sharedPrefs)
 
@@ -143,7 +140,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistory: SearchHistory,
         sharedPrefs: SharedPreferences
     ) {
-        historyTrackAdapter = TrackAdapter(searchHistory)
+        historyTrackAdapter = TrackAdapter(this, searchHistory)
         searchHistory.loadTracksFromJson()
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
@@ -159,7 +156,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setSearchResultsRecycler(searchHistory: SearchHistory) {
-        resultsTrackAdapter = TrackAdapter(searchHistory)
+        resultsTrackAdapter = TrackAdapter(this, searchHistory)
         resultsTrackAdapter.tracks = resultsTracksList
 
         recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
