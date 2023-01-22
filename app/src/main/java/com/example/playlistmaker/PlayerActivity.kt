@@ -63,7 +63,7 @@ class PlayerActivity : AppCompatActivity() {
         duration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
         timeRemained.text = duration.text
         albumCollection.text = track.collectionName
-        year.text = getYear(track.releaseDate)
+        year.text = track.getYear()
         genre.text = track.primaryGenreName
         country.text = track.country
         Glide.with(artwork)
@@ -72,12 +72,6 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(5))
             .placeholder(R.drawable.placeholder_image)
             .into(artwork)
-    }
-
-    private fun getYear(releaseDate: String): String {
-        return if (releaseDate.isNotEmpty()) {
-            releaseDate.substring(0,4)
-        } else ""
     }
 
     companion object {

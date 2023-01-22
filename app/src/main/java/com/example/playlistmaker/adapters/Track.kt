@@ -14,4 +14,10 @@ data class Track(
     val country: String
 ) {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
+
+    fun getYear(): String {
+        return if (releaseDate.isNotEmpty()) {
+            releaseDate.substring(0,4)
+        } else ""
+    }
 }
