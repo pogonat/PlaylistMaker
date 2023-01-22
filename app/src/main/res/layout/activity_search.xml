@@ -78,6 +78,15 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="148dp"
+        android:indeterminateTint="@color/yp_blue"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/errorPlaceholder"
         android:layout_width="match_parent"
@@ -164,13 +173,5 @@
         android:layout_height="match_parent"
         android:layout_marginTop="24dp" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="148dp"
-        android:indeterminateTint="@color/yp_blue"
-        android:visibility="gone"/>
 
 </LinearLayout>
