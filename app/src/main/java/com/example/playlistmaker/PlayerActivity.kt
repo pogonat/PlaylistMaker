@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
@@ -22,6 +23,10 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var genre: TextView
     private lateinit var country: TextView
     private lateinit var playlistButton: ImageView
+    private lateinit var play: ImageView
+
+    private var playerState = STATE_DEFAULT
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +39,30 @@ class PlayerActivity : AppCompatActivity() {
 
         val track = gson.fromJson(stringTrack, Track::class.java)
 
+        mediaPlayer = MediaPlayer()
+
         initViews()
         fillViews(track)
+        preparePlayer(track)
+
+        play.setOnClickListener {
+            playbackControl()
+        }
 
         arrowReturn.setOnClickListener {
             finish()
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
     }
 
     private fun initViews() {
@@ -55,6 +77,7 @@ class PlayerActivity : AppCompatActivity() {
         genre = findViewById(R.id.genre)
         country = findViewById(R.id.country)
         playlistButton = findViewById(R.id.playlist_button)
+        play = findViewById(R.id.play_button)
     }
 
     private fun fillViews(track: Track) {
@@ -74,7 +97,53 @@ class PlayerActivity : AppCompatActivity() {
             .into(artwork)
     }
 
+    private fun preparePlayer(track: Track) {
+        mediaPlayer.setDataSource(track.getAudioPreviewUrl())
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            play.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playerState = STATE_PREPARED
+            Glide.with(this)
+                .load(R.drawable.play_track)
+                .into(play)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playerState = STATE_PLAYING
+        Glide.with(this)
+            .load(R.drawable.track_pause)
+            .into(play)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playerState = STATE_PAUSED
+        Glide.with(this)
+            .load(R.drawable.play_track)
+            .into(play)
+    }
+
+    private fun playbackControl() {
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
     }
 }

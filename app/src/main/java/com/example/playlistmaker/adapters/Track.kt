@@ -21,4 +21,7 @@ data class Track(
             releaseDate.substring(0,4)
         } else ""
     }
+
+    fun getAudioPreviewUrl() = previewUrl
+
 }
