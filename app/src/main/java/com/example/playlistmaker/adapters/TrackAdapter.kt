@@ -2,6 +2,8 @@ package com.example.playlistmaker.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +16,18 @@ class TrackAdapter(private val adapterContext: Context, private val searchHistor
 
     private val gson = App.instance.gson
 
+    private var isClickAllowed = true
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -24,14 +38,21 @@ class TrackAdapter(private val adapterContext: Context, private val searchHistor
     }
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
+
         holder.bind(tracks[position])
+
         holder.itemView.setOnClickListener {
+
             val track = tracks[position]
             searchHistory.saveItem(track)
-            val playerIntent = Intent(adapterContext, PlayerActivity::class.java)
-            val jsonTrack = gson.toJson(track)
-            playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, jsonTrack)
-            adapterContext.startActivity(playerIntent)
+
+            if (clickDebounce()) {
+                val playerIntent = Intent(adapterContext, PlayerActivity::class.java)
+                val jsonTrack = gson.toJson(track)
+                playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, jsonTrack)
+                adapterContext.startActivity(playerIntent)
+            }
+
         }
     }
 
@@ -39,4 +60,7 @@ class TrackAdapter(private val adapterContext: Context, private val searchHistor
         return tracks.size
     }
 
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
 }

@@ -1,8 +1,12 @@
 package com.example.playlistmaker
 
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.*
+import android.os.Handler
+import android.os.Looper
+import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.adapters.Track
@@ -10,6 +14,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class PlayerActivity : AppCompatActivity() {
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val setProgressText = Runnable {
+        progressTextRenew()
+    }
 
     private lateinit var artwork: ImageView
     private lateinit var trackTitle: TextView
@@ -22,6 +32,10 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var genre: TextView
     private lateinit var country: TextView
     private lateinit var playlistButton: ImageView
+    private lateinit var play: ImageView
+
+    private var playerState = STATE_DEFAULT
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +48,31 @@ class PlayerActivity : AppCompatActivity() {
 
         val track = gson.fromJson(stringTrack, Track::class.java)
 
+        mediaPlayer = MediaPlayer()
+
         initViews()
         fillViews(track)
+        preparePlayer(track)
+
+        play.setOnClickListener {
+            playbackControl()
+        }
 
         arrowReturn.setOnClickListener {
             finish()
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(setProgressText)
+        mediaPlayer.release()
     }
 
     private fun initViews() {
@@ -55,6 +87,7 @@ class PlayerActivity : AppCompatActivity() {
         genre = findViewById(R.id.genre)
         country = findViewById(R.id.country)
         playlistButton = findViewById(R.id.playlist_button)
+        play = findViewById(R.id.play_button)
     }
 
     private fun fillViews(track: Track) {
@@ -74,7 +107,66 @@ class PlayerActivity : AppCompatActivity() {
             .into(artwork)
     }
 
+    private fun preparePlayer(track: Track) {
+        mediaPlayer.setDataSource(track.getAudioPreviewUrl())
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            play.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            handler.removeCallbacks(setProgressText)
+            playerState = STATE_PREPARED
+            timeRemained.text = "00:00"
+            Glide.with(play)
+                .load(R.drawable.play_track)
+                .into(play)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playerState = STATE_PLAYING
+        progressTextRenew()
+        Glide.with(play)
+            .load(R.drawable.pause_track)
+            .into(play)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        handler.removeCallbacks(setProgressText)
+        playerState = STATE_PAUSED
+        Glide.with(play)
+            .load(R.drawable.play_track)
+            .into(play)
+    }
+
+    private fun playbackControl() {
+        when (playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun progressTextRenew() {
+        timeRemained.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+        handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
+    }
+
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
+
+        const val SET_PROGRESS_TEXT_DELAY = 500L
+
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
     }
 }
