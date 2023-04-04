@@ -1,6 +1,6 @@
-package com.example.playlistmaker
+package data
 
-import com.example.playlistmaker.adapters.Track
+import data.adapters.Track
 import com.google.gson.annotations.SerializedName
 
 class TracksResponse (@SerializedName("results") val searchResults: ArrayList<Track>)

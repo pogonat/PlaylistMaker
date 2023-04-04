@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package presentation.Activities
 
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.adapters.Track
+import com.example.playlistmaker.App
+import com.example.playlistmaker.R
+import data.adapters.Track
 import java.text.SimpleDateFormat
 import java.util.*
 

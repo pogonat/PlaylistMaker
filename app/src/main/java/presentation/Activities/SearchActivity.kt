@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package presentation.Activities
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -20,15 +20,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.adapters.Track
-import com.example.playlistmaker.adapters.TrackAdapter
-import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.example.playlistmaker.App
+import data.ITunesSearchApi
+import com.example.playlistmaker.R
+import data.TracksResponse
+import data.adapters.Track
+import data.adapters.TrackAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Thread.sleep
 
 class SearchActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.adapters
+package data.adapters
 
 import android.content.Context
 import android.content.Intent
@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.*
+import presentation.Activities.PlayerActivity
+import presentation.Activities.SearchHistory
 import kotlin.collections.ArrayList
 
 class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
