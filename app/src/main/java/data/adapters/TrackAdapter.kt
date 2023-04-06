@@ -8,8 +8,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.*
-import presentation.Activities.PlayerActivity
-import presentation.Activities.SearchHistory
+import data.models.Track
+import presentation.activities.PlayerActivity
+import presentation.activities.SearchHistory
 import kotlin.collections.ArrayList
 
 class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {

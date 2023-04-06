@@ -1,8 +1,8 @@
-package presentation.Activities
+package presentation.activities
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.App
-import data.adapters.Track
+import data.models.Track
 
 class SearchHistory(private val sharedPrefs: SharedPreferences) {
 

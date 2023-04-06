@@ -1,4 +1,4 @@
-package presentation.Activities
+package presentation.activities
 
 import android.content.Intent
 import android.net.Uri

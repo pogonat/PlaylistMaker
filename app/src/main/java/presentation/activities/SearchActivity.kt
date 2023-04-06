@@ -1,4 +1,4 @@
-package presentation.Activities
+package presentation.activities
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -24,7 +24,7 @@ import com.example.playlistmaker.App
 import data.ITunesSearchApi
 import com.example.playlistmaker.R
 import data.TracksResponse
-import data.adapters.Track
+import data.models.Track
 import data.adapters.TrackAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -190,14 +190,6 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-
-        const val SEARCH_HISTORY_KEY = "key_for_search_history"
-
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-    }
-
     private fun iTunesSearch() {
 
         progressBar.visibility = View.VISIBLE
@@ -281,6 +273,14 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+
+        const val SEARCH_HISTORY_KEY = "key_for_search_history"
+
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
 }

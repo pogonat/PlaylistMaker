@@ -1,4 +1,4 @@
-package presentation.Activities
+package presentation.activities
 
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
@@ -11,11 +11,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import data.adapters.Track
+import data.models.Track
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(), PlayerView {
+    // активити должна будет реализовать методы интерфейса PlayerView, чтобы презентер вызывал их
+    private val presenter:PlayerPresenter = PlayerPresenterImpl(this, AudioPlayer()) // внутри активити используем методы презентера через presenter.
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -43,6 +45,8 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
+        presenter.loadTrack()
+
         val gson = App.instance.gson
 
         val extras = intent.extras
@@ -57,7 +61,7 @@ class PlayerActivity : AppCompatActivity() {
         preparePlayer(track)
 
         play.setOnClickListener {
-            playbackControl()
+            presenter.playbackControl()
         }
 
         arrowReturn.setOnClickListener {
@@ -68,13 +72,13 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        presenter.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(setProgressText)
-        mediaPlayer.release()
+        presenter.releasePlayer()
     }
 
     private fun initViews() {
@@ -110,6 +114,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer(track: Track) {
+        presenter.preparePlayer(track.getAudioPreviewUrl(),{
+            updatePlaybackControlButton()// обновить кнопку setOnPreparedListener
+        }, {
+            updatePlaybackControlButton()// обновить кнопку и убрать колбэки setOnCompletionListener
+        })
         mediaPlayer.setDataSource(track.getAudioPreviewUrl())
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -127,37 +136,42 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun startPlayer() {
+        presenter.startPlayer()
         mediaPlayer.start()
         playerState = STATE_PLAYING
         progressTextRenew()
-        Glide.with(play)
-            .load(R.drawable.pause_track)
-            .into(play)
+        updatePlaybackControlButton()
+//        Glide.with(play)
+//            .load(R.drawable.pause_track)
+//            .into(play)
     }
 
     private fun pausePlayer() {
+        presenter.pausePlayer()
         mediaPlayer.pause()
         handler.removeCallbacks(setProgressText)
+        updatePlaybackControlButton()//обновить кнопку
         playerState = STATE_PAUSED
-        Glide.with(play)
-            .load(R.drawable.play_track)
-            .into(play)
+//        Glide.with(play)
+//            .load(R.drawable.play_track)
+//            .into(play)
     }
 
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> {
-                pausePlayer()
-            }
-            STATE_PREPARED, STATE_PAUSED -> {
-                startPlayer()
-            }
+    private fun updatePlaybackControlButton() {
+        val iconRes = if (presenter.getPlayerState() == AudioPlayer.STATE_PLAYING) {
+            R.drawable.pause_track
+        } else {
+            R.drawable.play_track
         }
+        Glide.with(play)
+            .load(iconRes)
+            .into(play)
     }
 
     private fun progressTextRenew() {
         timeRemained.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(presenter.getCurrentPosition())
+//            SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
         handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
     }
 

@@ -1,4 +1,4 @@
-package presentation.Activities
+package presentation.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
