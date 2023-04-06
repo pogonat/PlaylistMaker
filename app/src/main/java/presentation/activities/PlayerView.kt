@@ -1,5 +1,12 @@
 package presentation.activities
 
+import data.models.Track
+
 interface PlayerView {
-    // когда мы находимся в презентере мы можем вызвать эти методы у view
+    fun getTrack(): String
+    fun initViews()
+    fun fillViews(track: Track)
+    fun enablePlayButton()
+    fun updatePlaybackControlButton()
+    fun stopProgressUpdate()
 }

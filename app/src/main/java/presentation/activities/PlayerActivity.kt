@@ -1,6 +1,5 @@
 package presentation.activities
 
-import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -9,15 +8,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import data.models.Track
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PlayerActivity : AppCompatActivity(), PlayerView {
-    // активити должна будет реализовать методы интерфейса PlayerView, чтобы презентер вызывал их
-    private val presenter:PlayerPresenter = PlayerPresenterImpl(this, AudioPlayer()) // внутри активити используем методы презентера через presenter.
+    private val presenter: PlayerPresenter = PlayerPresenterImpl(this, AudioPlayer())
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -38,8 +35,8 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
     private lateinit var playlistButton: ImageView
     private lateinit var play: ImageView
 
-    private var playerState = STATE_DEFAULT
-    private lateinit var mediaPlayer: MediaPlayer
+//    private var playerState = STATE_DEFAULT
+//    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,21 +44,16 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
 
         presenter.loadTrack()
 
-        val gson = App.instance.gson
+        val track = getTrack()
 
-        val extras = intent.extras
-        val stringTrack = extras?.getString(KEY_BUNDLE, "")
+//        mediaPlayer = MediaPlayer()
 
-        val track = gson.fromJson(stringTrack, Track::class.java)
-
-        mediaPlayer = MediaPlayer()
-
-        initViews()
-        fillViews(track)
-        preparePlayer(track)
+//        initViews()
+//        fillViews(track)
+//        preparePlayer(track)
 
         play.setOnClickListener {
-            presenter.playbackControl()
+            presenter.playBackControl()
         }
 
         arrowReturn.setOnClickListener {
@@ -77,11 +69,16 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(setProgressText)
+        stopProgressUpdate()
         presenter.releasePlayer()
     }
 
-    private fun initViews() {
+    override fun getTrack(): String {
+        val extras = intent.extras
+        return extras?.getString(KEY_BUNDLE, "") ?: ""
+    }
+
+    override fun initViews() {
         arrowReturn = findViewById(R.id.return_arrow)
         artwork = findViewById(R.id.source_album_art_large)
         trackTitle = findViewById(R.id.trackTitle)
@@ -96,7 +93,7 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
         play = findViewById(R.id.play_button)
     }
 
-    private fun fillViews(track: Track) {
+    override fun fillViews(track: Track) {
         trackTitle.text = track.trackName
         artistName.text = track.artistName
         duration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
@@ -113,52 +110,56 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
             .into(artwork)
     }
 
-    private fun preparePlayer(track: Track) {
-        presenter.preparePlayer(track.getAudioPreviewUrl(),{
-            updatePlaybackControlButton()// обновить кнопку setOnPreparedListener
-        }, {
-            updatePlaybackControlButton()// обновить кнопку и убрать колбэки setOnCompletionListener
-        })
-        mediaPlayer.setDataSource(track.getAudioPreviewUrl())
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            play.isEnabled = true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            handler.removeCallbacks(setProgressText)
-            playerState = STATE_PREPARED
-            timeRemained.text = "00:00"
-            Glide.with(play)
-                .load(R.drawable.play_track)
-                .into(play)
-        }
+//    private fun preparePlayer(track: Track) {
+//        presenter.preparePlayer(track.getAudioPreviewUrl(),{
+//            updatePlaybackControlButton()// обновить кнопку setOnPreparedListener
+//        }, {
+//            updatePlaybackControlButton()// обновить кнопку и убрать колбэки setOnCompletionListener
+//        })
+//        mediaPlayer.setDataSource(track.getAudioPreviewUrl())
+//        mediaPlayer.prepareAsync()
+//        mediaPlayer.setOnPreparedListener {
+//            play.isEnabled = true
+////            playerState = STATE_PREPARED
+//        }
+//        mediaPlayer.setOnCompletionListener {
+//            handler.removeCallbacks(setProgressText)
+////            playerState = STATE_PREPARED
+//            timeRemained.text = "00:00"
+//            Glide.with(play)
+//                .load(R.drawable.play_track)
+//                .into(play)
+//        }
+//    }
+
+//    override fun startPlayer() {
+//        presenter.startPlayer()
+////        mediaPlayer.start()
+////        playerState = STATE_PLAYING
+//        progressTextRenew()
+//        updatePlaybackControlButton()
+////        Glide.with(play)
+////            .load(R.drawable.pause_track)
+////            .into(play)
+//    }
+
+//    override fun pausePlayer() {
+//        presenter.pausePlayer()
+////        mediaPlayer.pause()
+//        handler.removeCallbacks(setProgressText)
+//        updatePlaybackControlButton()//обновить кнопку
+////        playerState = STATE_PAUSED
+////        Glide.with(play)
+////            .load(R.drawable.play_track)
+////            .into(play)
+//    }
+
+    override fun enablePlayButton() {
+        play.isEnabled = true
     }
 
-    private fun startPlayer() {
-        presenter.startPlayer()
-        mediaPlayer.start()
-        playerState = STATE_PLAYING
-        progressTextRenew()
-        updatePlaybackControlButton()
-//        Glide.with(play)
-//            .load(R.drawable.pause_track)
-//            .into(play)
-    }
-
-    private fun pausePlayer() {
-        presenter.pausePlayer()
-        mediaPlayer.pause()
-        handler.removeCallbacks(setProgressText)
-        updatePlaybackControlButton()//обновить кнопку
-        playerState = STATE_PAUSED
-//        Glide.with(play)
-//            .load(R.drawable.play_track)
-//            .into(play)
-    }
-
-    private fun updatePlaybackControlButton() {
-        val iconRes = if (presenter.getPlayerState() == AudioPlayer.STATE_PLAYING) {
+    override fun updatePlaybackControlButton() {
+        val iconRes = if (presenter.getPlayerState() == STATE_PLAYING) {
             R.drawable.pause_track
         } else {
             R.drawable.play_track
@@ -166,6 +167,10 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
         Glide.with(play)
             .load(iconRes)
             .into(play)
+    }
+
+    override fun stopProgressUpdate() {
+        handler.removeCallbacks(setProgressText)
     }
 
     private fun progressTextRenew() {
@@ -177,9 +182,7 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
 
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
-
         const val SET_PROGRESS_TEXT_DELAY = 500L
-
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
