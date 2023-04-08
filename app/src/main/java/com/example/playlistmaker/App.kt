@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import presentation.activities.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
-import presentation.activities.SettingsActivity.Companion.THEME_SWITCHER
+import com.example.playlistmaker.ui.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
+import com.example.playlistmaker.ui.SettingsActivity.Companion.THEME_SWITCHER
 import com.google.gson.Gson
 
 class App : Application() {

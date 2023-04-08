@@ -1,8 +1,8 @@
-package presentation.activities
+package com.example.playlistmaker.domain
 
 import android.media.MediaPlayer
 
-class AudioPlayer : AudioPlayerInteractor {
+class AudioPlayerInteractorImpl : AudioPlayerInteractor {
 
     private var playerState = STATE_DEFAULT
     private val mediaPlayer = MediaPlayer()

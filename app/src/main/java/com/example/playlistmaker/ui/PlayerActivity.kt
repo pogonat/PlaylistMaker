@@ -1,4 +1,4 @@
-package presentation.activities
+package com.example.playlistmaker.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,12 +9,21 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import data.models.Track
+import com.example.playlistmaker.data.NetworkSearchImpl
+import com.example.playlistmaker.data.TrackRepositoryImpl
+import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.domain.AudioPlayerInteractorImpl
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.PlayerPresenterImpl
+import com.example.playlistmaker.presentation.PlayerView
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class PlayerActivity : AppCompatActivity(), PlayerView {
-    private val presenter: PlayerPresenter = PlayerPresenterImpl(this, AudioPlayer())
+
+    private val repository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
+    private val presenter: PlayerPresenter = PlayerPresenterImpl(this, AudioPlayerInteractorImpl(),repository)
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -35,22 +44,11 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
     private lateinit var playlistButton: ImageView
     private lateinit var play: ImageView
 
-//    private var playerState = STATE_DEFAULT
-//    private lateinit var mediaPlayer: MediaPlayer
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
         presenter.loadTrack()
-
-        val track = getTrack()
-
-//        mediaPlayer = MediaPlayer()
-
-//        initViews()
-//        fillViews(track)
-//        preparePlayer(track)
 
         play.setOnClickListener {
             presenter.playBackControl()
@@ -73,7 +71,7 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
         presenter.releasePlayer()
     }
 
-    override fun getTrack(): String {
+    override fun getTrackId(): String {
         val extras = intent.extras
         return extras?.getString(KEY_BUNDLE, "") ?: ""
     }
@@ -110,50 +108,6 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
             .into(artwork)
     }
 
-//    private fun preparePlayer(track: Track) {
-//        presenter.preparePlayer(track.getAudioPreviewUrl(),{
-//            updatePlaybackControlButton()// обновить кнопку setOnPreparedListener
-//        }, {
-//            updatePlaybackControlButton()// обновить кнопку и убрать колбэки setOnCompletionListener
-//        })
-//        mediaPlayer.setDataSource(track.getAudioPreviewUrl())
-//        mediaPlayer.prepareAsync()
-//        mediaPlayer.setOnPreparedListener {
-//            play.isEnabled = true
-////            playerState = STATE_PREPARED
-//        }
-//        mediaPlayer.setOnCompletionListener {
-//            handler.removeCallbacks(setProgressText)
-////            playerState = STATE_PREPARED
-//            timeRemained.text = "00:00"
-//            Glide.with(play)
-//                .load(R.drawable.play_track)
-//                .into(play)
-//        }
-//    }
-
-//    override fun startPlayer() {
-//        presenter.startPlayer()
-////        mediaPlayer.start()
-////        playerState = STATE_PLAYING
-//        progressTextRenew()
-//        updatePlaybackControlButton()
-////        Glide.with(play)
-////            .load(R.drawable.pause_track)
-////            .into(play)
-//    }
-
-//    override fun pausePlayer() {
-//        presenter.pausePlayer()
-////        mediaPlayer.pause()
-//        handler.removeCallbacks(setProgressText)
-//        updatePlaybackControlButton()//обновить кнопку
-////        playerState = STATE_PAUSED
-////        Glide.with(play)
-////            .load(R.drawable.play_track)
-////            .into(play)
-//    }
-
     override fun enablePlayButton() {
         play.isEnabled = true
     }
@@ -173,10 +127,9 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
         handler.removeCallbacks(setProgressText)
     }
 
-    private fun progressTextRenew() {
+    override fun progressTextRenew() {
         timeRemained.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(presenter.getCurrentPosition())
-//            SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
         handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
     }
 

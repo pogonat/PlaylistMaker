@@ -1,8 +1,9 @@
-package presentation.activities
+package com.example.playlistmaker.presentation
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.App
-import data.models.Track
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.SearchActivity
 
 class SearchHistory(private val sharedPrefs: SharedPreferences) {
 

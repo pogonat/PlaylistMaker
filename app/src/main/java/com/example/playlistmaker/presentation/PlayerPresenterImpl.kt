@@ -1,19 +1,29 @@
-package presentation.activities
+package com.example.playlistmaker.presentation
 
 import com.example.playlistmaker.App
-import data.models.Track
+import com.example.playlistmaker.domain.AudioPlayerInteractor
+import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.PlayerPresenter
 
 class PlayerPresenterImpl(
     private val view: PlayerView,
-    private val audioPlayer: AudioPlayerInteractor
+    private val audioPlayer: AudioPlayerInteractor,
+    private val repository: TrackRepository
 ) : PlayerPresenter {
 
     override fun loadTrack() {
-        val gson = App.instance.gson
-        val stringTrack = view.getTrack()
-        val track = gson.fromJson(stringTrack, Track::class.java)
+//        val gson = App.instance.gson
+        val trackId = view.getTrackId()
+//        val stringTrack = view.getTrackId()
+//        val track = gson.fromJson(stringTrack, Track::class.java)
+//        val track = repository.getTrackById(trackId = trackId, ::presentTrack)
+        repository.getTrackById(trackId = trackId, ::presentTrack)
 
         view.initViews()
+    }
+
+    fun presentTrack(track: Track) {
         view.fillViews(track)
         val trackUrl = track.getAudioPreviewUrl()
         preparePlayer(trackUrl, onPrepared, onCompletion)
@@ -27,6 +37,7 @@ class PlayerPresenterImpl(
             }
             STATE_PREPARED, STATE_PAUSED -> {
                 audioPlayer.startPlayer()
+                view.progressTextRenew()
                 view.updatePlaybackControlButton()
             }
         }

@@ -1,4 +1,4 @@
-package presentation.activities
+package com.example.playlistmaker.ui
 
 interface PlayerPresenter {
     fun loadTrack()

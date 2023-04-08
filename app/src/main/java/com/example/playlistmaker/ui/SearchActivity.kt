@@ -1,4 +1,4 @@
-package presentation.activities
+package com.example.playlistmaker.ui
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -21,32 +22,34 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.App
-import data.ITunesSearchApi
 import com.example.playlistmaker.R
-import data.TracksResponse
-import data.models.Track
-import data.adapters.TrackAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.playlistmaker.data.NetworkSearchImpl
+import com.example.playlistmaker.data.TrackRepositoryImpl
+import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.presentation.SearchHistory
+import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.domain.models.SearchTrackResult
+import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.adapters.TrackAdapter
 
 class SearchActivity : AppCompatActivity() {
+
+    val trackRepository: TrackRepository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
 
     private val handler = Handler(Looper.getMainLooper())
 
     private var userInputSearchText = ""
 
-    private val iTunesBaseUrl = "https://itunes.apple.com"
+//    private val iTunesBaseUrl = "https://itunes.apple.com"
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val itunesService = retrofit.create(ITunesSearchApi::class.java)
-    private val searchRunnable = Runnable { iTunesSearch() }
+//    private val retrofit = Retrofit.Builder()
+//        .baseUrl(iTunesBaseUrl)
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .build()
+//
+//    private val itunesService = retrofit.create(NetworkSearchItunesApi::class.java)
+    private val searchRunnable = Runnable { startSearch() }
 
     private val resultsTracksList = ArrayList<Track>()
 
@@ -98,13 +101,13 @@ class SearchActivity : AppCompatActivity() {
         renewButton.setOnClickListener {
             errorPlaceholder.visibility = View.GONE
             renewButton.visibility = View.GONE
-            iTunesSearch()
+            startSearch()
         }
 
         searchInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (searchInput.text.isNotEmpty()) {
-                    iTunesSearch()
+                    startSearch()
                 }
             }
             false
@@ -190,37 +193,73 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    private fun iTunesSearch() {
+    fun saveSearchResults(result:SearchTrackResult) {
+        Log.e("Callback for network", result.toString())
+        when (result.searchResultStatus) {
+            SearchResultStatus.SUCCESS -> {
+                progressBar.visibility = View.GONE
+                resultsTracksList.addAll(result.resultTrackList)
+                resultsTrackAdapter.notifyDataSetChanged()
+            }
+            SearchResultStatus.NOTHING_FOUND -> {
+                negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
+            }
+            SearchResultStatus.ERROR_CONNECTION -> {
+                negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
+            }
+        }
+    }
+
+    private fun startSearch() {
 
         progressBar.visibility = View.VISIBLE
 
-        itunesService
-            .search(searchInput.text.toString())
-            .enqueue(object : Callback<TracksResponse> {
+//        val searchResult: SearchTrackResult =
+//            trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::)
+        trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::saveSearchResults)
 
-                override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
-                ) {
-                    if (response.code() == 200) {
-                        progressBar.visibility = View.GONE
-                        resultsTracksList.clear()
-                        if (response.body()?.searchResults?.isNotEmpty() == true) {
-                            resultsTracksList.addAll(response.body()?.searchResults!!)
-                            resultsTrackAdapter.notifyDataSetChanged()
-                        }
-                        if (resultsTracksList.isEmpty()) {
-                            negativeResultMessage(NegativeResultMessage.NOTHING_FOUND)
-                        }
-                    } else {
-                        negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                    }
-                }
 
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                }
-            })
+//        when (searchResult.searchResultStatus) {
+//            SearchResultStatus.SUCCESS -> {
+//                progressBar.visibility = View.GONE
+//                resultsTracksList.addAll(searchResult.resultTrackList)
+//                resultsTrackAdapter.notifyDataSetChanged()
+//            }
+//            SearchResultStatus.NOTHING_FOUND -> {
+//                negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
+//            }
+//            SearchResultStatus.ERROR_CONNECTION -> {
+//                negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
+//            }
+//        }
+
+//        itunesService
+//            .search(searchInput.text.toString())
+//            .enqueue(object : Callback<TracksResponse> {
+//
+//                override fun onResponse(
+//                    call: Call<TracksResponse>,
+//                    response: Response<TracksResponse>
+//                ) {
+//                    if (response.code() == 200) {
+//                        progressBar.visibility = View.GONE
+//                        resultsTracksList.clear()
+//                        if (response.body()?.searchResults?.isNotEmpty() == true) {
+//                            resultsTracksList.addAll(response.body()?.searchResults!!)
+//                            resultsTrackAdapter.notifyDataSetChanged()
+//                        }
+//                        if (resultsTracksList.isEmpty()) {
+//                            negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
+//                        }
+//                    } else {
+//                        negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+//                    negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
+//                }
+//            })
     }
 
     private fun searchDebounce() {
@@ -228,12 +267,7 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    enum class NegativeResultMessage {
-        NOTHING_FOUND,
-        ERROR_CONNECTION
-    }
-
-    private fun negativeResultMessage(errorCode: NegativeResultMessage) {
+    private fun negativeResultMessage(errorCode: SearchResultStatus) {
         progressBar.visibility = View.GONE
         searchHistoryViewGroup.visibility = View.GONE
         errorPlaceholder.visibility = View.VISIBLE
@@ -241,19 +275,20 @@ class SearchActivity : AppCompatActivity() {
         resultsTracksList.clear()
         resultsTrackAdapter.notifyDataSetChanged()
         when (errorCode) {
-            NegativeResultMessage.NOTHING_FOUND -> {
+            SearchResultStatus.NOTHING_FOUND -> {
                 placeholderMessage.text = getString(R.string.nothing_found)
                 Glide.with(placeholderImage)
                     .load(R.drawable.nothing_found)
                     .into(placeholderImage)
             }
-            NegativeResultMessage.ERROR_CONNECTION -> {
+            SearchResultStatus.ERROR_CONNECTION -> {
                 placeholderMessage.text = getString(R.string.no_connection)
                 Glide.with(placeholderImage)
                     .load(R.drawable.no_connection)
                     .into(placeholderImage)
                 renewButton.visibility = View.VISIBLE
             }
+            else -> return
         }
     }
 
