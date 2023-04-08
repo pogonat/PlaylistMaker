@@ -10,4 +10,5 @@ interface PlayerView {
     fun updatePlaybackControlButton()
     fun stopProgressUpdate()
     fun progressTextRenew()
+    fun finishIfTrackNull()
 }

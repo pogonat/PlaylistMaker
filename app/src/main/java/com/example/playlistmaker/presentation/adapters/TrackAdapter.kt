@@ -13,7 +13,8 @@ import com.example.playlistmaker.ui.PlayerActivity
 import com.example.playlistmaker.presentation.SearchHistory
 import kotlin.collections.ArrayList
 
-class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
+class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) :
+    RecyclerView.Adapter<TracksViewHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -21,7 +22,7 @@ class TrackAdapter(private val adapterContext: Context, private val searchHistor
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false

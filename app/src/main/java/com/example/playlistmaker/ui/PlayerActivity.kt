@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -13,6 +14,7 @@ import com.example.playlistmaker.data.NetworkSearchImpl
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.TrackStorage
 import com.example.playlistmaker.domain.AudioPlayerInteractorImpl
+import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.PlayerPresenterImpl
 import com.example.playlistmaker.presentation.PlayerView
@@ -23,7 +25,8 @@ import java.util.*
 class PlayerActivity : AppCompatActivity(), PlayerView {
 
     private val repository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
-    private val presenter: PlayerPresenter = PlayerPresenterImpl(this, AudioPlayerInteractorImpl(),repository)
+    private val presenter: PlayerPresenter =
+        PlayerPresenterImpl(this, AudioPlayerInteractorImpl(), repository)
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -113,7 +116,7 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
     }
 
     override fun updatePlaybackControlButton() {
-        val iconRes = if (presenter.getPlayerState() == STATE_PLAYING) {
+        val iconRes = if (presenter.getPlayerState() == PlayerState.STATE_PLAYING) {
             R.drawable.pause_track
         } else {
             R.drawable.play_track
@@ -133,12 +136,14 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
         handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
     }
 
+    override fun finishIfTrackNull() {
+        Toast.makeText(this, "Can/'t load track info", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
         const val SET_PROGRESS_TEXT_DELAY = 500L
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
     }
 }

@@ -1,29 +1,23 @@
 package com.example.playlistmaker.data
 
 import com.example.playlistmaker.App
+import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.domain.models.Track
 
 class TrackStorage {
     private val sharedPrefs = App.instance.sharedPrefs
     private val gson = App.instance.gson
+    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
-    fun getTrackById(trackId: String): Track {
-        val json = sharedPrefs.getString(SEARCH_HISTORY_KEY, "")
+    fun getTrackById(trackId: String): Track? {
+        val json = sharedPrefs.getString(storageHistoryKey, "")
         val tracksHistory = ArrayList<Track>()
         if (json !== "") tracksHistory.addAll(gson.fromJson(json, Array<Track>::class.java))
-        val tracks = ArrayList<Track>()
         for (track in tracksHistory) {
             if (track.trackId == trackId) {
-                tracks.add(track)
-                return tracks[0]
+                return track
             }
         }
-        return tracks[0]
+        return null
     }
-
-
-    companion object {
-        const val SEARCH_HISTORY_KEY = "key_for_search_history"
-    }
-
 }

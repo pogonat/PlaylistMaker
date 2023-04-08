@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.App
+import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.SearchActivity
 
@@ -9,9 +10,10 @@ class SearchHistory(private val sharedPrefs: SharedPreferences) {
 
     var tracksHistory = ArrayList<Track>()
     private val gson = App.instance.gson
+    val storageKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
     fun loadTracksFromJson() {
-        val json = sharedPrefs.getString(SearchActivity.SEARCH_HISTORY_KEY, "")
+        val json = sharedPrefs.getString(storageKey, "")
         if (json !== "") tracksHistory.addAll(gson.fromJson(json, Array<Track>::class.java))
     }
 
@@ -27,13 +29,13 @@ class SearchHistory(private val sharedPrefs: SharedPreferences) {
             tracksHistory.removeLast()
         }
         sharedPrefs.edit()
-            .putString(SearchActivity.SEARCH_HISTORY_KEY, toJson())
+            .putString(storageKey, toJson())
             .apply()
     }
 
     fun deleteItems() {
         tracksHistory.clear()
-        sharedPrefs.edit().remove(SearchActivity.SEARCH_HISTORY_KEY).apply()
+        sharedPrefs.edit().remove(storageKey).apply()
     }
 
     private fun toJson(): String {

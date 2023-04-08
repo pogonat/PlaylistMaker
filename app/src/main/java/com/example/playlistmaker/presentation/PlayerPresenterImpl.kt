@@ -1,8 +1,8 @@
 package com.example.playlistmaker.presentation
 
-import com.example.playlistmaker.App
 import com.example.playlistmaker.domain.AudioPlayerInteractor
 import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.PlayerPresenter
 
@@ -13,29 +13,32 @@ class PlayerPresenterImpl(
 ) : PlayerPresenter {
 
     override fun loadTrack() {
-//        val gson = App.instance.gson
+
         val trackId = view.getTrackId()
-//        val stringTrack = view.getTrackId()
-//        val track = gson.fromJson(stringTrack, Track::class.java)
-//        val track = repository.getTrackById(trackId = trackId, ::presentTrack)
+
         repository.getTrackById(trackId = trackId, ::presentTrack)
 
         view.initViews()
     }
 
-    fun presentTrack(track: Track) {
-        view.fillViews(track)
-        val trackUrl = track.getAudioPreviewUrl()
-        preparePlayer(trackUrl, onPrepared, onCompletion)
+    private fun presentTrack(track: Track?) {
+        when (track) {
+            null -> view.finishIfTrackNull()
+            else -> {
+                view.fillViews(track)
+                val trackUrl = track.getAudioPreviewUrl()
+                preparePlayer(trackUrl, onPrepared, onCompletion)
+            }
+        }
     }
 
     override fun playBackControl() {
         when (audioPlayer.getPlayerState()) {
-            STATE_PLAYING -> {
+            PlayerState.STATE_PLAYING -> {
                 audioPlayer.pausePlayer()
                 view.updatePlaybackControlButton()
             }
-            STATE_PREPARED, STATE_PAUSED -> {
+            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED, PlayerState.STATE_DEFAULT -> {
                 audioPlayer.startPlayer()
                 view.progressTextRenew()
                 view.updatePlaybackControlButton()
@@ -56,7 +59,7 @@ class PlayerPresenterImpl(
         audioPlayer.releasePlayer()
     }
 
-    override fun getPlayerState(): Int {
+    override fun getPlayerState(): PlayerState {
         return audioPlayer.getPlayerState()
     }
 
@@ -77,12 +80,4 @@ class PlayerPresenterImpl(
         view.stopProgressUpdate()
         view.updatePlaybackControlButton()
     }
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-    }
-
 }

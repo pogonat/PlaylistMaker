@@ -30,6 +30,7 @@ import com.example.playlistmaker.presentation.SearchHistory
 import com.example.playlistmaker.domain.TrackRepository
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.adapters.TrackAdapter
 
@@ -41,14 +42,6 @@ class SearchActivity : AppCompatActivity() {
 
     private var userInputSearchText = ""
 
-//    private val iTunesBaseUrl = "https://itunes.apple.com"
-
-//    private val retrofit = Retrofit.Builder()
-//        .baseUrl(iTunesBaseUrl)
-//        .addConverterFactory(GsonConverterFactory.create())
-//        .build()
-//
-//    private val itunesService = retrofit.create(NetworkSearchItunesApi::class.java)
     private val searchRunnable = Runnable { startSearch() }
 
     private val resultsTracksList = ArrayList<Track>()
@@ -57,6 +50,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTrackAdapter: TrackAdapter
 
     private lateinit var sharedPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
     private lateinit var searchInput: EditText
     private lateinit var errorPlaceholder: LinearLayout
@@ -77,6 +71,7 @@ class SearchActivity : AppCompatActivity() {
 
         val sharedPrefs = App.instance.sharedPrefs
         val searchHistory = SearchHistory(sharedPrefs)
+
 
         setSearchResultsRecycler(searchHistory)
 
@@ -160,7 +155,7 @@ class SearchActivity : AppCompatActivity() {
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
         sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+            if (key == storageHistoryKey) historyTrackAdapter.notifyDataSetChanged()
         }
         sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
 
@@ -193,8 +188,7 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    fun saveSearchResults(result:SearchTrackResult) {
-        Log.e("Callback for network", result.toString())
+    private fun saveSearchResults(result: SearchTrackResult) {
         when (result.searchResultStatus) {
             SearchResultStatus.SUCCESS -> {
                 progressBar.visibility = View.GONE
@@ -211,55 +205,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun startSearch() {
-
         progressBar.visibility = View.VISIBLE
-
-//        val searchResult: SearchTrackResult =
-//            trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::)
         trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::saveSearchResults)
 
-
-//        when (searchResult.searchResultStatus) {
-//            SearchResultStatus.SUCCESS -> {
-//                progressBar.visibility = View.GONE
-//                resultsTracksList.addAll(searchResult.resultTrackList)
-//                resultsTrackAdapter.notifyDataSetChanged()
-//            }
-//            SearchResultStatus.NOTHING_FOUND -> {
-//                negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
-//            }
-//            SearchResultStatus.ERROR_CONNECTION -> {
-//                negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
-//            }
-//        }
-
-//        itunesService
-//            .search(searchInput.text.toString())
-//            .enqueue(object : Callback<TracksResponse> {
-//
-//                override fun onResponse(
-//                    call: Call<TracksResponse>,
-//                    response: Response<TracksResponse>
-//                ) {
-//                    if (response.code() == 200) {
-//                        progressBar.visibility = View.GONE
-//                        resultsTracksList.clear()
-//                        if (response.body()?.searchResults?.isNotEmpty() == true) {
-//                            resultsTracksList.addAll(response.body()?.searchResults!!)
-//                            resultsTrackAdapter.notifyDataSetChanged()
-//                        }
-//                        if (resultsTracksList.isEmpty()) {
-//                            negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
-//                        }
-//                    } else {
-//                        negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-//                    negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
-//                }
-//            })
     }
 
     private fun searchDebounce() {
@@ -312,9 +260,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-
-        const val SEARCH_HISTORY_KEY = "key_for_search_history"
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 

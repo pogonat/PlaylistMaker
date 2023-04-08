@@ -11,7 +11,5 @@ interface NetworkSearchItunesApi {
     fun search(@Query("term") text: String): Call<TracksResponse>
 
     @GET("/search?entity=song")
-    fun getTrackDetails(
-        @Query("term") trackId: String
-    ): Call<TracksResponse>
+    fun getTrackDetails(@Query("term") trackId: String): Call<TracksResponse>
 }
