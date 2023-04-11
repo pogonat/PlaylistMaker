@@ -1,4 +1,4 @@
-package com.example.playlistmaker.adapters
+package com.example.playlistmaker.presentation.adapters
 
 import android.content.Context
 import android.content.Intent
@@ -8,19 +8,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.*
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.PlayerActivity
+import com.example.playlistmaker.presentation.SearchHistory
 import kotlin.collections.ArrayList
 
-class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) : RecyclerView.Adapter<TracksViewHolder>() {
+class TrackAdapter(private val adapterContext: Context, private val searchHistory: SearchHistory) :
+    RecyclerView.Adapter<TracksViewHolder>() {
 
     var tracks = ArrayList<Track>()
-
-    private val gson = App.instance.gson
 
     private var isClickAllowed = true
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
@@ -48,11 +50,10 @@ class TrackAdapter(private val adapterContext: Context, private val searchHistor
 
             if (clickDebounce()) {
                 val playerIntent = Intent(adapterContext, PlayerActivity::class.java)
-                val jsonTrack = gson.toJson(track)
-                playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, jsonTrack)
+                val trackId = track.trackId
+                playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
                 adapterContext.startActivity(playerIntent)
             }
-
         }
     }
 

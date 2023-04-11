@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -20,31 +21,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.adapters.Track
-import com.example.playlistmaker.adapters.TrackAdapter
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Thread.sleep
+import com.example.playlistmaker.App
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.NetworkSearchImpl
+import com.example.playlistmaker.data.TrackRepositoryImpl
+import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.presentation.SearchHistory
+import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.domain.models.SearchTrackResult
+import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.StorageKeys
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.adapters.TrackAdapter
 
 class SearchActivity : AppCompatActivity() {
+
+    val trackRepository: TrackRepository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
 
     private val handler = Handler(Looper.getMainLooper())
 
     private var userInputSearchText = ""
 
-    private val iTunesBaseUrl = "https://itunes.apple.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val itunesService = retrofit.create(ITunesSearchApi::class.java)
-    private val searchRunnable = Runnable { iTunesSearch() }
+    private val searchRunnable = Runnable { startSearch() }
 
     private val resultsTracksList = ArrayList<Track>()
 
@@ -52,6 +50,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTrackAdapter: TrackAdapter
 
     private lateinit var sharedPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
     private lateinit var searchInput: EditText
     private lateinit var errorPlaceholder: LinearLayout
@@ -72,6 +71,7 @@ class SearchActivity : AppCompatActivity() {
 
         val sharedPrefs = App.instance.sharedPrefs
         val searchHistory = SearchHistory(sharedPrefs)
+
 
         setSearchResultsRecycler(searchHistory)
 
@@ -96,13 +96,13 @@ class SearchActivity : AppCompatActivity() {
         renewButton.setOnClickListener {
             errorPlaceholder.visibility = View.GONE
             renewButton.visibility = View.GONE
-            iTunesSearch()
+            startSearch()
         }
 
         searchInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (searchInput.text.isNotEmpty()) {
-                    iTunesSearch()
+                    startSearch()
                 }
             }
             false
@@ -155,7 +155,7 @@ class SearchActivity : AppCompatActivity() {
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
         sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+            if (key == storageHistoryKey) historyTrackAdapter.notifyDataSetChanged()
         }
         sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
 
@@ -188,45 +188,26 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-
-        const val SEARCH_HISTORY_KEY = "key_for_search_history"
-
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    private fun saveSearchResults(result: SearchTrackResult) {
+        when (result.searchResultStatus) {
+            SearchResultStatus.SUCCESS -> {
+                progressBar.visibility = View.GONE
+                resultsTracksList.addAll(result.resultTrackList)
+                resultsTrackAdapter.notifyDataSetChanged()
+            }
+            SearchResultStatus.NOTHING_FOUND -> {
+                negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
+            }
+            SearchResultStatus.ERROR_CONNECTION -> {
+                negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
+            }
+        }
     }
 
-    private fun iTunesSearch() {
-
+    private fun startSearch() {
         progressBar.visibility = View.VISIBLE
+        trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::saveSearchResults)
 
-        itunesService
-            .search(searchInput.text.toString())
-            .enqueue(object : Callback<TracksResponse> {
-
-                override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
-                ) {
-                    if (response.code() == 200) {
-                        progressBar.visibility = View.GONE
-                        resultsTracksList.clear()
-                        if (response.body()?.searchResults?.isNotEmpty() == true) {
-                            resultsTracksList.addAll(response.body()?.searchResults!!)
-                            resultsTrackAdapter.notifyDataSetChanged()
-                        }
-                        if (resultsTracksList.isEmpty()) {
-                            negativeResultMessage(NegativeResultMessage.NOTHING_FOUND)
-                        }
-                    } else {
-                        negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                    }
-                }
-
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                }
-            })
     }
 
     private fun searchDebounce() {
@@ -234,12 +215,7 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    enum class NegativeResultMessage {
-        NOTHING_FOUND,
-        ERROR_CONNECTION
-    }
-
-    private fun negativeResultMessage(errorCode: NegativeResultMessage) {
+    private fun negativeResultMessage(errorCode: SearchResultStatus) {
         progressBar.visibility = View.GONE
         searchHistoryViewGroup.visibility = View.GONE
         errorPlaceholder.visibility = View.VISIBLE
@@ -247,19 +223,20 @@ class SearchActivity : AppCompatActivity() {
         resultsTracksList.clear()
         resultsTrackAdapter.notifyDataSetChanged()
         when (errorCode) {
-            NegativeResultMessage.NOTHING_FOUND -> {
+            SearchResultStatus.NOTHING_FOUND -> {
                 placeholderMessage.text = getString(R.string.nothing_found)
                 Glide.with(placeholderImage)
                     .load(R.drawable.nothing_found)
                     .into(placeholderImage)
             }
-            NegativeResultMessage.ERROR_CONNECTION -> {
+            SearchResultStatus.ERROR_CONNECTION -> {
                 placeholderMessage.text = getString(R.string.no_connection)
                 Glide.with(placeholderImage)
                     .load(R.drawable.no_connection)
                     .into(placeholderImage)
                 renewButton.visibility = View.VISIBLE
             }
+            else -> return
         }
     }
 
@@ -279,6 +256,11 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
 }
