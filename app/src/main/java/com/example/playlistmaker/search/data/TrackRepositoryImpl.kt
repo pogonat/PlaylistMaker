@@ -10,7 +10,6 @@ class TrackRepositoryImpl(
     private val trackStorage: TrackStorage
 ) : TrackRepository {
 
-
     override fun searchTracks(
         searchInput: String,
         callback: (searchResult: SearchTrackResult) -> Unit
@@ -27,6 +26,10 @@ class TrackRepositoryImpl(
         }
 
         networkSearch.searchTrackById(trackId, handleTrackResult)
+    }
+
+    override fun getTracksHistory(): ArrayList<Track> {
+        return trackStorage.getTracksHistory()
     }
 
 }

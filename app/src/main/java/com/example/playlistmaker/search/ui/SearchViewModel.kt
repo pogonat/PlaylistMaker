@@ -1,267 +1,97 @@
 package com.example.playlistmaker.search.ui
 
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.os.SystemClock
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.playlistmaker.App
-import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.search.data.NetworkSearchImpl
-import com.example.playlistmaker.search.data.TrackRepositoryImpl
-import com.example.playlistmaker.search.data.TrackStorage
 import com.example.playlistmaker.search.domain.*
-import com.example.playlistmaker.search.ui.models.SearchState
+import com.example.playlistmaker.search.ui.models.SearchScreenState
 
-class SearchViewModel(application: Application): AndroidViewModel(application) {
+class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
     private val searchInteractor = Creator.provideSearchInteractor(getApplication<Application>())
-//    val trackRepository: TrackRepository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
+
+    //    val trackRepository: TrackRepository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
     private val handler = Handler(Looper.getMainLooper())
 
-    private val stateLiveData = MutableLiveData<SearchState>()
-    fun observeState(): LiveData<SearchState> = stateLiveData
+    private val stateLiveData = MutableLiveData<SearchScreenState>()
+    fun observeState(): LiveData<SearchScreenState> = stateLiveData
 
+//    init {
+//        searchInteractor.loadTrackData(
+//            trackId
+//        )
+//    }
+
+    //    change to "" as it was previously?
     private var userInputSearchText: String? = null
+
+    fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     override fun onCleared() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
-    private val searchRunnable = Runnable { startSearch() }
+    private fun searchTracks(searchRequestText: String) {
+        if (searchRequestText.isNotEmpty()) {
+            renderState(SearchScreenState.Loading)
+            searchInteractor.searchTracks(
+                searchRequestText,
+                object : SearchInteractor.TracksConsumer {
 
-    private val resultsTracksList = ArrayList<Track>()
+                    override fun consume(searchTrackResult: SearchTrackResult) {
+                        val tracks = mutableListOf<Track>()
+                        if (searchTrackResult.resultTrackList != null) {
+                            tracks.addAll(searchTrackResult.resultTrackList)
+                        }
 
-    private lateinit var resultsTrackAdapter: TrackAdapter
-    private lateinit var historyTrackAdapter: TrackAdapter
+                        when (searchTrackResult.searchResultStatus) {
+                            SearchResultStatus.ERROR_CONNECTION -> {
+                                renderState(SearchScreenState.ErrorConnection)
+                            }
+                            SearchResultStatus.NOTHING_FOUND -> {
+                                renderState(SearchScreenState.NothingFound)
+                            }
+                            SearchResultStatus.SUCCESS -> {
+                                renderState(SearchScreenState.Success(tracks = tracks))
+                            }
+                        }
 
-    private lateinit var sharedPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
-    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
-
-    private lateinit var searchInput: EditText
-    private lateinit var errorPlaceholder: LinearLayout
-    private lateinit var placeholderMessage: TextView
-    private lateinit var placeholderImage: ImageView
-    private lateinit var clearButton: ImageView
-    private lateinit var renewButton: Button
-    private lateinit var arrowReturn: ImageView
-    private lateinit var searchHistoryViewGroup: LinearLayout
-    private lateinit var clearHistoryButton: Button
-    private lateinit var recyclerHistoryTrackList: RecyclerView
-    private lateinit var recyclerResultsTrackList: RecyclerView
-    private lateinit var progressBar: ProgressBar
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-
-        viewModel = ViewModelProvider(this, )[SearchViewModel::class.java]
-
-        val sharedPrefs = App.instance.sharedPrefs
-        val searchHistory = SearchHistory(sharedPrefs)
-
-
-        setSearchResultsRecycler(searchHistory)
-
-        setSearchHistoryRecycler(searchHistory, sharedPrefs)
-
-        initViews()
-
-        arrowReturn.setOnClickListener {
-            finish()
-        }
-
-        clearButton.setOnClickListener {
-            searchInput.setText("")
-            val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)
-            resultsTracksList.clear()
-            resultsTrackAdapter.notifyDataSetChanged()
-
-        }
-
-        renewButton.setOnClickListener {
-            errorPlaceholder.visibility = View.GONE
-            renewButton.visibility = View.GONE
-            startSearch()
-        }
-
-        searchInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (searchInput.text.isNotEmpty()) {
-                    startSearch()
-                }
-            }
-            false
-        }
-
-        val searchTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                errorPlaceholder.visibility = View.GONE
-                renewButton.visibility = View.GONE
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchDebounce()
-                clearButton.visibility = clearButtonVisibility(s)
-                userInputSearchText = s.toString()
-                searchHistoryViewGroup.visibility =
-                    if (
-                        searchInput.hasFocus() &&
-                        s?.isEmpty() == true &&
-                        searchHistory.tracksHistory.isNotEmpty()
-                    ) View.VISIBLE else View.GONE
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        }
-        searchInput.addTextChangedListener(searchTextWatcher)
-
-        searchInput.setOnFocusChangeListener { view, hasFocus ->
-            searchHistoryViewGroup.visibility =
-                if (
-                    hasFocus &&
-                    searchInput.text.isEmpty() &&
-                    searchHistory.tracksHistory.isNotEmpty()
-                ) View.VISIBLE else View.GONE
-        }
-
-        clearHistoryButton.setOnClickListener {
-            searchHistory.deleteItems()
-            searchHistoryViewGroup.visibility = View.GONE
+                    }
+                })
         }
     }
 
-    private fun setSearchHistoryRecycler(
-        searchHistory: SearchHistory,
-        sharedPrefs: SharedPreferences
-    ) {
-        historyTrackAdapter = TrackAdapter(this, searchHistory)
-        searchHistory.loadTracksFromJson()
-        historyTrackAdapter.tracks = searchHistory.tracksHistory
+    fun searchDebounce(changedSearchText: String) {
 
-        sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == storageHistoryKey) historyTrackAdapter.notifyDataSetChanged()
+        if (userInputSearchText == changedSearchText) {
+            return
         }
-        sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
 
-        recyclerHistoryTrackList = findViewById(R.id.recyclerViewSearchHistory)
-        recyclerHistoryTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerHistoryTrackList.adapter = historyTrackAdapter
+        this.userInputSearchText = changedSearchText
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+
+        val searchRunnable = Runnable { searchTracks(changedSearchText) }
+
+        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
+        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, postTime)
     }
 
-    private fun setSearchResultsRecycler(searchHistory: SearchHistory) {
-        resultsTrackAdapter = TrackAdapter(this, searchHistory)
-        resultsTrackAdapter.tracks = resultsTracksList
-
-        recyclerResultsTrackList = findViewById(R.id.recyclerViewResultsItems)
-        recyclerResultsTrackList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerResultsTrackList.adapter = resultsTrackAdapter
+    fun saveItem(track: Track) {
+        searchInteractor.saveTrack(track)
     }
 
-    private fun initViews() {
-        arrowReturn = findViewById(R.id.arrowReturn)
-        searchInput = findViewById(R.id.inputEditText)
-        errorPlaceholder = findViewById(R.id.errorPlaceholder)
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        placeholderImage = findViewById(R.id.placeholderErrorImage)
-        renewButton = findViewById(R.id.renewButton)
-        clearButton = findViewById(R.id.clearIcon)
-        searchHistoryViewGroup = findViewById(R.id.searchHistory)
-        clearHistoryButton = findViewById(R.id.clearHistoryButton)
-        progressBar = findViewById(R.id.progressBar)
+    fun getTracksHistory(): ArrayList<Track> {
+        return searchInteractor.getTracksHistory()
     }
 
-    private fun saveSearchResults(result: SearchTrackResult) {
-        when (result.searchResultStatus) {
-            SearchResultStatus.SUCCESS -> {
-                progressBar.visibility = View.GONE
-                resultsTracksList.addAll(result.resultTrackList)
-                resultsTrackAdapter.notifyDataSetChanged()
-            }
-            SearchResultStatus.NOTHING_FOUND -> {
-                negativeResultMessage(SearchResultStatus.NOTHING_FOUND)
-            }
-            SearchResultStatus.ERROR_CONNECTION -> {
-                negativeResultMessage(SearchResultStatus.ERROR_CONNECTION)
-            }
-        }
-    }
-
-    private fun startSearch() {
-        if (searchInput.text.toString().isNotEmpty()) {
-            progressBar.visibility = View.VISIBLE
-            trackRepository.searchTracks(searchInput = searchInput.text.toString(), ::saveSearchResults)
-        }
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
-
-    private fun negativeResultMessage(errorCode: SearchResultStatus) {
-        progressBar.visibility = View.GONE
-        searchHistoryViewGroup.visibility = View.GONE
-        errorPlaceholder.visibility = View.VISIBLE
-
-        resultsTracksList.clear()
-        resultsTrackAdapter.notifyDataSetChanged()
-        when (errorCode) {
-            SearchResultStatus.NOTHING_FOUND -> {
-                placeholderMessage.text = getString(R.string.nothing_found)
-                Glide.with(placeholderImage)
-                    .load(R.drawable.nothing_found)
-                    .into(placeholderImage)
-            }
-            SearchResultStatus.ERROR_CONNECTION -> {
-                placeholderMessage.text = getString(R.string.no_connection)
-                Glide.with(placeholderImage)
-                    .load(R.drawable.no_connection)
-                    .into(placeholderImage)
-                renewButton.visibility = View.VISIBLE
-            }
-            else -> return
-        }
-    }
-
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, userInputSearchText)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        userInputSearchText = savedInstanceState.getString(SEARCH_TEXT, "")
-    }
-
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+    private fun renderState(state: SearchScreenState) {
+        stateLiveData.postValue(state)
     }
 
     companion object {

@@ -10,9 +10,7 @@ class TrackStorage {
     private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
     fun getTrackById(trackId: String): Track? {
-        val json = sharedPrefs.getString(storageHistoryKey, "")
-        val tracksHistory = ArrayList<Track>()
-        if (json !== "") tracksHistory.addAll(gson.fromJson(json, Array<Track>::class.java))
+        val tracksHistory = getTracksHistory()
         for (track in tracksHistory) {
             if (track.trackId == trackId) {
                 return track
@@ -20,4 +18,12 @@ class TrackStorage {
         }
         return null
     }
+
+    fun getTracksHistory(): ArrayList<Track> {
+        val json = sharedPrefs.getString(storageHistoryKey, "")
+        val tracksHistory = ArrayList<Track>()
+        if (json !== "") tracksHistory.addAll(gson.fromJson(json, Array<Track>::class.java))
+        return tracksHistory
+    }
+
 }
