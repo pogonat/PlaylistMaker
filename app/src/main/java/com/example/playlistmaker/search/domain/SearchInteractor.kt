@@ -8,6 +8,8 @@ interface SearchInteractor {
 
     fun getTracksHistory(): ArrayList<Track>
 
+    fun clearTracksHistory()
+
     interface TracksConsumer {
         fun consume(searchTrackResult: SearchTrackResult)
     }

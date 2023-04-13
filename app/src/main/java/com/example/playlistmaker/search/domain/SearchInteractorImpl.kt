@@ -17,11 +17,15 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
     }
 
     override fun saveTrack(track: Track) {
-        TODO("Not yet implemented")
+        trackRepository.saveTrack(track)
     }
 
     override fun getTracksHistory(): ArrayList<Track> {
         return trackRepository.getTracksHistory()
+    }
+
+    override fun clearTracksHistory() {
+        trackRepository.clearTracksHistory()
     }
 
 }

@@ -20,7 +20,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<SearchScreenState>()
-    fun observeState(): LiveData<SearchScreenState> = stateLiveData
+//    fun observeState(): LiveData<SearchScreenState> = stateLiveData
 
 //    init {
 //        searchInteractor.loadTrackData(
@@ -90,12 +90,16 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         return searchInteractor.getTracksHistory()
     }
 
+    fun clearTracksHistory() {
+        searchInteractor.clearTracksHistory()
+    }
+
     private fun renderState(state: SearchScreenState) {
         stateLiveData.postValue(state)
     }
 
     companion object {
-        private const val SEARCH_TEXT = "SEARCH_TEXT"
+//        private const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
