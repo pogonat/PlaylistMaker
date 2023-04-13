@@ -10,10 +10,10 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.search.data.NetworkSearchImpl
 import com.example.playlistmaker.search.data.TrackRepositoryImpl
-import com.example.playlistmaker.search.data.TrackStorage
+import com.example.playlistmaker.search.data.TrackStorageImpl
 import com.example.playlistmaker.player.domain.AudioPlayerInteractorImpl
+import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.domain.PlayerState
 import com.example.playlistmaker.search.domain.Track
 import java.text.SimpleDateFormat
@@ -22,7 +22,7 @@ import java.util.*
 
 class PlayerActivity : AppCompatActivity(), PlayerView {
 
-    private val repository = TrackRepositoryImpl(NetworkSearchImpl(), TrackStorage())
+    private val repository = TrackRepositoryImpl(RetrofitNetworkClient(this), TrackStorageImpl())
     private val presenter: PlayerPresenter =
         PlayerPresenterImpl(this, AudioPlayerInteractorImpl(), repository)
 

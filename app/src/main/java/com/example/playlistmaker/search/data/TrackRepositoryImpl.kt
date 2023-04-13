@@ -1,35 +1,87 @@
 package com.example.playlistmaker.search.data
 
-import com.example.playlistmaker.search.domain.TrackRepository
-import com.example.playlistmaker.search.domain.LookupTrackResults
-import com.example.playlistmaker.search.domain.SearchTrackResult
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.Resource
+import com.example.playlistmaker.search.domain.*
 
 class TrackRepositoryImpl(
     private val networkSearch: NetworkSearch,
     private val trackStorage: TrackStorage
 ) : TrackRepository {
 
-    override fun searchTracks(
-        searchInput: String,
-        callback: (searchResult: SearchTrackResult) -> Unit
-    ) {
-        networkSearch.searchTracks(searchInput = searchInput, callback)
-    }
+    override fun searchTracks(searchInput: String): Resource<List<Track>> {
+        val response = networkSearch.searchTracks(TracksSearchRequest(searchInput))
 
-    override fun getTrackById(trackId: String, callback: (track: Track?) -> Unit) {
-        val handleTrackResult: (LookupTrackResults) -> Unit = { trackLookupResult ->
-            when (trackLookupResult.resultTrackInfo) {
-                null -> callback(trackStorage.getTrackById(trackId))
-                else -> callback(trackLookupResult.resultTrackInfo!!)
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error(SearchResultStatus.ERROR_CONNECTION)
+            }
+
+            200 -> {
+                Resource.Success((response as TracksResponse).searchResults.map{
+                    Track(
+                        trackId = it.trackId,
+                        trackName = it.trackName ?: "",
+                        artistName = it.artistName ?: "",
+                        trackTime = it.trackTime,
+                        artworkUrl100 = it.artworkUrl100?: "",
+                        collectionName = it.collectionName?: "",
+                        releaseDate = it.releaseDate?: "",
+                        primaryGenreName = it.primaryGenreName?: "",
+                        country = it.country?: "",
+                        previewUrl = it.previewUrl?: ""
+                    )
+                })
+            }
+            else -> {
+                Resource.Error(SearchResultStatus.ERROR_CONNECTION)
             }
         }
+    }
 
-        networkSearch.searchTrackById(trackId, handleTrackResult)
+    override fun searchTrackById(trackId: String): Resource<List<Track>> {
+        val response = networkSearch.searchTracks(TracksSearchRequest(trackId))
+
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error(SearchResultStatus.ERROR_CONNECTION)
+            }
+
+            200 -> {
+                Resource.Success((response as TracksResponse).searchResults.map{
+                    Track(
+                        trackId = it.trackId,
+                        trackName = it.trackName ?: "",
+                        artistName = it.artistName ?: "",
+                        trackTime = it.trackTime,
+                        artworkUrl100 = it.artworkUrl100?: "",
+                        collectionName = it.collectionName?: "",
+                        releaseDate = it.releaseDate?: "",
+                        primaryGenreName = it.primaryGenreName?: "",
+                        country = it.country?: "",
+                        previewUrl = it.previewUrl?: ""
+                    )
+                })
+            }
+            else -> {
+                Resource.Error(SearchResultStatus.ERROR_CONNECTION)
+            }
+        }
+    }
+
+    override fun getTrackById(trackId: String): Track? {
+        return (trackStorage.getTrackById(trackId))
+    }
+
+    override fun saveTrack(track: Track) {
+        trackStorage.saveTrack(newTrack = track)
     }
 
     override fun getTracksHistory(): ArrayList<Track> {
         return trackStorage.getTracksHistory()
+    }
+
+    override fun clearTracksHistory() {
+        trackStorage.deleteItems()
     }
 
 }

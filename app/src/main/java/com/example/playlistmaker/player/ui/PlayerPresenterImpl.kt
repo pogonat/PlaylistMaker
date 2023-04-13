@@ -15,7 +15,7 @@ class PlayerPresenterImpl(
 
         val trackId = view.getTrackId()
 
-        repository.getTrackById(trackId = trackId, ::presentTrack)
+        repository.searchTrackById(trackId = trackId)
 
         view.initViews()
     }
