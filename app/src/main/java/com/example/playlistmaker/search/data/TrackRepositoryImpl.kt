@@ -72,8 +72,8 @@ class TrackRepositoryImpl(
         return (trackStorage.getTrackById(trackId))
     }
 
-    override fun saveTrack(track: Track) {
-        trackStorage.saveTrack(newTrack = track)
+    override fun saveTrack(track: Track): ArrayList<Track> {
+        return trackStorage.saveTrack(newTrack = track)
     }
 
     override fun getTracksHistory(): ArrayList<Track> {

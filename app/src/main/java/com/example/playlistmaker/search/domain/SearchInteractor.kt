@@ -6,7 +6,7 @@ interface SearchInteractor {
 
     fun searchTracks(searchText: String, consumer: TracksConsumer)
 
-    fun saveTrack(track: Track)
+    fun saveTrack(track: Track): ArrayList<Track>
 
     fun getTracksHistory(): ArrayList<Track>
 

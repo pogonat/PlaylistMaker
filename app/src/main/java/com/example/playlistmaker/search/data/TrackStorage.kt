@@ -10,7 +10,7 @@ interface TrackStorage {
 
     fun getTracksHistory(): ArrayList<Track>
 
-    fun saveTrack(newTrack: Track)
+    fun saveTrack(newTrack: Track): ArrayList<Track>
 
     fun deleteItems()
 }

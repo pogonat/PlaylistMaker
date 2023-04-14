@@ -10,14 +10,17 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
     override fun searchTracks(searchText: String, consumer: SearchInteractor.TracksConsumer) {
         executor.execute {
             when (val resource = trackRepository.searchTracks(searchText)) {
-                is Resource.Success -> {consumer.consume(SearchTrackResult(SearchResultStatus.SUCCESS, resource.data))}
+                is Resource.Success -> {
+                    if (resource.data!!.size == 0) {
+                        consumer.consume(SearchTrackResult(SearchResultStatus.NOTHING_FOUND, resource.data))
+                    } else consumer.consume(SearchTrackResult(SearchResultStatus.SUCCESS, resource.data))}
                 is Resource.Error -> {consumer.consume(SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null))}
             }
         }
     }
 
-    override fun saveTrack(track: Track) {
-        trackRepository.saveTrack(track)
+    override fun saveTrack(track: Track): ArrayList<Track> {
+        return trackRepository.saveTrack(track)
     }
 
     override fun getTracksHistory(): ArrayList<Track> {

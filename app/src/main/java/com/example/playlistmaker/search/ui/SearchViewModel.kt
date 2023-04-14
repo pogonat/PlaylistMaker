@@ -31,6 +31,9 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     //    change to "" as it was previously?
     private var userInputSearchText: String? = null
 
+    val foundTracks = mutableListOf<Track>()
+    val historyTracks = initTrackHistory()
+
     fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     override fun onCleared() {
@@ -38,6 +41,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun searchTracks(searchRequestText: String) {
+        foundTracks.clear()
         if (searchRequestText.isNotEmpty()) {
             renderState(SearchScreenState.Loading)
             searchInteractor.searchTracks(
@@ -45,20 +49,20 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
                 object : SearchInteractor.TracksConsumer {
 
                     override fun consume(searchTrackResult: SearchTrackResult) {
-                        val tracks = mutableListOf<Track>()
                         if (searchTrackResult.resultTrackList != null) {
-                            tracks.addAll(searchTrackResult.resultTrackList)
+                            foundTracks.addAll(searchTrackResult.resultTrackList)
                         }
 
                         when (searchTrackResult.searchResultStatus) {
                             SearchResultStatus.ERROR_CONNECTION -> {
+                                userInputSearchText = ""
                                 renderState(SearchScreenState.ErrorConnection)
                             }
                             SearchResultStatus.NOTHING_FOUND -> {
                                 renderState(SearchScreenState.NothingFound)
                             }
                             SearchResultStatus.SUCCESS -> {
-                                renderState(SearchScreenState.Success(tracks = tracks))
+                                renderState(SearchScreenState.Success(foundTracks = foundTracks, historyTracks = historyTracks))
                             }
                         }
 
@@ -83,15 +87,32 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun saveItem(track: Track) {
-        searchInteractor.saveTrack(track)
+        val history = searchInteractor.saveTrack(track)
+        historyTracks.clear()
+        historyTracks.addAll(history)
+        renderState(SearchScreenState.Success(foundTracks = foundTracks, historyTracks = historyTracks))
     }
 
-    fun getTracksHistory(): ArrayList<Track> {
+    fun initTrackHistory(): MutableList<Track> {
         return searchInteractor.getTracksHistory()
+    }
+
+    fun getTracksHistory(){
+        val history = searchInteractor.getTracksHistory()
+        historyTracks.clear()
+        historyTracks.addAll(history)
+        renderState(SearchScreenState.Success(foundTracks = foundTracks, historyTracks = historyTracks))
     }
 
     fun clearTracksHistory() {
         searchInteractor.clearTracksHistory()
+        historyTracks.clear()
+        renderState(SearchScreenState.Success(foundTracks = foundTracks, historyTracks = historyTracks))
+    }
+
+    fun clearSearchResults() {
+        foundTracks.clear()
+        renderState(SearchScreenState.Success(foundTracks = foundTracks, historyTracks = historyTracks))
     }
 
     private fun renderState(state: SearchScreenState) {
