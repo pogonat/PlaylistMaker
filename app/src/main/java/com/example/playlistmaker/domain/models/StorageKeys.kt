@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.domain
+package com.example.playlistmaker.domain.models
 
 enum class StorageKeys {
     SEARCH_HISTORY_KEY

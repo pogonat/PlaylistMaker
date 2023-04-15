@@ -1,7 +1,6 @@
 package com.example.playlistmaker.player.ui.models
 
-import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.search.ui.models.SearchScreenState
+import com.example.playlistmaker.domain.models.Track
 
 sealed class PlayerScreenState {
 

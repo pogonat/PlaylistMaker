@@ -11,9 +11,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.ui.models.PlayerScreenState
-import com.example.playlistmaker.player.ui.models.PlayerState
 import com.example.playlistmaker.player.ui.models.PlayerStatus
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,28 +25,9 @@ class PlayerActivity : ComponentActivity() {
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
 
-
-//    private val repository = TrackRepositoryImpl(RetrofitNetworkClient(this), TrackStorageImpl())
-//    private val presenter: PlayerPresenter =
-//        PlayerViewModel(this, AudioPlayerInteractorImpl(), repository)
-
-
     private val setProgressText = Runnable {
         progressTextRenew()
     }
-
-//    private lateinit var artwork: ImageView
-//    private lateinit var trackTitle: TextView
-//    private lateinit var artistName: TextView
-//    private lateinit var duration: TextView
-//    private lateinit var timeRemained: TextView
-//    private lateinit var albumCollection: TextView
-//    private lateinit var year: TextView
-//    private lateinit var arrowReturn: ImageView
-//    private lateinit var genre: TextView
-//    private lateinit var country: TextView
-//    private lateinit var playlistButton: ImageView
-//    private lateinit var play: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +37,10 @@ class PlayerActivity : ComponentActivity() {
         viewModel.loadTrack(getTrackIdFromIntent())
 
         binding.playControlButton.setOnClickListener {
-            if (clickDebounce()) {viewModel.playBackControl()}
+            if (clickDebounce()) {
+                handler.removeCallbacks(setProgressText)
+                viewModel.playBackControl()
+            }
         }
 
         binding.returnArrow.setOnClickListener {
@@ -65,25 +48,28 @@ class PlayerActivity : ComponentActivity() {
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
-            render(screenState) }
+            render(screenState)
+        }
 
         viewModel.getPayerStateLiveData().observe(this) { playerState ->
-            renderPlayer(playerState) }
+            renderPlayer(playerState)
+        }
 
     }
 
     override fun onPause() {
         super.onPause()
+        handler.removeCallbacks(setProgressText)
         viewModel.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopProgressUpdate()
+        handler.removeCallbacks(setProgressText)
         viewModel.releasePlayer()
     }
 
-    fun getTrackIdFromIntent(): String {
+    private fun getTrackIdFromIntent(): String {
         val extras = intent.extras
         return extras?.getString(KEY_BUNDLE, "") ?: ""
     }
@@ -96,7 +82,7 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
-    fun showLoading() {
+    private fun showLoading() {
         Toast.makeText(this, "Loading Track", Toast.LENGTH_SHORT).show()
     }
 
@@ -120,62 +106,48 @@ class PlayerActivity : ComponentActivity() {
     private fun renderPlayer(playerStatus: PlayerStatus) {
         when (playerStatus) {
             is PlayerStatus.Ready -> enablePlayButton()
-            is PlayerStatus.Paused -> updatePlaybackControlButton()
+            is PlayerStatus.Paused -> updatePlayerButton()
             is PlayerStatus.Playing -> showPlayerProgress(playerStatus.progress)
+            is PlayerStatus.Complete -> stopProgressUpdate()
         }
     }
 
-    fun showPlayerProgress(progress: Long) {
-        val setProgressText = Runnable {
-            progressTextRenew()
-        }
+    private fun showPlayerProgress(progress: Int) {
+        Glide.with(binding.playControlButton)
+            .load(R.drawable.pause_track)
+            .into(binding.playControlButton)
         binding.timeRemained.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(progress)
         handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
     }
 
-//    override fun initViews() {
-//        arrowReturn = findViewById(R.id.returnArrow)
-//        artwork = findViewById(R.id.artworkLarge)
-//        trackTitle = findViewById(R.id.trackTitle)
-//        artistName = findViewById(R.id.artist)
-//        duration = findViewById(R.id.duration)
-//        timeRemained = findViewById(R.id.timeRemained)
-//        albumCollection = findViewById(R.id.albumCollection)
-//        year = findViewById(R.id.year)
-//        genre = findViewById(R.id.genre)
-//        country = findViewById(R.id.country)
-//        playlistButton = findViewById(R.id.playlistButton)
-//        play = findViewById(R.id.playControlButton)
-//    }
-
-    fun enablePlayButton() {
+    private fun enablePlayButton() {
         binding.playControlButton.isEnabled = true
     }
 
-    fun updatePlaybackControlButton() {
-        val iconRes = if (viewModel.getPlayerState() == PlayerState.STATE_PLAYING) {
-            R.drawable.pause_track
-        } else {
-            R.drawable.play_track
-        }
+    private fun updatePlayerButton() {
+        handler.removeCallbacks(setProgressText)
         Glide.with(binding.playControlButton)
-            .load(iconRes)
+            .load(R.drawable.play_track)
             .into(binding.playControlButton)
     }
 
-    fun stopProgressUpdate() {
+    private fun stopProgressUpdate() {
         handler.removeCallbacks(setProgressText)
+
+        Glide.with(binding.playControlButton)
+            .load(R.drawable.play_track)
+            .into(binding.playControlButton)
+
+        binding.timeRemained.text = binding.duration.text
     }
 
-    fun progressTextRenew() {
-        binding.timeRemained.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(viewModel.getCurrentPosition())
-        handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
+    private fun progressTextRenew() {
+        viewModel.getCurrentPosition()
     }
 
-    fun finishIfTrackNull() {
-        Toast.makeText(this, "Can/'t load track info", Toast.LENGTH_SHORT).show()
+    private fun finishIfTrackNull() {
+        Toast.makeText(this, "Can\'t load track info", Toast.LENGTH_SHORT).show()
         finish()
     }
 

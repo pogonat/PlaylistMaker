@@ -1,4 +1,4 @@
-package com.example.playlistmaker.data
+package com.example.playlistmaker.data.models
 
 import com.google.gson.annotations.SerializedName
 
@@ -13,19 +13,4 @@ data class TrackDto(
     @SerializedName("primaryGenreName") val primaryGenreName: String?,
     @SerializedName("country") val country: String?,
     @SerializedName("previewUrl") val previewUrl: String?
-) {
-//    fun toDomain(): Track {
-//        return Track(
-//            trackId = this.trackId,
-//            trackName = this.trackName ?: "",
-//            artistName = this.artistName ?: "",
-//            trackTime = this.trackTime ?: "",
-//            artworkUrl100 = this.artworkUrl100?: "",
-//            collectionName = this.collectionName?: "",
-//            releaseDate = this.releaseDate?: "",
-//            primaryGenreName = this.primaryGenreName?: "",
-//            country = this.country?: "",
-//            previewUrl = this.previewUrl?: ""
-//        )
-//    }
-}
+)

@@ -1,53 +1,14 @@
 package com.example.playlistmaker.player.domain
 
-import android.media.MediaPlayer
 import com.example.playlistmaker.Resource
-import com.example.playlistmaker.player.ui.models.PlayerState
-import com.example.playlistmaker.search.domain.*
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.SearchTrackResult
 import java.util.concurrent.Executors
 
 class PlayerInteractorImpl(private val trackRepository: TrackPlayerRepository) : PlayerInteractor {
 
-    private var playerState = PlayerState.STATE_DEFAULT
-    private val mediaPlayer = MediaPlayer()
-
     private val executor = Executors.newCachedThreadPool()
-
-
-    override fun preparePlayer(trackUrl: String, onPrepared: () -> Unit, onCompletion: () -> Unit) {
-        mediaPlayer.setDataSource(trackUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = PlayerState.STATE_PREPARED
-            onPrepared()
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerState = PlayerState.STATE_PREPARED
-            onCompletion()
-        }
-    }
-
-    override fun startPlayer() {
-        mediaPlayer.start()
-        playerState = PlayerState.STATE_PLAYING
-    }
-
-    override fun pausePlayer() {
-        mediaPlayer.pause()
-        playerState = PlayerState.STATE_PAUSED
-    }
-
-    override fun releasePlayer() {
-        mediaPlayer.release()
-    }
-
-    override fun getPlayerState(): PlayerState {
-        return playerState
-    }
-
-    override fun getCurrentPosition(): Int {
-        return mediaPlayer.currentPosition
-    }
 
     override fun searchTrackById(trackId: String, consumer: PlayerInteractor.PlayerConsumer) {
 

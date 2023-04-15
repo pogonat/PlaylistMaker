@@ -8,7 +8,6 @@ interface TrackPlayer {
     fun pausePlayer()
     fun releasePlayer()
     fun getPlayerState(): PlayerState
-    fun getCurrentPosition(): Long
-    fun playBackControl()
-    fun enablePlayButton()
+    fun getCurrentPosition(): Int
+    fun resetPlayer()
 }

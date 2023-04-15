@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -19,7 +18,8 @@ import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
 import com.example.playlistmaker.search.ui.models.SearchScreenState
 
 class SearchActivity : ComponentActivity() {
@@ -35,7 +35,7 @@ class SearchActivity : ComponentActivity() {
                     val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
                     val trackId = track.trackId
                     playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    Toast.makeText(this@SearchActivity, "saved" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SearchActivity, "saved", Toast.LENGTH_SHORT).show()
                     startActivity(playerIntent)
                 }
             }
@@ -50,7 +50,7 @@ class SearchActivity : ComponentActivity() {
                     val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
                     val trackId = track.trackId
                     playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    Toast.makeText(this@SearchActivity, "saved" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SearchActivity, "saved", Toast.LENGTH_SHORT).show()
                     startActivity(playerIntent)
                 }
             }
@@ -91,10 +91,6 @@ class SearchActivity : ComponentActivity() {
         }
         searchTextWatcher?.let { binding.inputEditText.addTextChangedListener(it) }
 
-        val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(binding.clearIcon.windowToken, 0)
-
         binding.arrowReturn.setOnClickListener { finish() }
 
         binding.clearIcon.setOnClickListener {
@@ -102,10 +98,12 @@ class SearchActivity : ComponentActivity() {
             userInputSearchText = ""
             viewModel.clearSearchResults()
             binding.searchHistory.isVisible = true
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(binding.clearIcon.windowToken, 0)
         }
 
         binding.renewButton.setOnClickListener {
-            Log.d("$userInputSearchText", "$userInputSearchText" )
             viewModel.searchDebounce(changedSearchText = userInputSearchText)
         }
 
@@ -131,7 +129,8 @@ class SearchActivity : ComponentActivity() {
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
-            render(screenState) }
+            render(screenState)
+        }
     }
 
     override fun onDestroy() {
@@ -167,7 +166,10 @@ class SearchActivity : ComponentActivity() {
             is SearchScreenState.Loading -> showLoading()
             is SearchScreenState.ErrorConnection -> showErrorConnection()
             is SearchScreenState.NothingFound -> showNothingFound()
-            is SearchScreenState.Success -> showSearchResults(state.foundTracks,state.historyTracks)
+            is SearchScreenState.Success -> showSearchResults(
+                state.foundTracks,
+                state.historyTracks
+            )
         }
     }
 
@@ -206,7 +208,6 @@ class SearchActivity : ComponentActivity() {
     }
 
     private fun showSearchResults(foundTracks: List<Track>, historyTracks: List<Track>) {
-        Log.d("ADAPTER???", "WEAREHERE")
         searchResultsAdapter.tracks.clear()
         searchResultsAdapter.tracks.addAll(foundTracks)
         searchResultsAdapter.notifyDataSetChanged()
@@ -217,7 +218,8 @@ class SearchActivity : ComponentActivity() {
 
         binding.progressBar.isVisible = false
         binding.errorPlaceholder.isVisible = false
-        binding.searchHistory.isVisible = (userInputSearchText == "" && historyTracks.isNotEmpty() && binding.inputEditText.hasFocus())
+        binding.searchHistory.isVisible =
+            (userInputSearchText == "" && historyTracks.isNotEmpty() && binding.inputEditText.hasFocus())
         binding.recyclerViewResultsItems.isVisible = true
     }
 

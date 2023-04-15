@@ -1,6 +1,6 @@
 package com.example.playlistmaker
 
-import com.example.playlistmaker.search.domain.SearchResultStatus
+import com.example.playlistmaker.domain.models.SearchResultStatus
 
 sealed class Resource<T>(val data: T? = null, val status: SearchResultStatus? = null) {
     class Success<T>(data: T): Resource<T>(data)

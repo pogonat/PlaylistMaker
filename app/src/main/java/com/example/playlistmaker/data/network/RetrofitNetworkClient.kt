@@ -4,9 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.playlistmaker.data.NetworkSearch
-import com.example.playlistmaker.data.NetworkSearchItunesApi
-import com.example.playlistmaker.data.Response
-import com.example.playlistmaker.data.TracksSearchRequest
+import com.example.playlistmaker.data.models.Response
+import com.example.playlistmaker.data.models.TracksSearchRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

@@ -3,7 +3,7 @@ package com.example.playlistmaker.player.ui
 import android.media.MediaPlayer
 import com.example.playlistmaker.player.ui.models.PlayerState
 
-class TrackPlayerImpl: TrackPlayer {
+class TrackPlayerImpl : TrackPlayer {
 
     private var playerState = PlayerState.STATE_DEFAULT
     private val mediaPlayer = MediaPlayer()
@@ -11,12 +11,12 @@ class TrackPlayerImpl: TrackPlayer {
     override fun preparePlayer(trackUrl: String) {
         mediaPlayer.setDataSource(trackUrl)
         mediaPlayer.prepareAsync()
-//        mediaPlayer.setOnPreparedListener {
-//            playerState = PlayerState.STATE_PREPARED
-//        }
-//        mediaPlayer.setOnCompletionListener {
-//            playerState = PlayerState.STATE_PREPARED
-//        }
+        mediaPlayer.setOnPreparedListener {
+            playerState = PlayerState.STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playerState = PlayerState.STATE_COMPLETE
+        }
     }
 
     override fun startPlayer() {
@@ -31,30 +31,19 @@ class TrackPlayerImpl: TrackPlayer {
 
     override fun releasePlayer() {
         mediaPlayer.release()
+        playerState = PlayerState.STATE_DEFAULT
     }
 
     override fun getPlayerState(): PlayerState {
         return playerState
     }
 
-    override fun getCurrentPosition(): Long {
-        return mediaPlayer.currentPosition.toLong()
+    override fun getCurrentPosition(): Int {
+        return mediaPlayer.currentPosition
     }
 
-    override fun playBackControl() {
-        TODO("Not yet implemented")
+    override fun resetPlayer() {
+        playerState = PlayerState.STATE_PREPARED
     }
 
-    override fun enablePlayButton() {
-        TODO("Not yet implemented")
-    }
-
-
-//    fun preparePlayer(trackUrl: String, onPrepared: () -> Unit, onCompletion: () -> Unit)
-//    fun pausePlayer()
-//    fun releasePlayer()
-//    fun getPlayerState(): PlayerState
-//    fun getCurrentPosition(): Int
-//    fun playBackControl()
-//    fun enablePlayButton()
 }

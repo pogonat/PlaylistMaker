@@ -1,6 +1,10 @@
 package com.example.playlistmaker.data
 
 import com.example.playlistmaker.Resource
+import com.example.playlistmaker.data.models.TracksResponse
+import com.example.playlistmaker.data.models.TracksSearchRequest
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
 import com.example.playlistmaker.search.domain.*
 import java.text.SimpleDateFormat
@@ -26,7 +30,10 @@ class TrackRepositoryImpl(
                         trackId = it.trackId,
                         trackName = it.trackName ?: "",
                         artistName = it.artistName ?: "",
-                        trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTime?.toLong() ?: 0f),
+                        trackTime = SimpleDateFormat(
+                            "mm:ss",
+                            Locale.getDefault()
+                        ).format(it.trackTime?.toLong() ?: 0f),
                         artworkUrl100 = it.artworkUrl100 ?: "",
                         collectionName = it.collectionName ?: "",
                         releaseDate = it.releaseDate ?: "",
@@ -59,14 +66,18 @@ class TrackRepositoryImpl(
                         trackId = it.trackId,
                         trackName = it.trackName ?: "",
                         artistName = it.artistName ?: "",
-                        trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTime?.toLong() ?: 0f),
+                        trackTime = SimpleDateFormat(
+                            "mm:ss",
+                            Locale.getDefault()
+                        ).format(it.trackTime?.toLong() ?: 0f),
                         artworkUrl100 = it.artworkUrl100 ?: "",
                         collectionName = it.collectionName ?: "",
                         releaseDate = it.releaseDate ?: "",
                         primaryGenreName = it.primaryGenreName ?: "",
                         country = it.country ?: "",
                         previewUrl = it.previewUrl ?: "",
-                        largeArtworkUrl = it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: "",
+                        largeArtworkUrl = it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
+                            ?: "",
                         collectionYear = it.releaseDate?.substring(0, 4) ?: ""
                     )
                 })

@@ -13,11 +13,11 @@ import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.player.ui.models.PlayerScreenState
 import com.example.playlistmaker.player.ui.models.PlayerState
 import com.example.playlistmaker.player.ui.models.PlayerStatus
-import com.example.playlistmaker.search.domain.SearchResultStatus
-import com.example.playlistmaker.search.domain.SearchTrackResult
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.SearchTrackResult
+import com.example.playlistmaker.domain.models.Track
 
-class PlayerViewModel(application: Application): AndroidViewModel(application) {
+class PlayerViewModel(application: Application) : AndroidViewModel(application) {
 
     private val playerInteractor = Creator.providePlayerInteractor(getApplication<Application>())
     private val trackPlayer = Creator.provideTrackPlayer()
@@ -62,6 +62,7 @@ class PlayerViewModel(application: Application): AndroidViewModel(application) {
                         }
                         SearchResultStatus.SUCCESS -> {
                             renderState(PlayerScreenState.Content(foundTrack[0]))
+                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
                         }
                     }
                 }
@@ -87,6 +88,7 @@ class PlayerViewModel(application: Application): AndroidViewModel(application) {
                         }
                         SearchResultStatus.SUCCESS -> {
                             renderState(PlayerScreenState.Content(foundTrack[0]))
+                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
                         }
                     }
                 }
@@ -94,88 +96,48 @@ class PlayerViewModel(application: Application): AndroidViewModel(application) {
         )
     }
 
-    private fun getCurrentPlayStatus(): PlayerStatus {
-
-        return  playStatusLiveData.value ?: PlayerStatus.Ready(isPlaying = false)
-    }
-
-//    fun play() {
-//        trackPlayer.startPlayer(
-//            trackId = trackId,
-//            statusObserver =  object : TrackPlayer.StatusObserver {
-//                override fun onProgress(progress: Float) {
-//                    playStatusLiveData.value = getCurrentPlayStatus().copy(progress = progress)
-//                }
-//
-//                override fun onStop() {
-//                    playStatusLiveData.value = getCurrentPlayStatus().copy(isPlaying = false)
-//                }
-//
-//                override fun onPlay() {
-//                    playStatusLiveData.value = getCurrentPlayStatus().copy(isPlaying = true)
-//                }
-//            }
-//        )
-//    }
-
-//    private fun presentTrack(track: Track?) {
-//        when (track) {
-//            null -> view.finishIfTrackNull()
-//            else -> {
-//                view.fillViews(track)
-//                val trackUrl = track.getAudioPreviewUrl()
-//                preparePlayer(trackUrl, onPrepared, onCompletion)
-//            }
-//        }
-//    }
-
     fun playBackControl() {
-        when (trackPlayer.getPlayerState()) {
+        when (getPlayerState()) {
             PlayerState.STATE_PLAYING -> {
-                trackPlayer.pausePlayer()
-                renderPlayer(PlayerStatus.Paused(progress = getCurrentPosition(), isPlaying = false))
+                pausePlayer()
             }
-            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED, PlayerState.STATE_DEFAULT -> {
+            PlayerState.STATE_DEFAULT -> {
+                trackPlayer.preparePlayer(foundTrack[0].previewUrl)
                 trackPlayer.startPlayer()
-                renderPlayer(PlayerStatus.Playing(progress = getCurrentPosition(), isPlaying = false))
+                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+            }
+            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
+                trackPlayer.startPlayer()
+                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+            }
+            PlayerState.STATE_COMPLETE -> {
+                renderPlayer(PlayerStatus.Complete)
             }
         }
 
     }
 
-    fun preparePlayer(trackUrl: String) {
-        trackPlayer.preparePlayer(trackUrl)
-    }
-
     fun pausePlayer() {
         trackPlayer.pausePlayer()
+        renderPlayer(PlayerStatus.Paused(progress = trackPlayer.getCurrentPosition()))
     }
 
     fun releasePlayer() {
         trackPlayer.releasePlayer()
     }
 
-    fun getPlayerState(): PlayerState {
+    private fun getPlayerState(): PlayerState {
         return trackPlayer.getPlayerState()
     }
 
-    fun getCurrentPosition(): Long {
-        return trackPlayer.getCurrentPosition()
+    fun getCurrentPosition() {
+        if (getPlayerState() == PlayerState.STATE_COMPLETE) {
+            trackPlayer.resetPlayer()
+            renderPlayer(PlayerStatus.Complete)
+        } else {
+            renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+        }
     }
-
-//    fun enablePlayButton() {
-//        view.enablePlayButton()
-//    }
-
-//    private val onPrepared: () -> Unit = {
-//        view.enablePlayButton()
-//        view.updatePlaybackControlButton()
-//    }
-//
-//    private val onCompletion: () -> Unit = {
-//        view.stopProgressUpdate()
-//        view.updatePlaybackControlButton()
-//    }
 
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {

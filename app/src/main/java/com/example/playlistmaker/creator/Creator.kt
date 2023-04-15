@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractorImpl
 import com.example.playlistmaker.data.TrackRepositoryImpl
-import com.example.playlistmaker.data.TrackStorageImpl
+import com.example.playlistmaker.data.storage.TrackStorageImpl
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
 import com.example.playlistmaker.player.ui.TrackPlayer

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.domain
+package com.example.playlistmaker.domain.models
 
 import com.google.gson.annotations.SerializedName
 
@@ -15,15 +15,4 @@ data class Track(
     val previewUrl: String,
     val largeArtworkUrl: String,
     val collectionYear: String
-) {
-//    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
-
-//    fun getYear(): String {
-//        return if (releaseDate.isNotEmpty()) {
-//            releaseDate.substring(0, 4)
-//        } else ""
-//    }
-//
-//    fun getAudioPreviewUrl() = previewUrl
-
-}
+)

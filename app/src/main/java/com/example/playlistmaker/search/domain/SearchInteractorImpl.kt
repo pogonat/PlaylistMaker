@@ -1,9 +1,12 @@
 package com.example.playlistmaker.search.domain
 
 import com.example.playlistmaker.Resource
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.SearchResultStatus
+import com.example.playlistmaker.domain.models.SearchTrackResult
 import java.util.concurrent.Executors
 
-class SearchInteractorImpl(private val trackRepository: TrackRepository): SearchInteractor {
+class SearchInteractorImpl(private val trackRepository: TrackRepository) : SearchInteractor {
 
     private val executor = Executors.newCachedThreadPool()
 
@@ -12,9 +15,22 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
             when (val resource = trackRepository.searchTracks(searchText)) {
                 is Resource.Success -> {
                     if (resource.data!!.isEmpty()) {
-                        consumer.consume(SearchTrackResult(SearchResultStatus.NOTHING_FOUND, resource.data))
-                    } else consumer.consume(SearchTrackResult(SearchResultStatus.SUCCESS, resource.data))}
-                is Resource.Error -> {consumer.consume(SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null))}
+                        consumer.consume(
+                            SearchTrackResult(
+                                SearchResultStatus.NOTHING_FOUND,
+                                resource.data
+                            )
+                        )
+                    } else consumer.consume(
+                        SearchTrackResult(
+                            SearchResultStatus.SUCCESS,
+                            resource.data
+                        )
+                    )
+                }
+                is Resource.Error -> {
+                    consumer.consume(SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null))
+                }
             }
         }
     }
@@ -30,13 +46,5 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
     override fun clearTracksHistory() {
         trackRepository.clearTracksHistory()
     }
-
-//    override fun searchTrackById(trackId: String): Track {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun getTrackById(trackId: String): Track? {
-//        TODO("Not yet implemented")
-//    }
 
 }

@@ -1,10 +1,11 @@
-package com.example.playlistmaker.data
+package com.example.playlistmaker.data.storage
 
 import com.example.playlistmaker.App
-import com.example.playlistmaker.search.domain.StorageKeys
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.domain.models.StorageKeys
+import com.example.playlistmaker.domain.models.Track
 
-class TrackStorageImpl: TrackStorage {
+class TrackStorageImpl : TrackStorage {
 
     private val sharedPrefs = App.instance.sharedPrefs
     private val gson = App.instance.gson
@@ -28,7 +29,7 @@ class TrackStorageImpl: TrackStorage {
     }
 
     override fun saveTrack(newTrack: Track): ArrayList<Track> {
-        var tracksHistory: ArrayList<Track> = getTracksHistory()
+        val tracksHistory: ArrayList<Track> = getTracksHistory()
         for (track in tracksHistory) {
             if (track.trackId == newTrack.trackId) {
                 tracksHistory.remove(track)
