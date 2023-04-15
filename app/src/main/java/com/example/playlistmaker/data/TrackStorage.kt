@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.data
+package com.example.playlistmaker.data
 
 import com.example.playlistmaker.App
 import com.example.playlistmaker.search.domain.StorageKeys

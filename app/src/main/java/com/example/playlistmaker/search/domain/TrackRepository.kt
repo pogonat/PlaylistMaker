@@ -4,8 +4,6 @@ import com.example.playlistmaker.Resource
 
 interface TrackRepository {
     fun searchTracks(searchInput: String): Resource<List<Track>>
-    fun searchTrackById(trackId: String): Resource<List<Track>>
-    fun getTrackById(trackId: String): Track?
     fun saveTrack(track: Track): ArrayList<Track>
     fun getTracksHistory(): ArrayList<Track>
     fun clearTracksHistory()

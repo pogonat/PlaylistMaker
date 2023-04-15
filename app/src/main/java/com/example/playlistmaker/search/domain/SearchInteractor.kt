@@ -12,9 +12,9 @@ interface SearchInteractor {
 
     fun clearTracksHistory()
 
-    fun searchTrackById(trackId: String): Track
-
-    fun getTrackById(trackId: String): Track?
+//    fun searchTrackById(trackId: String): Track
+//
+//    fun getTrackById(trackId: String): Track?
 
     interface TracksConsumer {
         fun consume(searchTrackResult: SearchTrackResult)

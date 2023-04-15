@@ -11,7 +11,7 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
         executor.execute {
             when (val resource = trackRepository.searchTracks(searchText)) {
                 is Resource.Success -> {
-                    if (resource.data!!.size == 0) {
+                    if (resource.data!!.isEmpty()) {
                         consumer.consume(SearchTrackResult(SearchResultStatus.NOTHING_FOUND, resource.data))
                     } else consumer.consume(SearchTrackResult(SearchResultStatus.SUCCESS, resource.data))}
                 is Resource.Error -> {consumer.consume(SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null))}
@@ -31,12 +31,12 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository): Search
         trackRepository.clearTracksHistory()
     }
 
-    override fun searchTrackById(trackId: String): Track {
-        TODO("Not yet implemented")
-    }
-
-    override fun getTrackById(trackId: String): Track? {
-        TODO("Not yet implemented")
-    }
+//    override fun searchTrackById(trackId: String): Track {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun getTrackById(trackId: String): Track? {
+//        TODO("Not yet implemented")
+//    }
 
 }

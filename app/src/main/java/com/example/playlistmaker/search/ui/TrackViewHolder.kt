@@ -20,8 +20,8 @@ class TrackViewHolder(
 
         binding.trackName.text = item.trackName
         binding.artistName.text = item.artistName
-        binding.trackDuration.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(item.trackTime)
+        binding.trackDuration.text = item.trackTime
+//            SimpleDateFormat("mm:ss", Locale.getDefault()).format(item.trackTime)
 
         Glide.with(itemView)
             .load(item.artworkUrl100)
