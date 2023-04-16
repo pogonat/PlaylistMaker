@@ -1,10 +1,10 @@
-package com.example.playlistmaker.sharing.presentation
+package com.example.playlistmaker.sharing.domain
 
+import android.content.Intent
 import com.example.playlistmaker.sharing.domain.models.EmailData
-import com.example.playlistmaker.sharing.presentation.models.IntentTransfer
 
 interface ExternalNavigator {
-    fun shareLink(url: String)
-    fun openLink(url: String)
-    fun openEmail(emailData: EmailData)
+    fun shareLink(url: String): Intent
+    fun openLink(url: String): Intent
+    fun openEmail(emailData: EmailData): Intent
 }

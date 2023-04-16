@@ -1,22 +1,15 @@
 package com.example.playlistmaker.settings.ui
 
-import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
-import com.example.playlistmaker.App
-import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
-import com.example.playlistmaker.search.ui.SearchViewModel
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.example.playlistmaker.settings.ui.models.SettingsSwitcherState
 
-class SettingsActivity : ComponentActivity() {
+class SettingsActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<SearchViewModel> { SettingsViewModel.getViewModelFactory() }
+    private val viewModel by viewModels<SettingsViewModel> { SettingsViewModel.getViewModelFactory() }
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,53 +17,48 @@ class SettingsActivity : ComponentActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sharedPrefs = getSharedPreferences(App.PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-
-        binding.themeSwitcher.isChecked = (applicationContext as App).darkTheme
+        viewModel.getTheme()
 
         binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-            if (sharedPrefs.getString(THEME_SWITCHER, "") == DARK_THEME_SWITCHER_ON) {
-                sharedPrefs.edit().putString(THEME_SWITCHER, DARK_THEME_SWITCHER_OFF).apply()
-            } else {
-                sharedPrefs.edit().putString(THEME_SWITCHER, DARK_THEME_SWITCHER_ON).apply()
-            }
+            viewModel.updateThemeSettings(checked)
         }
 
         binding.shareButton.setOnClickListener {
-            val link = getString(R.string.share_link)
-            val sendIntent = Intent(Intent.ACTION_SEND)
-            sendIntent.type = "text/plain"
-            sendIntent.putExtra(Intent.EXTRA_TEXT, link)
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
+            viewModel.share()
         }
 
         binding.supportButton.setOnClickListener {
-            val message = getString(R.string.support_message)
-            val email = getString(R.string.support_email)
-            val emailSubject = getString(R.string.support_subject)
-            val sendIntent = Intent(Intent.ACTION_SEND)
-            sendIntent.data = Uri.parse("mailto:")
-            sendIntent.putExtra(Intent.EXTRA_TEXT, message)
-            sendIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject)
-            val supportIntent = Intent.createChooser(sendIntent, null)
-            startActivity(supportIntent)
+            viewModel.openSupport()
         }
 
         binding.agreementButton.setOnClickListener {
-            val link = getString(R.string.agreement_link)
-            val readIntent = Intent(Intent.ACTION_VIEW)
-            readIntent.data = Uri.parse(link)
-            val readAgreementIntent = Intent.createChooser(readIntent, null)
-            startActivity(readAgreementIntent)
+            viewModel.openTerms()
+        }
+
+        binding.arrowReturn.setOnClickListener{
+            finish()
+        }
+
+        viewModel.getSwitcherStateLiveData().observe(this) { switcherState ->
+            render(switcherState)
+        }
+
+        viewModel.navigationEvent.observe(this) { intent ->
+            startActivity(intent)
         }
     }
 
-    companion object {
-        const val THEME_SWITCHER = "THEME_SWITCHER"
-        const val DARK_THEME_SWITCHER_ON = "on"
-        const val DARK_THEME_SWITCHER_OFF = "off"
+    private fun render(switcherState: SettingsSwitcherState) {
+        when (switcherState) {
+            SettingsSwitcherState.On -> {
+                binding.themeSwitcher.isChecked = true
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            SettingsSwitcherState.Off -> {
+                binding.themeSwitcher.isChecked = false
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
     }
+
 }

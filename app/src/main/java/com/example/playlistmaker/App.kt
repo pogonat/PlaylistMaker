@@ -3,9 +3,10 @@ package com.example.playlistmaker
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.settings.ui.SettingsActivity.Companion.DARK_THEME_SWITCHER_ON
-import com.example.playlistmaker.settings.ui.SettingsActivity.Companion.THEME_SWITCHER
+import com.example.playlistmaker.domain.models.StorageKeys
+import com.example.playlistmaker.settings.domain.models.DarkThemeSwitcher
 import com.google.gson.Gson
 
 class App : Application() {
@@ -16,16 +17,19 @@ class App : Application() {
     lateinit var gson: Gson
         private set
 
-    var darkTheme = false
+    private var darkTheme = false
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-        sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-
+        val storageKey = StorageKeys.PLAYLIST_MAKER_PREFERENCES.toString()
+        sharedPrefs = getSharedPreferences(storageKey, MODE_PRIVATE)
         gson = Gson()
 
-        if (sharedPrefs.getString(THEME_SWITCHER, "") == "") {
+
+        val storageThemeKey = StorageKeys.THEME_SWITCHER.toString()
+        val darkThemeStatus = sharedPrefs.getString(storageThemeKey, "")
+        if (darkThemeStatus == "") {
             when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
                 Configuration.UI_MODE_NIGHT_YES -> {
                     switchTheme(true)
@@ -38,13 +42,13 @@ class App : Application() {
                 }
             }
         } else {
-            darkTheme = (sharedPrefs.getString(THEME_SWITCHER, "") == DARK_THEME_SWITCHER_ON)
+            darkTheme = (darkThemeStatus == DarkThemeSwitcher.DARK_THEME_SWITCHER_ON.toString())
             switchTheme(darkTheme)
         }
 
     }
 
-    fun switchTheme(darkThemeEnabled: Boolean) {
+    private fun switchTheme(darkThemeEnabled: Boolean) {
         darkTheme = darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
@@ -56,7 +60,6 @@ class App : Application() {
     }
 
     companion object {
-        const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
         lateinit var instance: App
             private set
     }

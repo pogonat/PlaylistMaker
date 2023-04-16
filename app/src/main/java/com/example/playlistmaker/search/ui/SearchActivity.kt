@@ -9,9 +9,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -22,7 +21,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
 import com.example.playlistmaker.search.ui.models.SearchScreenState
 
-class SearchActivity : ComponentActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<SearchViewModel> { SearchViewModel.getViewModelFactory() }
     private lateinit var binding: ActivitySearchBinding
@@ -35,7 +34,6 @@ class SearchActivity : ComponentActivity() {
                     val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
                     val trackId = track.trackId
                     playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    Toast.makeText(this@SearchActivity, "saved", Toast.LENGTH_SHORT).show()
                     startActivity(playerIntent)
                 }
             }
@@ -50,7 +48,6 @@ class SearchActivity : ComponentActivity() {
                     val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
                     val trackId = track.trackId
                     playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    Toast.makeText(this@SearchActivity, "saved", Toast.LENGTH_SHORT).show()
                     startActivity(playerIntent)
                 }
             }

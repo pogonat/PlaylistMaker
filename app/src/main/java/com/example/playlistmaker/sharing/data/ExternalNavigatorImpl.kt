@@ -1,34 +1,31 @@
-package com.example.playlistmaker.sharing.presentation
+package com.example.playlistmaker.sharing.data
 
 import android.content.Intent
 import android.net.Uri
+import com.example.playlistmaker.sharing.domain.ExternalNavigator
 import com.example.playlistmaker.sharing.domain.models.EmailData
-import com.example.playlistmaker.sharing.presentation.models.IntentTransfer
 
 class ExternalNavigatorImpl: ExternalNavigator {
 
-    override fun shareLink(url: String) {
+    override fun shareLink(url: String): Intent {
         val sendIntent = Intent(Intent.ACTION_SEND)
         sendIntent.type = "text/plain"
         sendIntent.putExtra(Intent.EXTRA_TEXT, url)
-        val shareIntent = Intent.createChooser(sendIntent, null)
-//        return IntentTransfer(shareIntent)
+        return Intent.createChooser(sendIntent, null)
     }
 
-    override fun openLink(url: String) {
+    override fun openLink(url: String): Intent {
         val readIntent = Intent(Intent.ACTION_VIEW)
         readIntent.data = Uri.parse(url)
-        val readAgreementIntent = Intent.createChooser(readIntent, null)
-//        return IntentTransfer(readAgreementIntent)
+        return Intent.createChooser(readIntent, null)
     }
 
-    override fun openEmail(emailData: EmailData) {
+    override fun openEmail(emailData: EmailData): Intent {
         val sendIntent = Intent(Intent.ACTION_SEND)
         sendIntent.data = Uri.parse("mailto:")
         sendIntent.putExtra(Intent.EXTRA_TEXT, emailData.emailMessage)
         sendIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(emailData.emailAddress))
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, emailData.emailSubject)
-        val supportIntent = Intent.createChooser(sendIntent, null)
-//        return IntentTransfer(supportIntent)
+        return Intent.createChooser(sendIntent, null)
     }
 }
