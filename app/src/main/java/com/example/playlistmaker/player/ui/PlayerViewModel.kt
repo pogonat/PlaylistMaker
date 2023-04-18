@@ -1,15 +1,6 @@
 package com.example.playlistmaker.player.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.player.domain.PlayerInteractor
+import androidx.lifecycle.*
 import com.example.playlistmaker.player.ui.models.PlayerScreenState
 import com.example.playlistmaker.player.ui.models.PlayerState
 import com.example.playlistmaker.player.ui.models.PlayerStatus
@@ -17,10 +8,10 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 
-class PlayerViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val playerInteractor = Creator.providePlayerInteractor(getApplication<Application>())
-    private val trackPlayer = Creator.provideTrackPlayer()
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+    private val trackPlayer: TrackPlayer
+) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerScreenState>()
     private val playStatusLiveData = MutableLiveData<PlayerStatus>()
@@ -139,11 +130,4 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(this[APPLICATION_KEY] as Application)
-            }
-        }
-    }
 }
