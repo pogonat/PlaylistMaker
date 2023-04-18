@@ -1,6 +1,8 @@
 package com.example.playlistmaker.domain.models
 
+import com.example.playlistmaker.data.models.Response
+
 data class SearchTrackResult(
-    var searchResultStatus: SearchResultStatus,
-    var resultTrackList: ArrayList<Track>
-)
+    val searchResultStatus: SearchResultStatus,
+    val resultTrackList: List<Track>?
+) : Response()

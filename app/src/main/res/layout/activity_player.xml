@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.PlayerActivity">
+    tools:context=".player.ui.PlayerActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/return_arrow"
+            android:id="@+id/returnArrow"
             style="@style/ArrowBack"
             android:layout_width="@dimen/arrow_back_size"
             android:layout_height="@dimen/arrow_back_size"
@@ -37,7 +37,7 @@
             app:layout_constraintGuide_end="24dp" />
 
         <ImageView
-            android:id="@+id/source_album_art_large"
+            android:id="@+id/artworkLarge"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="46dp"
@@ -46,7 +46,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toStartOf="@+id/right_guideline"
             app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/return_arrow" />
+            app:layout_constraintTop_toBottomOf="@+id/returnArrow" />
 
         <TextView
             android:id="@+id/trackTitle"
@@ -55,10 +55,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/source_album_art_large" />
+            app:layout_constraintTop_toBottomOf="@+id/artworkLarge" />
 
         <TextView
-            android:id="@+id/artist_name"
+            android:id="@+id/artist"
             style="@style/ArtistNamePlayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,30 +67,30 @@
             app:layout_constraintTop_toBottomOf="@+id/trackTitle" />
 
         <ImageView
-            android:id="@+id/playlist_button"
+            android:id="@+id/playlistButton"
             android:layout_width="@dimen/media_activity_buttons"
             android:layout_height="@dimen/media_activity_buttons"
             android:contentDescription="@string/playlist_icon"
             android:src="@drawable/add_playlist_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/play_button"
-            app:layout_constraintEnd_toStartOf="@+id/play_button"
+            app:layout_constraintBottom_toBottomOf="@+id/playControlButton"
+            app:layout_constraintEnd_toStartOf="@+id/playControlButton"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toTopOf="@+id/play_button" />
+            app:layout_constraintTop_toTopOf="@+id/playControlButton" />
 
         <ImageView
-            android:id="@+id/play_button"
+            android:id="@+id/playControlButton"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_marginTop="40dp"
             android:contentDescription="@string/play"
             android:src="@drawable/play_track"
             app:layout_constraintEnd_toStartOf="@+id/favlist_button"
-            app:layout_constraintStart_toEndOf="@+id/playlist_button"
-            app:layout_constraintTop_toBottomOf="@+id/artist_name" />
+            app:layout_constraintStart_toEndOf="@+id/playlistButton"
+            app:layout_constraintTop_toBottomOf="@+id/artist" />
 
         <TextView
-            android:id="@+id/time_remained"
+            android:id="@+id/timeRemained"
             style="@style/ArtistNamePlayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
             app:fontWeight="500"
             app:layout_constraintEnd_toStartOf="@+id/right_guideline"
             app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/play_button" />
+            app:layout_constraintTop_toBottomOf="@+id/playControlButton" />
 
         <ImageView
             android:id="@+id/favlist_button"
@@ -106,10 +106,10 @@
             android:layout_height="@dimen/media_activity_buttons"
             android:contentDescription="@string/favorite_list_icon"
             android:src="@drawable/add_favlist_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/play_button"
+            app:layout_constraintBottom_toBottomOf="@+id/playControlButton"
             app:layout_constraintEnd_toStartOf="@+id/right_guideline"
-            app:layout_constraintStart_toEndOf="@+id/play_button"
-            app:layout_constraintTop_toTopOf="@+id/play_button" />
+            app:layout_constraintStart_toEndOf="@+id/playControlButton"
+            app:layout_constraintTop_toTopOf="@+id/playControlButton" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/left_guideline_text"
@@ -133,7 +133,7 @@
             android:layout_marginTop="40dp"
             android:text="@string/duration"
             app:layout_constraintStart_toStartOf="@+id/left_guideline_text"
-            app:layout_constraintTop_toBottomOf="@+id/time_remained" />
+            app:layout_constraintTop_toBottomOf="@+id/timeRemained" />
 
         <TextView
             android:id="@+id/duration"
@@ -154,7 +154,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         <TextView
-            android:id="@+id/album_collection"
+            android:id="@+id/albumCollection"
             style="@style/PlayerTrackValues"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
