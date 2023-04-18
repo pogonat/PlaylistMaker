@@ -9,7 +9,7 @@ import com.example.playlistmaker.domain.models.Track
 
 class TrackViewHolder(
     private val binding: TrackViewBinding,
-    private val clicklListener: SearchTracksAdapter.TrackClickListener
+    private val clickListener: SearchTracksAdapter.TrackClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(item: Track) {
 
@@ -24,7 +24,7 @@ class TrackViewHolder(
             .placeholder(R.drawable.placeholder_image)
             .into(binding.albumArt)
 
-        itemView.setOnClickListener { clicklListener.onTrackClick(track = item) }
+        itemView.setOnClickListener { clickListener.onTrackClick(track = item) }
     }
 
 }

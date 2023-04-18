@@ -1,5 +1,7 @@
 package com.example.playlistmaker.di
 
+import android.media.MediaPlayer
+import com.example.playlistmaker.ThemeManager
 import com.example.playlistmaker.player.ui.PlayerViewModel
 import com.example.playlistmaker.player.ui.TrackPlayer
 import com.example.playlistmaker.player.ui.TrackPlayerImpl
@@ -11,7 +13,11 @@ import org.koin.dsl.module
 val uiModule = module {
 
     factory<TrackPlayer> {
-        TrackPlayerImpl()
+        TrackPlayerImpl(mediaPlayer = get())
+    }
+
+    factory<MediaPlayer> {
+        MediaPlayer()
     }
 
     viewModel<PlayerViewModel> {
@@ -24,6 +30,10 @@ val uiModule = module {
 
     viewModel<SettingsViewModel> {
         SettingsViewModel(settingsInteractor = get(), sharingInteractor = get())
+    }
+
+    single {
+        ThemeManager(get())
     }
 
 }

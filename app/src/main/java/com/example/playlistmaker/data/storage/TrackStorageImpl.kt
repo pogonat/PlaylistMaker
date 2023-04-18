@@ -1,14 +1,17 @@
 package com.example.playlistmaker.data.storage
 
+import android.content.SharedPreferences
 import com.example.playlistmaker.App
 import com.example.playlistmaker.data.TrackStorage
 import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.domain.models.Track
+import com.google.gson.Gson
 
-class TrackStorageImpl : TrackStorage {
+class TrackStorageImpl(
+    private val gson: Gson,
+    private val sharedPrefs: SharedPreferences
+) : TrackStorage {
 
-    private val sharedPrefs = App.instance.sharedPrefs
-    private val gson = App.instance.gson
     private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
 
     override fun getTrackById(trackId: String): Track? {
