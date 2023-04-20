@@ -10,7 +10,7 @@ import com.example.playlistmaker.settings.domain.models.DarkThemeSwitcher
 class ThemeManager(private val sharedPrefs: SharedPreferences) {
 
     fun applyTheme() {
-        val darkThemeStatus = sharedPrefs.getString(StorageKeys.THEME_SWITCHER.toString(), "")
+        val darkThemeStatus = sharedPrefs.getString(StorageKeys.THEME_SWITCHER, "")
         val darkTheme = when (darkThemeStatus) {
             DarkThemeSwitcher.DARK_THEME_SWITCHER_ON.toString() -> true
             DarkThemeSwitcher.DARK_THEME_SWITCHER_OFF.toString() -> false

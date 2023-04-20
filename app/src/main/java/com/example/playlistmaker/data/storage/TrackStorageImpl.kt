@@ -1,7 +1,6 @@
 package com.example.playlistmaker.data.storage
 
 import android.content.SharedPreferences
-import com.example.playlistmaker.App
 import com.example.playlistmaker.data.TrackStorage
 import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.domain.models.Track
@@ -12,7 +11,7 @@ class TrackStorageImpl(
     private val sharedPrefs: SharedPreferences
 ) : TrackStorage {
 
-    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY.toString()
+    private val storageHistoryKey = StorageKeys.SEARCH_HISTORY_KEY
 
     override fun getTrackById(trackId: String): Track? {
         val tracksHistory = getTracksHistory()

@@ -36,7 +36,7 @@ val dataModule = module {
     }
 
     single<SharedPreferences> {
-        androidContext().getSharedPreferences(StorageKeys.PLAYLIST_MAKER_PREFERENCES.toString(), Context.MODE_PRIVATE)
+        androidContext().getSharedPreferences(StorageKeys.PLAYLIST_MAKER_PREFERENCES, Context.MODE_PRIVATE)
     }
 
     single<Gson> {

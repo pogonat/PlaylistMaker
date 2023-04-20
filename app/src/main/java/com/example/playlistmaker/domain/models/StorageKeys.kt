@@ -1,7 +1,7 @@
 package com.example.playlistmaker.domain.models
 
-enum class StorageKeys {
-    SEARCH_HISTORY_KEY,
-    THEME_SWITCHER,
-    PLAYLIST_MAKER_PREFERENCES
+object StorageKeys {
+    const val SEARCH_HISTORY_KEY = "SEARCH_HISTORY_KEY"
+    const val THEME_SWITCHER = "THEME_SWITCHER"
+    const val PLAYLIST_MAKER_PREFERENCES = "PLAYLIST_MAKER_PREFERENCES"
 }
