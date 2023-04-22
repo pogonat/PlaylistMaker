@@ -7,7 +7,7 @@ import com.example.playlistmaker.databinding.TrackViewBinding
 import com.example.playlistmaker.domain.models.Track
 import kotlin.collections.ArrayList
 
-class SearchTracksAdapter(private val clicklListener: TrackClickListener) :
+class SearchTracksAdapter(private val clickListener: TrackClickListener) :
     RecyclerView.Adapter<TrackViewHolder>() {
 
     var tracks = ArrayList<Track>()
@@ -17,7 +17,7 @@ class SearchTracksAdapter(private val clicklListener: TrackClickListener) :
 
         return TrackViewHolder(
             TrackViewBinding.inflate(layoutInspector, parent, false),
-            clicklListener
+            clickListener
         )
 
     }

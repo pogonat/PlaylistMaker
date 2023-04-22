@@ -1,26 +1,17 @@
 package com.example.playlistmaker.settings.ui
 
 import com.example.playlistmaker.SingleLiveEvent
-import android.app.Application
 import android.content.Intent
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
+import androidx.lifecycle.*
 import com.example.playlistmaker.settings.domain.models.DarkThemeSwitcher
 import com.example.playlistmaker.settings.domain.models.ThemeSettings
 import com.example.playlistmaker.settings.ui.models.SettingsSwitcherState
+import com.example.playlistmaker.sharing.presentation.SharingInteractor
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val settingsInteractor =
-        Creator.provideSettingsInteractor(getApplication<Application>())
-
-    private val sharingInteractor =
-        Creator.provideSharingInteractor(getApplication<Application>())
+class SettingsViewModel(
+    private val settingsInteractor: SettingsInteractor,
+    private val sharingInteractor: SharingInteractor
+) : ViewModel() {
 
     private val switcherLiveData = MutableLiveData<SettingsSwitcherState>()
     fun getSwitcherStateLiveData(): LiveData<SettingsSwitcherState> = switcherLiveData
@@ -69,15 +60,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             }
         }
 
-    }
-
-    companion object {
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SettingsViewModel(this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-            }
-        }
     }
 
 }

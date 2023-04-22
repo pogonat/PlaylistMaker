@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -13,13 +12,14 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.ui.models.PlayerScreenState
 import com.example.playlistmaker.player.ui.models.PlayerStatus
 import com.example.playlistmaker.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class PlayerActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<PlayerViewModel> { PlayerViewModel.getViewModelFactory() }
+    private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding: ActivityPlayerBinding
 
     private var isClickAllowed = true

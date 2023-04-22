@@ -1,23 +1,15 @@
 package com.example.playlistmaker.search.ui
 
-import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.*
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
-import com.example.playlistmaker.search.domain.*
 import com.example.playlistmaker.search.ui.models.SearchScreenState
 
-class SearchViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val searchInteractor = Creator.provideSearchInteractor(getApplication<Application>())
+class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -143,11 +135,6 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(this[APPLICATION_KEY] as Application)
-            }
-        }
     }
 
 }

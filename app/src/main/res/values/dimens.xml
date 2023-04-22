@@ -17,4 +17,5 @@
     <dimen name="clear_icon_size">12dp</dimen>
     <dimen name="media_activity_buttons">51dp</dimen>
     <dimen name="media_text_marginTop">16dp</dimen>
+    <dimen name="text_marginEnd">8dp</dimen>
 </resources>

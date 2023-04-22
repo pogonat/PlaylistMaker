@@ -9,21 +9,20 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
 import com.example.playlistmaker.search.ui.models.SearchScreenState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<SearchViewModel> { SearchViewModel.getViewModelFactory() }
+    private val viewModel by viewModel<SearchViewModel>()
     private lateinit var binding: ActivitySearchBinding
 
     private val searchResultsAdapter = SearchTracksAdapter(
@@ -179,9 +178,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showErrorConnection() {
         binding.placeholderMessage.text = getString(R.string.no_connection)
-        Glide.with(binding.placeholderErrorImage)
-            .load(R.drawable.no_connection)
-            .into(binding.placeholderErrorImage)
+        binding.placeholderErrorImage.setImageResource(R.drawable.no_connection)
         binding.placeholderErrorImage.isVisible = true
         binding.renewButton.isVisible = true
 
@@ -193,9 +190,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showNothingFound() {
         binding.placeholderMessage.text = getString(R.string.nothing_found)
-        Glide.with(binding.placeholderErrorImage)
-            .load(R.drawable.nothing_found)
-            .into(binding.placeholderErrorImage)
+        binding.placeholderErrorImage.setImageResource(R.drawable.nothing_found)
         binding.renewButton.isVisible = false
 
         binding.progressBar.isVisible = false

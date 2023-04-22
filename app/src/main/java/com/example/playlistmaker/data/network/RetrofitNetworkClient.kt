@@ -6,18 +6,11 @@ import android.net.NetworkCapabilities
 import com.example.playlistmaker.data.NetworkSearch
 import com.example.playlistmaker.data.models.Response
 import com.example.playlistmaker.data.models.TracksSearchRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitNetworkClient(private val context: Context) : NetworkSearch {
-
-    private val iTunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val itunesService = retrofit.create(NetworkSearchItunesApi::class.java)
+class RetrofitNetworkClient(
+    private val itunesApi: NetworkSearchItunesApi,
+    private val context: Context
+) : NetworkSearch {
 
     override fun searchTracks(dto: Any): Response {
 
@@ -29,7 +22,7 @@ class RetrofitNetworkClient(private val context: Context) : NetworkSearch {
             return Response().apply { resultCode = 400 }
         }
 
-        val response = itunesService.search(dto.expression).execute()
+        val response = this.itunesApi.search(dto.expression).execute()
         val body = response.body()
         return if (body != null) {
             body.apply { resultCode = response.code() }
@@ -47,7 +40,7 @@ class RetrofitNetworkClient(private val context: Context) : NetworkSearch {
             return Response().apply { resultCode = 400 }
         }
 
-        val response = itunesService.getTrackDetails(dto.expression).execute()
+        val response = this.itunesApi.getTrackDetails(dto.expression).execute()
         val body = response.body()
         return if (body != null) {
             body.apply { resultCode = response.code() }
