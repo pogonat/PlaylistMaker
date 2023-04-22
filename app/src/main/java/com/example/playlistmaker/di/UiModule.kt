@@ -2,6 +2,8 @@ package com.example.playlistmaker.di
 
 import android.media.MediaPlayer
 import com.example.playlistmaker.ThemeManager
+import com.example.playlistmaker.mediaactivity.ui.FavoritesViewModel
+import com.example.playlistmaker.mediaactivity.ui.PlaylistsViewModel
 import com.example.playlistmaker.player.ui.PlayerViewModel
 import com.example.playlistmaker.player.ui.TrackPlayer
 import com.example.playlistmaker.player.ui.TrackPlayerImpl
@@ -30,6 +32,14 @@ val uiModule = module {
 
     viewModel<SettingsViewModel> {
         SettingsViewModel(settingsInteractor = get(), sharingInteractor = get())
+    }
+
+    viewModel<PlaylistsViewModel> {
+        PlaylistsViewModel()
+    }
+
+    viewModel<FavoritesViewModel> {
+        FavoritesViewModel()
     }
 
     single {
