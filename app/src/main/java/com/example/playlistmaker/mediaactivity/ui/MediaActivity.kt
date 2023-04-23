@@ -28,6 +28,11 @@ class MediaActivity : AppCompatActivity() {
             }
         }
         tabMediator.attach()
+
+        binding.topNavBar.setOnClickListener {
+            finish()
+        }
+
     }
 
     override fun onDestroy() {
