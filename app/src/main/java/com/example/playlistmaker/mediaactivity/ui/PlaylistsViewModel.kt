@@ -3,7 +3,6 @@ package com.example.playlistmaker.mediaactivity.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.mediaactivity.ui.models.FavoritesState
 import com.example.playlistmaker.mediaactivity.ui.models.PlaylistsState
 
 class PlaylistsViewModel : ViewModel() {

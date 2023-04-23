@@ -89,7 +89,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         )
     }
 
-    fun initTrackHistory(): MutableList<Track> {
+    private fun initTrackHistory(): MutableList<Track> {
         return searchInteractor.getTracksHistory()
     }
 
