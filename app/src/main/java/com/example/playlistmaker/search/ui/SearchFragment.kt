@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -99,8 +98,6 @@ class SearchFragment : Fragment() {
         }
         searchTextWatcher?.let { binding.inputEditText.addTextChangedListener(it) }
 
-//        binding.arrowReturn.setOnClickListener { finish() }
-
         binding.clearIcon.setOnClickListener {
             binding.inputEditText.setText("")
             userInputSearchText = ""
@@ -158,10 +155,10 @@ class SearchFragment : Fragment() {
         binding.recyclerViewResultsItems.adapter = searchResultsAdapter
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, userInputSearchText)
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        outState.putString(SEARCH_TEXT, userInputSearchText)
+//    }
 
 //    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
 //        super.onRestoreInstanceState(savedInstanceState)
@@ -236,7 +233,7 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
+//        const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val CLICK_DEBOUNCE_DELAY = 500L
 
 //        fun createArgs(userInputSearchText: String): Bundle =

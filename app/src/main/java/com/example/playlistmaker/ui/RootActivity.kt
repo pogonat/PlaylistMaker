@@ -19,19 +19,19 @@ class RootActivity : AppCompatActivity() {
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState == null) {
-            // Добавляем фрагмент в контейнер
-            supportFragmentManager.commit {
-                this.add(R.id.rootFragmentContainerView, SearchFragment())
-            }
-        }
+//        if (savedInstanceState == null) {
+//            // Добавляем фрагмент в контейнер
+//            supportFragmentManager.commit {
+//                this.add(R.id.rootFragmentContainerView, SearchFragment())
+//            }
+//        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
 //            when (destination.id) {
 //                R.id.detailsFragment, R.id.moviesCastFragment -> {
 //                    binding.bottomNavigationView.visibility = View.GONE
@@ -40,7 +40,7 @@ class RootActivity : AppCompatActivity() {
 //                    binding.bottomNavigationView.visibility = View.VISIBLE
 //                }
 //            }
-        }
+//        }
 
     }
 
