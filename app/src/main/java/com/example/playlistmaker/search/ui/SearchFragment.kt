@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -140,10 +141,9 @@ class SearchFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         searchTextWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
-
     }
 
     private fun setSearchHistoryRecycler() {
@@ -238,6 +238,10 @@ class SearchFragment : Fragment() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val CLICK_DEBOUNCE_DELAY = 500L
+
+//        fun createArgs(userInputSearchText: String): Bundle =
+//            bundleOf(SEARCH_TEXT to userInputSearchText)
+
     }
 
 
