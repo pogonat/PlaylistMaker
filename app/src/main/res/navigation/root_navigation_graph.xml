@@ -23,10 +23,19 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_agreementFragment"
+            app:destination="@id/agreementFragment" />
+    </fragment>
     <activity
         android:id="@+id/playerActivity"
         android:name="com.example.playlistmaker.player.ui.PlayerActivity"
         android:label="activity_player"
         tools:layout="@layout/activity_player" />
+    <fragment
+        android:id="@+id/agreementFragment"
+        android:name="com.example.playlistmaker.sharing.ui.AgreementFragment"
+        android:label="fragment_agreement"
+        tools:layout="@layout/fragment_agreement" />
 </navigation>

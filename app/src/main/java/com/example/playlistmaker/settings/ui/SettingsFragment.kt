@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSettingsBinding
 import com.example.playlistmaker.settings.ui.models.SettingsSwitcherState
+import com.example.playlistmaker.sharing.ui.AgreementFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
@@ -43,12 +46,8 @@ class SettingsFragment : Fragment() {
         }
 
         binding.agreementButton.setOnClickListener {
-            viewModel.openTerms()
+                findNavController().navigate(R.id.action_settingsFragment_to_agreementFragment)
         }
-
-//        binding.arrowReturn.setOnClickListener{
-//            finish()
-//        }
 
         viewModel.getSwitcherStateLiveData().observe(viewLifecycleOwner) { switcherState ->
             render(switcherState)
