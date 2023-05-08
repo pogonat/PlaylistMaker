@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.navigation.fragment.NavHostFragment
@@ -19,28 +20,21 @@ class RootActivity : AppCompatActivity() {
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        if (savedInstanceState == null) {
-//            // Добавляем фрагмент в контейнер
-//            supportFragmentManager.commit {
-//                this.add(R.id.rootFragmentContainerView, SearchFragment())
-//            }
-//        }
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
-//        navController.addOnDestinationChangedListener { _, destination, _ ->
-//            when (destination.id) {
-//                R.id.detailsFragment, R.id.moviesCastFragment -> {
-//                    binding.bottomNavigationView.visibility = View.GONE
-//                }
-//                else -> {
-//                    binding.bottomNavigationView.visibility = View.VISIBLE
-//                }
-//            }
-//        }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.agreementFragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
+        }
 
     }
 
