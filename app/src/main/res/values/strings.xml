@@ -20,9 +20,11 @@
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="no_connection">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
     <string name="renew">Обновить</string>
+    <string name="newPlayList">Новый плейлист</string>
     <string name="clear_history">Очистить историю</string>
     <string name="search_history">Вы искали</string>
     <string name="placeholder_image">Artwork not downloaded yet</string>
+    <string name="media_empty">Ваша медиатека пуста</string>
     <string name="duration">Длительность</string>
     <string name="collection_name">Альбом</string>
     <string name="year">Год</string>
@@ -31,4 +33,8 @@
     <string name="playlist_icon">Playlist icon</string>
     <string name="play">Play track icon</string>
     <string name="favorite_list_icon">Favorite list icon</string>
+    <string name="playlists_empty">Вы не создали\nни одного плейлиста</string>
+    <string name="image_sad_emoticon">image sad emoticon</string>
+    <string name="favorites">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
 </resources>
