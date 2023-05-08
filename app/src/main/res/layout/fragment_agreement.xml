@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     style="@style/AgreementBackground"
     android:orientation="vertical"
-    tools:context="com.example.playlistmaker.sharing.ui.AgreementFragment">
+    tools:context="com.example.playlistmaker.settings.ui.AgreementFragment">
 
     <TextView
         android:id="@+id/backNavBar"

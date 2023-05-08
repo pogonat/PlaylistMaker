@@ -1,6 +1,6 @@
-package com.example.playlistmaker.player.ui
+package com.example.playlistmaker.player.presentation
 
-import com.example.playlistmaker.player.ui.models.PlayerState
+import com.example.playlistmaker.player.presentation.models.PlayerState
 
 interface TrackPlayer {
     fun preparePlayer(trackUrl: String)

@@ -1,6 +1,6 @@
 package com.example.playlistmaker.search.domain
 
-import com.example.playlistmaker.Resource
+import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.domain.models.Track
 
 interface TrackRepository {

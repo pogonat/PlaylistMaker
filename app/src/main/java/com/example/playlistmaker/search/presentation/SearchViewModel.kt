@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.ui
+package com.example.playlistmaker.search.presentation
 
 import android.os.Handler
 import android.os.Looper
@@ -7,7 +7,8 @@ import androidx.lifecycle.*
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
-import com.example.playlistmaker.search.ui.models.SearchScreenState
+import com.example.playlistmaker.search.domain.SearchInteractor
+import com.example.playlistmaker.search.presentation.models.SearchScreenState
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 

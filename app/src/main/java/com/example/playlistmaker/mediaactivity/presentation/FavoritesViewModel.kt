@@ -1,9 +1,9 @@
-package com.example.playlistmaker.mediaactivity.ui
+package com.example.playlistmaker.mediaactivity.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.mediaactivity.ui.models.FavoritesState
+import com.example.playlistmaker.mediaactivity.presentation.models.FavoritesState
 
 class FavoritesViewModel : ViewModel() {
     private val stateLiveData = MutableLiveData<FavoritesState>()

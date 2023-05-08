@@ -1,4 +1,4 @@
-package com.example.playlistmaker.player.ui
+package com.example.playlistmaker.player.domain
 
 import com.example.playlistmaker.domain.models.SearchTrackResult
 

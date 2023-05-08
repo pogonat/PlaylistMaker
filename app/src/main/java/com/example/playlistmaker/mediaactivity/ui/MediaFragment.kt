@@ -29,20 +29,16 @@ class MediaFragment : Fragment() {
 
         binding.viewPager.adapter = MediaViewPagerAdapter(
             supportFragmentManager = childFragmentManager,
-            lifecycle = lifecycle)
+            lifecycle = lifecycle
+        )
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when(position) {
+            when (position) {
                 0 -> tab.text = getString(R.string.favorites)
                 1 -> tab.text = getString(R.string.playlists)
             }
         }
         tabMediator.attach()
-
-//        binding.topNavBar.setOnClickListener {
-//            finish()
-//        }
-
     }
 
     override fun onDestroyView() {

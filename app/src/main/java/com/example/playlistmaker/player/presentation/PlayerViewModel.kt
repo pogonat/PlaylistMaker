@@ -1,12 +1,13 @@
-package com.example.playlistmaker.player.ui
+package com.example.playlistmaker.player.presentation
 
 import androidx.lifecycle.*
-import com.example.playlistmaker.player.ui.models.PlayerScreenState
-import com.example.playlistmaker.player.ui.models.PlayerState
-import com.example.playlistmaker.player.ui.models.PlayerStatus
+import com.example.playlistmaker.player.presentation.models.PlayerScreenState
+import com.example.playlistmaker.player.presentation.models.PlayerState
+import com.example.playlistmaker.player.presentation.models.PlayerStatus
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.player.domain.PlayerInteractor
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,

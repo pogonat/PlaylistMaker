@@ -19,8 +19,9 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.search.presentation.SearchViewModel
 import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
-import com.example.playlistmaker.search.ui.models.SearchScreenState
+import com.example.playlistmaker.search.presentation.models.SearchScreenState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -155,16 +156,6 @@ class SearchFragment : Fragment() {
         binding.recyclerViewResultsItems.adapter = searchResultsAdapter
     }
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        outState.putString(SEARCH_TEXT, userInputSearchText)
-//    }
-
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        userInputSearchText = savedInstanceState.getString(SEARCH_TEXT, "")
-//    }
-
     private fun render(state: SearchScreenState) {
         when (state) {
             is SearchScreenState.Loading -> showLoading()
@@ -233,11 +224,8 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-//        const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val CLICK_DEBOUNCE_DELAY = 500L
 
-//        fun createArgs(userInputSearchText: String): Bundle =
-//            bundleOf(SEARCH_TEXT to userInputSearchText)
+        private const val CLICK_DEBOUNCE_DELAY = 500L
 
     }
 

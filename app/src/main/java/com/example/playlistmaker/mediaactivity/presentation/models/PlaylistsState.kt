@@ -1,4 +1,4 @@
-package com.example.playlistmaker.mediaactivity.ui.models
+package com.example.playlistmaker.mediaactivity.presentation.models
 
 import com.example.playlistmaker.domain.models.Track
 

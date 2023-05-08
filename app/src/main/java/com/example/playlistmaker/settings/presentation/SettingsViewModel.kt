@@ -1,11 +1,12 @@
-package com.example.playlistmaker.settings.ui
+package com.example.playlistmaker.settings.presentation
 
-import com.example.playlistmaker.SingleLiveEvent
+import com.example.playlistmaker.core.SingleLiveEvent
 import android.content.Intent
 import androidx.lifecycle.*
+import com.example.playlistmaker.settings.domain.SettingsInteractor
 import com.example.playlistmaker.settings.domain.models.DarkThemeSwitcher
 import com.example.playlistmaker.settings.domain.models.ThemeSettings
-import com.example.playlistmaker.settings.ui.models.SettingsSwitcherState
+import com.example.playlistmaker.settings.presentation.models.SettingsSwitcherState
 import com.example.playlistmaker.sharing.presentation.SharingInteractor
 
 class SettingsViewModel(

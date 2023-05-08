@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.core
 
 import com.example.playlistmaker.domain.models.SearchResultStatus
 

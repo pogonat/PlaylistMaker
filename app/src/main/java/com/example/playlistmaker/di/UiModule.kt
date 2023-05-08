@@ -2,13 +2,13 @@ package com.example.playlistmaker.di
 
 import android.media.MediaPlayer
 import com.example.playlistmaker.ThemeManager
-import com.example.playlistmaker.mediaactivity.ui.FavoritesViewModel
+import com.example.playlistmaker.mediaactivity.presentation.FavoritesViewModel
 import com.example.playlistmaker.mediaactivity.ui.PlaylistsViewModel
-import com.example.playlistmaker.player.ui.PlayerViewModel
-import com.example.playlistmaker.player.ui.TrackPlayer
-import com.example.playlistmaker.player.ui.TrackPlayerImpl
-import com.example.playlistmaker.search.ui.SearchViewModel
-import com.example.playlistmaker.settings.ui.SettingsViewModel
+import com.example.playlistmaker.player.presentation.PlayerViewModel
+import com.example.playlistmaker.player.presentation.TrackPlayer
+import com.example.playlistmaker.player.presentation.TrackPlayerImpl
+import com.example.playlistmaker.search.presentation.SearchViewModel
+import com.example.playlistmaker.settings.presentation.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

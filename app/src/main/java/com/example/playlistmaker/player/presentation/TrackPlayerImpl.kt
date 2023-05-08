@@ -1,7 +1,8 @@
-package com.example.playlistmaker.player.ui
+package com.example.playlistmaker.player.presentation
 
 import android.media.MediaPlayer
-import com.example.playlistmaker.player.ui.models.PlayerState
+import com.example.playlistmaker.player.presentation.TrackPlayer
+import com.example.playlistmaker.player.presentation.models.PlayerState
 
 class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
 

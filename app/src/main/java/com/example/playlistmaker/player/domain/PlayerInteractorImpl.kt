@@ -1,10 +1,9 @@
 package com.example.playlistmaker.player.domain
 
-import com.example.playlistmaker.Resource
+import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
-import com.example.playlistmaker.player.ui.PlayerInteractor
 import java.util.concurrent.Executors
 
 class PlayerInteractorImpl(private val trackRepository: TrackPlayerRepository) : PlayerInteractor {

@@ -1,10 +1,9 @@
 package com.example.playlistmaker.search.domain
 
-import com.example.playlistmaker.Resource
+import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
-import com.example.playlistmaker.search.ui.SearchInteractor
 import java.util.concurrent.Executors
 
 class SearchInteractorImpl(private val trackRepository: TrackRepository) : SearchInteractor {

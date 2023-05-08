@@ -1,4 +1,4 @@
-package com.example.playlistmaker.settings.ui.models
+package com.example.playlistmaker.settings.presentation.models
 
 sealed class SettingsSwitcherState {
     object On: SettingsSwitcherState()

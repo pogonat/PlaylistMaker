@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSettingsBinding
-import com.example.playlistmaker.settings.ui.models.SettingsSwitcherState
-import com.example.playlistmaker.sharing.ui.AgreementFragment
+import com.example.playlistmaker.settings.presentation.SettingsViewModel
+import com.example.playlistmaker.settings.presentation.models.SettingsSwitcherState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {

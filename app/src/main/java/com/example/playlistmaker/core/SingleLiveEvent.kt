@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.core
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
@@ -12,7 +12,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
         if (hasActiveObservers()) {
-            throw IllegalStateException("Only one observer at a time may subscribe to a com.example.playlistmaker.SingleLiveEvent")
+            throw IllegalStateException("Only one observer at a time may subscribe to a com.example.playlistmaker.core.SingleLiveEvent")
         }
 
         super.observe(owner, Observer<T> { t ->
