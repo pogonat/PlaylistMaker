@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/placeholderErrorImage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/media_placeholder"
+        android:layout_height="@dimen/media_placeholder"
         android:layout_marginTop="106dp"
         android:contentDescription="@string/image_sad_emoticon"
         android:src="@drawable/nothing_found"

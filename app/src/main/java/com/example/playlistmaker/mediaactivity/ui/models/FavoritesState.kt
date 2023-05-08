@@ -7,6 +7,6 @@ sealed class FavoritesState {
     object Loading : FavoritesState()
     object Error : FavoritesState()
 
-    data class Content(val favList: ArrayList<Track>) : FavoritesState()
+    data class Content(val favList: List<Track>) : FavoritesState()
 
 }
