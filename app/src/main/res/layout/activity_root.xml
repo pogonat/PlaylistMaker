@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.RootActivity"
-    android:name="androidx.navigation.fragment.NavHostFragment"
+    app:defaultNavHost="true"
     app:navGraph="@navigation/root_navigation_graph"
-    app:defaultNavHost="true">
+    tools:context=".ui.RootActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rootFragmentContainerView"
