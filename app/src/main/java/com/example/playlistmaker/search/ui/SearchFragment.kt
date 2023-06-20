@@ -28,7 +28,8 @@ class SearchFragment : Fragment() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private lateinit var binding: FragmentSearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private val searchResultsAdapter = SearchTracksAdapter(
         object : SearchTracksAdapter.TrackClickListener {
@@ -70,12 +71,17 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(savedInstanceState != null) {
+            userInputSearchText = savedInstanceState.getString(SEARCH_TEXT, "")
+            binding.inputEditText.setText(userInputSearchText)
+        }
 
         setSearchResultsRecycler()
         setSearchHistoryRecycler()
@@ -142,6 +148,12 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         searchTextWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
+        _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT, userInputSearchText)
     }
 
     private fun setSearchHistoryRecycler() {
@@ -224,10 +236,9 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-
+        const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val CLICK_DEBOUNCE_DELAY = 500L
 
     }
-
 
 }

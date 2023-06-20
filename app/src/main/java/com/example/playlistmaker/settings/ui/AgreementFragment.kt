@@ -12,14 +12,15 @@ import com.example.playlistmaker.databinding.FragmentAgreementBinding
 
 class AgreementFragment : Fragment() {
 
-    private lateinit var binding: FragmentAgreementBinding
+    private var _binding: FragmentAgreementBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAgreementBinding.inflate(inflater, container, false)
+        _binding = FragmentAgreementBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -34,7 +35,11 @@ class AgreementFragment : Fragment() {
         binding.backNavBar.setOnClickListener{
             findNavController().navigateUp()
         }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
