@@ -32,6 +32,14 @@
         <item name="android:background">?attr/colorSecondary</item>
     </style>
 
+    <style name="MediaBackground">
+        <item name="android:background">?attr/colorSecondary</item>
+    </style>
+
+    <style name="AgreementBackground">
+        <item name="android:background">?attr/colorSecondary</item>
+    </style>
+
     <style name="ArrowBack">
         <item name="tint">?attr/colorOnSecondary</item>
     </style>
@@ -67,7 +75,7 @@
     </style>
 
     <style name="SearchBackground">
-        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:background">?attr/colorSecondary</item>
     </style>
 
     <style name="SearchBox">

@@ -3,7 +3,7 @@ package com.example.playlistmaker.search.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.databinding.TrackViewBinding
+import com.example.playlistmaker.databinding.ListItemTrackBinding
 import com.example.playlistmaker.domain.models.Track
 import kotlin.collections.ArrayList
 
@@ -16,7 +16,7 @@ class SearchTracksAdapter(private val clickListener: TrackClickListener) :
         val layoutInspector = LayoutInflater.from(parent.context)
 
         return TrackViewHolder(
-            TrackViewBinding.inflate(layoutInspector, parent, false),
+            ListItemTrackBinding.inflate(layoutInspector, parent, false),
             clickListener
         )
 

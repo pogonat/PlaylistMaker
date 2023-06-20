@@ -1,6 +1,6 @@
 package com.example.playlistmaker.data
 
-import com.example.playlistmaker.Resource
+import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.data.models.TracksResponse
 import com.example.playlistmaker.data.models.TracksSearchRequest
 import com.example.playlistmaker.domain.models.Track
