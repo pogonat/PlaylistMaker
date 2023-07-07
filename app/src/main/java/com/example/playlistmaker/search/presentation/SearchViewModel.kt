@@ -1,9 +1,7 @@
 package com.example.playlistmaker.search.presentation
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.*
+import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
@@ -12,8 +10,6 @@ import com.example.playlistmaker.search.presentation.models.SearchScreenState
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 
-    private val handler = Handler(Looper.getMainLooper())
-
     private val stateLiveData = MutableLiveData<SearchScreenState>()
 
     private var userInputSearchText: String? = null
@@ -21,11 +17,12 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     val foundTracks = mutableListOf<Track>()
     val historyTracks = initTrackHistory()
 
-    fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
+    private val trackSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { searchRequestText ->
+            searchTracks(searchRequestText)
+        }
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
+    fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     private fun searchTracks(searchRequestText: String) {
         foundTracks.clear()
@@ -45,9 +42,11 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
                                 userInputSearchText = ""
                                 renderState(SearchScreenState.ErrorConnection)
                             }
+
                             SearchResultStatus.NOTHING_FOUND -> {
                                 renderState(SearchScreenState.NothingFound)
                             }
+
                             SearchResultStatus.SUCCESS -> {
                                 renderState(
                                     SearchScreenState.Success(
@@ -64,18 +63,10 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     }
 
     fun searchDebounce(changedSearchText: String) {
-
-        if (userInputSearchText == changedSearchText) {
-            return
+        if (userInputSearchText != changedSearchText) {
+            this.userInputSearchText = changedSearchText
+            trackSearchDebounce(changedSearchText)
         }
-
-        this.userInputSearchText = changedSearchText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchTracks(changedSearchText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, postTime)
     }
 
     fun saveItem(track: Track) {
@@ -134,7 +125,6 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     companion object {
 
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
 
     }
 
