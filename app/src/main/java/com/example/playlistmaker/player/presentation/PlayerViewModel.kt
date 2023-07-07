@@ -136,12 +136,12 @@ class PlayerViewModel(
         timerJob = viewModelScope.launch {
             while(getPlayerState() == PlayerState.STATE_PLAYING) {
                 delay(300L)
-                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+                renderCurrentPosition()
             }
         }
     }
 
-    fun getCurrentPosition() {
+    private fun renderCurrentPosition() {
         if (getPlayerState() == PlayerState.STATE_COMPLETE) {
             trackPlayer.resetPlayer()
             renderPlayer(PlayerStatus.Complete)

@@ -1,8 +1,9 @@
 package com.example.playlistmaker.player.presentation
 
 import android.media.MediaPlayer
-import com.example.playlistmaker.player.presentation.TrackPlayer
 import com.example.playlistmaker.player.presentation.models.PlayerState
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
 
@@ -38,8 +39,8 @@ class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
         return playerState
     }
 
-    override fun getCurrentPosition(): Int {
-        return mediaPlayer.currentPosition
+    override fun getCurrentPosition(): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
     }
 
     override fun resetPlayer() {
