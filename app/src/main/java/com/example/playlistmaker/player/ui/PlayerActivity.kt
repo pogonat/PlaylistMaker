@@ -53,7 +53,7 @@ class PlayerActivity : AppCompatActivity() {
             render(screenState)
         }
 
-        viewModel.getPayerStateLiveData().observe(this) { playerState ->
+        viewModel.getPlayerStateLiveData().observe(this) { playerState ->
             renderPlayer(playerState)
         }
 

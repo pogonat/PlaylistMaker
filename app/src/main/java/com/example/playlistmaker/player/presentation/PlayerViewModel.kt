@@ -8,6 +8,9 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.domain.PlayerInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
@@ -18,7 +21,9 @@ class PlayerViewModel(
     private val playStatusLiveData = MutableLiveData<PlayerStatus>()
 
     fun getScreenStateLiveData(): LiveData<PlayerScreenState> = stateLiveData
-    fun getPayerStateLiveData(): LiveData<PlayerStatus> = playStatusLiveData
+    fun getPlayerStateLiveData(): LiveData<PlayerStatus> = playStatusLiveData
+
+    private var timerJob: Job? = null
 
     val foundTrack = mutableListOf<Track>()
 
@@ -95,12 +100,10 @@ class PlayerViewModel(
             }
             PlayerState.STATE_DEFAULT -> {
                 trackPlayer.preparePlayer(foundTrack[0].previewUrl)
-                trackPlayer.startPlayer()
-                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+                startPlayer()
             }
             PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
-                trackPlayer.startPlayer()
-                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+                startPlayer()
             }
             PlayerState.STATE_COMPLETE -> {
                 renderPlayer(PlayerStatus.Complete)
@@ -109,8 +112,15 @@ class PlayerViewModel(
 
     }
 
+    private fun startPlayer() {
+        trackPlayer.startPlayer()
+        renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+        startTimer()
+    }
+
     fun pausePlayer() {
         trackPlayer.pausePlayer()
+        timerJob?.cancel()
         renderPlayer(PlayerStatus.Paused(progress = trackPlayer.getCurrentPosition()))
     }
 
@@ -120,6 +130,15 @@ class PlayerViewModel(
 
     private fun getPlayerState(): PlayerState {
         return trackPlayer.getPlayerState()
+    }
+
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while(getPlayerState() == PlayerState.STATE_PLAYING) {
+                delay(300L)
+                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+            }
+        }
     }
 
     fun getCurrentPosition() {
