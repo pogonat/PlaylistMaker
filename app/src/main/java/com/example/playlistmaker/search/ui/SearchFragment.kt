@@ -3,8 +3,6 @@ package com.example.playlistmaker.search.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,8 +12,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.ui.PlayerActivity
@@ -31,37 +31,10 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val searchResultsAdapter = SearchTracksAdapter(
-        object : SearchTracksAdapter.TrackClickListener {
-            override fun onTrackClick(track: Track) {
-                if (clickDebounce()) {
-                    viewModel.saveItem(track)
-                    val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-                    val trackId = track.trackId
-                    playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    startActivity(playerIntent)
-                }
-            }
-        }
-    )
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
 
-    private val searchHistoryAdapter = SearchTracksAdapter(
-        object : SearchTracksAdapter.TrackClickListener {
-            override fun onTrackClick(track: Track) {
-                if (clickDebounce()) {
-                    viewModel.saveItem(track)
-                    val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-                    val trackId = track.trackId
-                    playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
-                    startActivity(playerIntent)
-                }
-            }
-        }
-    )
-
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
-
+    private var searchResultsAdapter: SearchTracksAdapter? = null
+    private var searchHistoryAdapter: SearchTracksAdapter? = null
 
     private var userInputSearchText = ""
     private var searchTextWatcher: TextWatcher? = null
@@ -83,6 +56,30 @@ class SearchFragment : Fragment() {
             binding.inputEditText.setText(userInputSearchText)
         }
 
+        onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+            viewModel.saveItem(track)
+            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
+            val trackId = track.trackId
+            playerIntent.putExtra(PlayerActivity.KEY_BUNDLE, trackId)
+            startActivity(playerIntent)
+        }
+
+        searchResultsAdapter = SearchTracksAdapter(
+            object : SearchTracksAdapter.TrackClickListener {
+                override fun onTrackClick(track: Track) {
+                    onTrackClickDebounce(track)
+                }
+            }
+        )
+
+        searchHistoryAdapter = SearchTracksAdapter(
+            object : SearchTracksAdapter.TrackClickListener {
+                override fun onTrackClick(track: Track) {
+                    onTrackClickDebounce(track)
+                }
+            }
+        )
+
         setSearchResultsRecycler()
         setSearchHistoryRecycler()
 
@@ -92,7 +89,7 @@ class SearchFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.searchHistory.isVisible = (binding.inputEditText.hasFocus() &&
-                        s?.isEmpty() == true && searchHistoryAdapter.tracks.isNotEmpty())
+                        s?.isEmpty() == true && searchHistoryAdapter!!.tracks.isNotEmpty())
 
                 binding.clearIcon.isVisible = !s.isNullOrEmpty()
                 userInputSearchText = s?.toString() ?: ""
@@ -147,6 +144,8 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        searchResultsAdapter = null
+        searchHistoryAdapter = null
         searchTextWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
         _binding = null
     }
@@ -211,12 +210,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun showSearchResults(foundTracks: List<Track>, historyTracks: List<Track>) {
-        searchResultsAdapter.tracks.clear()
-        searchResultsAdapter.tracks.addAll(foundTracks)
-        searchResultsAdapter.notifyDataSetChanged()
-        searchHistoryAdapter.tracks.clear()
-        searchHistoryAdapter.tracks.addAll(historyTracks)
-        searchHistoryAdapter.notifyDataSetChanged()
+        searchResultsAdapter?.tracks?.clear()
+        searchResultsAdapter?.tracks?.addAll(foundTracks)
+        searchResultsAdapter?.notifyDataSetChanged()
+        searchHistoryAdapter?.tracks?.clear()
+        searchHistoryAdapter?.tracks?.addAll(historyTracks)
+        searchHistoryAdapter?.notifyDataSetChanged()
 
 
         binding.progressBar.isVisible = false
@@ -226,18 +225,9 @@ class SearchFragment : Fragment() {
         binding.recyclerViewResultsItems.isVisible = true
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val CLICK_DEBOUNCE_DELAY = 500L
+        private const val CLICK_DEBOUNCE_DELAY = 300L
 
     }
 
