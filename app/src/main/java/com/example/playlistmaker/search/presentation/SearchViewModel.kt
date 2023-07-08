@@ -7,6 +7,7 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.search.domain.SearchInteractor
 import com.example.playlistmaker.search.presentation.models.SearchScreenState
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 
@@ -14,8 +15,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     private var userInputSearchText: String? = null
 
-    val foundTracks = mutableListOf<Track>()
-    val historyTracks = initTrackHistory()
+    private val foundTracks = mutableListOf<Track>()
+    private val historyTracks = initTrackHistory()
 
     private val trackSearchDebounce =
         debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { searchRequestText ->
@@ -25,40 +26,47 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     private fun searchTracks(searchRequestText: String) {
+
         foundTracks.clear()
+
         if (searchRequestText.isNotEmpty()) {
+
             renderState(SearchScreenState.Loading)
-            searchInteractor.searchTracks(
-                searchRequestText,
-                object : SearchInteractor.TracksConsumer {
 
-                    override fun consume(searchTrackResult: SearchTrackResult) {
-                        if (searchTrackResult.resultTrackList != null) {
-                            foundTracks.addAll(searchTrackResult.resultTrackList)
-                        }
-
-                        when (searchTrackResult.searchResultStatus) {
-                            SearchResultStatus.ERROR_CONNECTION -> {
-                                userInputSearchText = ""
-                                renderState(SearchScreenState.ErrorConnection)
-                            }
-
-                            SearchResultStatus.NOTHING_FOUND -> {
-                                renderState(SearchScreenState.NothingFound)
-                            }
-
-                            SearchResultStatus.SUCCESS -> {
-                                renderState(
-                                    SearchScreenState.Success(
-                                        foundTracks = foundTracks,
-                                        historyTracks = historyTracks
-                                    )
-                                )
-                            }
-                        }
-
+            viewModelScope.launch {
+                searchInteractor
+                    .searchTracks(searchRequestText)
+                    .collect { searchResult ->
+                        processResult(searchResult)
                     }
-                })
+            }
+        }
+    }
+
+    private fun processResult(searchResult: SearchTrackResult) {
+
+        if (searchResult.resultTrackList != null) {
+            foundTracks.addAll(searchResult.resultTrackList)
+        }
+
+        when (searchResult.searchResultStatus) {
+            SearchResultStatus.ERROR_CONNECTION -> {
+                userInputSearchText = ""
+                renderState(SearchScreenState.ErrorConnection)
+            }
+
+            SearchResultStatus.NOTHING_FOUND -> {
+                renderState(SearchScreenState.NothingFound)
+            }
+
+            SearchResultStatus.SUCCESS -> {
+                renderState(
+                    SearchScreenState.Success(
+                        foundTracks = foundTracks,
+                        historyTracks = historyTracks
+                    )
+                )
+            }
         }
     }
 

@@ -25,10 +25,10 @@ class PlayerViewModel(
 
     private var timerJob: Job? = null
 
-    val foundTrack = mutableListOf<Track>()
+    private var foundTrack: Track? = null
 
     fun loadTrack(trackId: String) {
-        foundTrack.clear()
+        foundTrack = null
         renderState(PlayerScreenState.Loading)
         getTrackById(trackId)
     }
@@ -42,55 +42,52 @@ class PlayerViewModel(
     }
 
     private fun getTrackById(trackId: String) {
-        playerInteractor.getTrackById(
-            trackId,
-            object : PlayerInteractor.PlayerConsumer {
-                override fun consume(searchTrackResult: SearchTrackResult) {
-                    if (searchTrackResult.resultTrackList != null) {
-                        foundTrack.add(searchTrackResult.resultTrackList[0])
-                    }
-
-                    when (searchTrackResult.searchResultStatus) {
-                        SearchResultStatus.ERROR_CONNECTION -> {
+        if (trackId.isNotEmpty()) {
+            viewModelScope.launch {
+                playerInteractor
+                    .getTrackById(trackId)
+                    .collect { result ->
+                        if (result == null) {
                             searchTrackById(trackId)
-                        }
-                        SearchResultStatus.NOTHING_FOUND -> {
-                            searchTrackById(trackId)
-                        }
-                        SearchResultStatus.SUCCESS -> {
-                            renderState(PlayerScreenState.Content(foundTrack[0]))
-                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
+                        } else {
+                            foundTrack = result
+                            renderState(PlayerScreenState.Content(result))
+                            trackPlayer.preparePlayer(result.previewUrl)
                         }
                     }
-                }
             }
-        )
+        }
     }
 
     private fun searchTrackById(trackId: String) {
-        playerInteractor.getTrackById(
-            trackId,
-            object : PlayerInteractor.PlayerConsumer {
-                override fun consume(searchTrackResult: SearchTrackResult) {
-                    if (searchTrackResult.resultTrackList != null) {
-                        foundTrack.add(searchTrackResult.resultTrackList[0])
-                    }
+        viewModelScope.launch {
+            playerInteractor
+                .searchTrackById(trackId)
+                .collect { searchResult ->
+                    processResult(searchResult)
+                }
+        }
+    }
 
-                    when (searchTrackResult.searchResultStatus) {
-                        SearchResultStatus.ERROR_CONNECTION -> {
-                            renderState(PlayerScreenState.Destroy)
-                        }
-                        SearchResultStatus.NOTHING_FOUND -> {
-                            renderState(PlayerScreenState.Destroy)
-                        }
-                        SearchResultStatus.SUCCESS -> {
-                            renderState(PlayerScreenState.Content(foundTrack[0]))
-                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
-                        }
-                    }
+    private fun processResult(searchResult: SearchTrackResult) {
+
+        when (searchResult.searchResultStatus) {
+            SearchResultStatus.ERROR_CONNECTION -> {
+                renderState(PlayerScreenState.Destroy)
+            }
+
+            SearchResultStatus.NOTHING_FOUND -> {
+                renderState(PlayerScreenState.Destroy)
+            }
+
+            SearchResultStatus.SUCCESS -> {
+                if (searchResult.resultTrackList != null) {
+                    foundTrack = searchResult.resultTrackList[0]
+                    renderState(PlayerScreenState.Content(foundTrack!!))
+                    trackPlayer.preparePlayer(foundTrack!!.previewUrl)
                 }
             }
-        )
+        }
     }
 
     fun playBackControl() {
@@ -98,13 +95,16 @@ class PlayerViewModel(
             PlayerState.STATE_PLAYING -> {
                 pausePlayer()
             }
+
             PlayerState.STATE_DEFAULT -> {
-                trackPlayer.preparePlayer(foundTrack[0].previewUrl)
+                trackPlayer.preparePlayer(foundTrack!!.previewUrl)
                 startPlayer()
             }
+
             PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
                 startPlayer()
             }
+
             PlayerState.STATE_COMPLETE -> {
                 renderPlayer(PlayerStatus.Complete)
             }
@@ -134,7 +134,7 @@ class PlayerViewModel(
 
     private fun startTimer() {
         timerJob = viewModelScope.launch {
-            while(getPlayerState() == PlayerState.STATE_PLAYING) {
+            while (getPlayerState() == PlayerState.STATE_PLAYING) {
                 delay(300L)
                 renderCurrentPosition()
             }
