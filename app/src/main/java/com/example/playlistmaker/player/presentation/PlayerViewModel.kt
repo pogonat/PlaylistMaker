@@ -8,6 +8,9 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.domain.PlayerInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
@@ -18,12 +21,14 @@ class PlayerViewModel(
     private val playStatusLiveData = MutableLiveData<PlayerStatus>()
 
     fun getScreenStateLiveData(): LiveData<PlayerScreenState> = stateLiveData
-    fun getPayerStateLiveData(): LiveData<PlayerStatus> = playStatusLiveData
+    fun getPlayerStateLiveData(): LiveData<PlayerStatus> = playStatusLiveData
 
-    val foundTrack = mutableListOf<Track>()
+    private var timerJob: Job? = null
+
+    private var foundTrack: Track? = null
 
     fun loadTrack(trackId: String) {
-        foundTrack.clear()
+        foundTrack = null
         renderState(PlayerScreenState.Loading)
         getTrackById(trackId)
     }
@@ -37,55 +42,52 @@ class PlayerViewModel(
     }
 
     private fun getTrackById(trackId: String) {
-        playerInteractor.getTrackById(
-            trackId,
-            object : PlayerInteractor.PlayerConsumer {
-                override fun consume(searchTrackResult: SearchTrackResult) {
-                    if (searchTrackResult.resultTrackList != null) {
-                        foundTrack.add(searchTrackResult.resultTrackList[0])
-                    }
-
-                    when (searchTrackResult.searchResultStatus) {
-                        SearchResultStatus.ERROR_CONNECTION -> {
+        if (trackId.isNotEmpty()) {
+            viewModelScope.launch {
+                playerInteractor
+                    .getTrackById(trackId)
+                    .collect { result ->
+                        if (result == null) {
                             searchTrackById(trackId)
-                        }
-                        SearchResultStatus.NOTHING_FOUND -> {
-                            searchTrackById(trackId)
-                        }
-                        SearchResultStatus.SUCCESS -> {
-                            renderState(PlayerScreenState.Content(foundTrack[0]))
-                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
+                        } else {
+                            foundTrack = result
+                            renderState(PlayerScreenState.Content(result))
+                            trackPlayer.preparePlayer(result.previewUrl)
                         }
                     }
-                }
             }
-        )
+        }
     }
 
     private fun searchTrackById(trackId: String) {
-        playerInteractor.getTrackById(
-            trackId,
-            object : PlayerInteractor.PlayerConsumer {
-                override fun consume(searchTrackResult: SearchTrackResult) {
-                    if (searchTrackResult.resultTrackList != null) {
-                        foundTrack.add(searchTrackResult.resultTrackList[0])
-                    }
+        viewModelScope.launch {
+            playerInteractor
+                .searchTrackById(trackId)
+                .collect { searchResult ->
+                    processResult(searchResult)
+                }
+        }
+    }
 
-                    when (searchTrackResult.searchResultStatus) {
-                        SearchResultStatus.ERROR_CONNECTION -> {
-                            renderState(PlayerScreenState.Destroy)
-                        }
-                        SearchResultStatus.NOTHING_FOUND -> {
-                            renderState(PlayerScreenState.Destroy)
-                        }
-                        SearchResultStatus.SUCCESS -> {
-                            renderState(PlayerScreenState.Content(foundTrack[0]))
-                            trackPlayer.preparePlayer(foundTrack[0].previewUrl)
-                        }
-                    }
+    private fun processResult(searchResult: SearchTrackResult) {
+
+        when (searchResult.searchResultStatus) {
+            SearchResultStatus.ERROR_CONNECTION -> {
+                renderState(PlayerScreenState.Destroy)
+            }
+
+            SearchResultStatus.NOTHING_FOUND -> {
+                renderState(PlayerScreenState.Destroy)
+            }
+
+            SearchResultStatus.SUCCESS -> {
+                if (searchResult.resultTrackList != null) {
+                    foundTrack = searchResult.resultTrackList[0]
+                    renderState(PlayerScreenState.Content(foundTrack!!))
+                    trackPlayer.preparePlayer(foundTrack!!.previewUrl)
                 }
             }
-        )
+        }
     }
 
     fun playBackControl() {
@@ -93,15 +95,16 @@ class PlayerViewModel(
             PlayerState.STATE_PLAYING -> {
                 pausePlayer()
             }
+
             PlayerState.STATE_DEFAULT -> {
-                trackPlayer.preparePlayer(foundTrack[0].previewUrl)
-                trackPlayer.startPlayer()
-                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+                trackPlayer.preparePlayer(foundTrack!!.previewUrl)
+                startPlayer()
             }
+
             PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
-                trackPlayer.startPlayer()
-                renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+                startPlayer()
             }
+
             PlayerState.STATE_COMPLETE -> {
                 renderPlayer(PlayerStatus.Complete)
             }
@@ -109,8 +112,15 @@ class PlayerViewModel(
 
     }
 
+    private fun startPlayer() {
+        trackPlayer.startPlayer()
+        renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
+        startTimer()
+    }
+
     fun pausePlayer() {
         trackPlayer.pausePlayer()
+        timerJob?.cancel()
         renderPlayer(PlayerStatus.Paused(progress = trackPlayer.getCurrentPosition()))
     }
 
@@ -122,13 +132,26 @@ class PlayerViewModel(
         return trackPlayer.getPlayerState()
     }
 
-    fun getCurrentPosition() {
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (getPlayerState() == PlayerState.STATE_PLAYING) {
+                delay(TIMER_DELAY)
+                renderCurrentPosition()
+            }
+        }
+    }
+
+    private fun renderCurrentPosition() {
         if (getPlayerState() == PlayerState.STATE_COMPLETE) {
             trackPlayer.resetPlayer()
             renderPlayer(PlayerStatus.Complete)
         } else {
             renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
         }
+    }
+
+    companion object {
+        private const val TIMER_DELAY = 300L
     }
 
 }

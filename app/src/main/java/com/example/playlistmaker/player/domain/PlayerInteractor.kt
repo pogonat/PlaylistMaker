@@ -1,14 +1,12 @@
 package com.example.playlistmaker.player.domain
 
 import com.example.playlistmaker.domain.models.SearchTrackResult
+import com.example.playlistmaker.domain.models.Track
+import kotlinx.coroutines.flow.Flow
 
 interface PlayerInteractor {
 
-    fun searchTrackById(trackId: String, consumer: PlayerConsumer)
-    fun getTrackById(trackId: String, consumer: PlayerConsumer)
-
-    interface PlayerConsumer {
-        fun consume(searchTrackResult: SearchTrackResult)
-    }
+    fun searchTrackById(trackId: String): Flow<SearchTrackResult>
+    fun getTrackById(trackId: String): Flow<Track?>
 
 }

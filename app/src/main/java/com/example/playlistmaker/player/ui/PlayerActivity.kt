@@ -1,8 +1,6 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -14,21 +12,12 @@ import com.example.playlistmaker.player.presentation.models.PlayerStatus
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.presentation.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class PlayerActivity : AppCompatActivity() {
 
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding: ActivityPlayerBinding
-
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val setProgressText = Runnable {
-        progressTextRenew()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +28,7 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.loadTrack(getTrackIdFromIntent())
 
         binding.playControlButton.setOnClickListener {
-            if (clickDebounce()) {
-                handler.removeCallbacks(setProgressText)
-                viewModel.playBackControl()
-            }
+            viewModel.playBackControl()
         }
 
         binding.returnArrow.setOnClickListener {
@@ -53,7 +39,7 @@ class PlayerActivity : AppCompatActivity() {
             render(screenState)
         }
 
-        viewModel.getPayerStateLiveData().observe(this) { playerState ->
+        viewModel.getPlayerStateLiveData().observe(this) { playerState ->
             renderPlayer(playerState)
         }
 
@@ -61,13 +47,11 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(setProgressText)
         viewModel.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(setProgressText)
         viewModel.releasePlayer()
     }
 
@@ -114,11 +98,9 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun showPlayerProgress(progress: Int) {
+    private fun showPlayerProgress(progress: String) {
         binding.playControlButton.setImageResource(R.drawable.pause_track)
-        binding.timeRemained.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(progress)
-        handler.postDelayed(setProgressText, SET_PROGRESS_TEXT_DELAY)
+        binding.timeRemained.text = progress
     }
 
     private fun enablePlayButton() {
@@ -126,20 +108,14 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun updatePlayerButton() {
-        handler.removeCallbacks(setProgressText)
         binding.playControlButton.setImageResource(R.drawable.play_track)
     }
 
     private fun stopProgressUpdate() {
-        handler.removeCallbacks(setProgressText)
 
         binding.playControlButton.setImageResource(R.drawable.play_track)
 
-        binding.timeRemained.text = binding.duration.text
-    }
-
-    private fun progressTextRenew() {
-        viewModel.getCurrentPosition()
+        binding.timeRemained.text = getString(R.string.player_completed)
     }
 
     private fun finishIfTrackNull() {
@@ -147,18 +123,7 @@ class PlayerActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
     companion object {
         const val KEY_BUNDLE = "KEY_BUNDLE"
-        private const val SET_PROGRESS_TEXT_DELAY = 500L
-        private const val CLICK_DEBOUNCE_DELAY = 500L
     }
 }

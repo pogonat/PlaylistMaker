@@ -4,32 +4,24 @@ import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SearchInteractorImpl(private val trackRepository: TrackRepository) : SearchInteractor {
 
-    private val executor = Executors.newCachedThreadPool()
-
-    override fun searchTracks(searchText: String, consumer: SearchInteractor.TracksConsumer) {
-        executor.execute {
-            when (val resource = trackRepository.searchTracks(searchText)) {
+    override fun searchTracks(searchText: String): Flow<SearchTrackResult> {
+        return trackRepository.searchTracks(searchText).map { result ->
+            when (result) {
                 is Resource.Success -> {
-                    if (resource.data!!.isEmpty()) {
-                        consumer.consume(
-                            SearchTrackResult(
-                                SearchResultStatus.NOTHING_FOUND,
-                                resource.data
-                            )
-                        )
-                    } else consumer.consume(
-                        SearchTrackResult(
-                            SearchResultStatus.SUCCESS,
-                            resource.data
-                        )
-                    )
+                    if (result.data?.isNotEmpty() == true) {
+                        SearchTrackResult(SearchResultStatus.SUCCESS, result.data)
+                    } else {
+                        SearchTrackResult(SearchResultStatus.NOTHING_FOUND,result.data)
+                    }
                 }
+
                 is Resource.Error -> {
-                    consumer.consume(SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null))
+                    SearchTrackResult(SearchResultStatus.ERROR_CONNECTION, null)
                 }
             }
         }
