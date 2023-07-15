@@ -115,7 +115,7 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.playControlButton.setImageResource(R.drawable.play_track)
 
-        binding.timeRemained.text = "00:00"
+        binding.timeRemained.text = getString(R.string.player_completed)
     }
 
     private fun finishIfTrackNull() {

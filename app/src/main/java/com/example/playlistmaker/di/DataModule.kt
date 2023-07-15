@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.example.playlistmaker.data.NetworkSearch
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.data.models.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.network.NetworkSearchItunesApi
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.storage.TrackStorageImpl
@@ -43,6 +44,10 @@ val dataModule = module {
         Gson()
     }
 
+    single<TracksResponseToTrackMapper>  {
+        TracksResponseToTrackMapper()
+    }
+
     single<TrackStorage> {
         TrackStorageImpl(gson = get(), sharedPrefs = get())
     }
@@ -52,11 +57,11 @@ val dataModule = module {
     }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(networkSearch = get(), trackStorage = get())
+        TrackRepositoryImpl(networkSearch = get(), trackStorage = get(), mapper = get())
     }
 
     single<TrackPlayerRepository> {
-        TrackRepositoryImpl(networkSearch = get(), trackStorage = get())
+        TrackRepositoryImpl(networkSearch = get(), trackStorage = get(), mapper = get())
     }
 
     single<SettingsStorage> {

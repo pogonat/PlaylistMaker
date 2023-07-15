@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.playlistmaker.data.NetworkSearch
+import com.example.playlistmaker.data.models.NetworkResultCode
 import com.example.playlistmaker.data.models.Response
 import com.example.playlistmaker.data.models.TracksSearchRequest
 import kotlinx.coroutines.Dispatchers
@@ -14,42 +15,42 @@ class RetrofitNetworkClient(
     private val context: Context
 ) : NetworkSearch {
 
-    override suspend fun searchTracks(dto: Any): Response {
+    override suspend fun searchTracks(dto: TracksSearchRequest): Response {
 
         if (isConnected() == false) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NetworkResultCode.CONNECTION_ERROR }
         }
 
-        if (dto !is TracksSearchRequest) {
-            return Response().apply { resultCode = 400 }
-        }
+//        if (dto !is TracksSearchRequest) {
+//            return Response().apply { resultCode = NetworkResultCode.BAD_REQUEST }
+//        }
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = itunesApi.search(dto.expression)
-                response.apply { resultCode = 200 }
+                response.apply { resultCode = NetworkResultCode.SUCCESS }
             } catch (e: Throwable) {
-                Response().apply { resultCode = 500 }
+                Response().apply { resultCode = NetworkResultCode.SERVER_ERROR }
             }
         }
     }
 
-    override suspend fun searchTrackById(dto: Any): Response {
+    override suspend fun searchTrackById(dto: TracksSearchRequest): Response {
 
         if (isConnected() == false) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NetworkResultCode.CONNECTION_ERROR }
         }
 
-        if (dto !is TracksSearchRequest) {
-            return Response().apply { resultCode = 400 }
-        }
+//        if (dto !is TracksSearchRequest) {
+//            return Response().apply { resultCode = NetworkResultCode.BAD_REQUEST }
+//        }
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = itunesApi.getTrackDetails(dto.expression)
-                response.apply { resultCode = 200 }
+                response.apply { resultCode = NetworkResultCode.SUCCESS }
             } catch (e: Throwable) {
-                Response().apply { resultCode = 500 }
+                Response().apply { resultCode = NetworkResultCode.SERVER_ERROR }
             }
         }
     }

@@ -135,7 +135,7 @@ class PlayerViewModel(
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (getPlayerState() == PlayerState.STATE_PLAYING) {
-                delay(300L)
+                delay(TIMER_DELAY)
                 renderCurrentPosition()
             }
         }
@@ -148,6 +148,10 @@ class PlayerViewModel(
         } else {
             renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
         }
+    }
+
+    companion object {
+        private const val TIMER_DELAY = 300L
     }
 
 }
