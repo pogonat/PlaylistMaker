@@ -3,7 +3,7 @@ package com.example.playlistmaker.data
 import com.example.playlistmaker.core.Resource
 import com.example.playlistmaker.data.models.NetworkResultCode
 import com.example.playlistmaker.data.models.TracksResponse
-import com.example.playlistmaker.data.models.TracksResponseToTrackMapper
+import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.models.TracksSearchRequest
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus

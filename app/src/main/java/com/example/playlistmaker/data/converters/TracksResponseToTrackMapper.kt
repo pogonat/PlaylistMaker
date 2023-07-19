@@ -1,6 +1,7 @@
-package com.example.playlistmaker.data.models
+package com.example.playlistmaker.data.converters
 
 import com.example.playlistmaker.core.DateTimeUtil
+import com.example.playlistmaker.data.models.TracksResponse
 import com.example.playlistmaker.domain.models.Track
 
 class TracksResponseToTrackMapper: (TracksResponse) -> List<Track> {

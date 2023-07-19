@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.example.playlistmaker.data.NetworkSearch
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.TrackStorage
-import com.example.playlistmaker.data.models.TracksResponseToTrackMapper
+import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.network.NetworkSearchItunesApi
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.storage.TrackStorageImpl
