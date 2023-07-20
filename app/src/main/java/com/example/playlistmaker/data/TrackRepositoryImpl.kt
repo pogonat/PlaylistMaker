@@ -5,6 +5,7 @@ import com.example.playlistmaker.data.models.NetworkResultCode
 import com.example.playlistmaker.data.models.TracksResponse
 import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.models.TracksSearchRequest
+import com.example.playlistmaker.data.network.NetworkSearch
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.player.domain.TrackPlayerRepository

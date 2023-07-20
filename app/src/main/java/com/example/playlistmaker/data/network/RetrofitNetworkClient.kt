@@ -3,7 +3,6 @@ package com.example.playlistmaker.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.example.playlistmaker.data.NetworkSearch
 import com.example.playlistmaker.data.models.NetworkResultCode
 import com.example.playlistmaker.data.models.Response
 import com.example.playlistmaker.data.models.TracksSearchRequest
