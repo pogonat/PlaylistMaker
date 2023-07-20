@@ -8,9 +8,9 @@ interface SearchInteractor {
 
     fun searchTracks(searchText: String): Flow<SearchTrackResult>
 
-    fun saveTrack(track: Track): ArrayList<Track>
+    fun saveTrack(track: Track)
 
-    fun getTracksHistory(): ArrayList<Track>
+    fun getTracksHistory(): Flow<ArrayList<Track>>
 
     fun clearTracksHistory()
 

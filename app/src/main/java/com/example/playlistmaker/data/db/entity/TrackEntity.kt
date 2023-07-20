@@ -39,6 +39,9 @@ data class TrackEntity(
     val trackTime: String?,
 
     @ColumnInfo(name = "track_sample_url")
-    val previewUrl: String?
+    val previewUrl: String?,
+
+    @ColumnInfo(name = "created_at")
+    val createdTimeStamp: Long
 
 )

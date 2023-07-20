@@ -30,7 +30,7 @@ class TrackStorageImpl(
         return tracksHistory
     }
 
-    override fun saveTrack(newTrack: Track): ArrayList<Track> {
+    override fun saveTrack(newTrack: Track) {
         val tracksHistory: ArrayList<Track> = getTracksHistory()
         for (track in tracksHistory) {
             if (track.trackId == newTrack.trackId) {
@@ -45,7 +45,6 @@ class TrackStorageImpl(
         sharedPrefs.edit()
             .putString(storageHistoryKey, gson.toJson(tracksHistory))
             .apply()
-        return tracksHistory
     }
 
     override fun deleteItems() {

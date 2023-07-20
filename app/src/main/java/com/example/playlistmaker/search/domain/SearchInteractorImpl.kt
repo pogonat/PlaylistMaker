@@ -27,11 +27,11 @@ class SearchInteractorImpl(private val trackRepository: TrackRepository) : Searc
         }
     }
 
-    override fun saveTrack(track: Track): ArrayList<Track> {
-        return trackRepository.saveTrack(track)
+    override fun saveTrack(track: Track) {
+        trackRepository.saveTrack(track)
     }
 
-    override fun getTracksHistory(): ArrayList<Track> {
+    override fun getTracksHistory(): Flow<ArrayList<Track>> {
         return trackRepository.getTracksHistory()
     }
 
