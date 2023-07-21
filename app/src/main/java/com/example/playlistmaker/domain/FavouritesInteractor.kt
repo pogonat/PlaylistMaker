@@ -7,6 +7,8 @@ interface FavouritesInteractor {
 
     fun getFavourites(): Flow<List<Track>>
 
-    fun toggleFavourite(track: Track)
+    suspend fun saveFavourite(track: Track)
+
+    suspend fun deleteFavourite(track: Track)
 
 }

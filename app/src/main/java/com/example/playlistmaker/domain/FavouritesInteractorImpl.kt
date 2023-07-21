@@ -8,6 +8,13 @@ class FavouritesInteractorImpl(private val favoritesRepository: FavouritesReposi
         return favoritesRepository.getFavourites()
     }
 
-    override fun toggleFavourite(track: Track) {
+    override suspend fun saveFavourite(track: Track) {
+        favoritesRepository.addToFavourites(track)
     }
+
+    override suspend fun deleteFavourite(track: Track) {
+        favoritesRepository.removeFromFavourites(track)
+    }
+
+
 }

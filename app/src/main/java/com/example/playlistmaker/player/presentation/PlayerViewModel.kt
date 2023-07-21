@@ -1,6 +1,8 @@
 package com.example.playlistmaker.player.presentation
 
 import androidx.lifecycle.*
+import com.example.playlistmaker.core.debounce
+import com.example.playlistmaker.domain.FavouritesInteractor
 import com.example.playlistmaker.player.presentation.models.PlayerScreenState
 import com.example.playlistmaker.player.presentation.models.PlayerState
 import com.example.playlistmaker.player.presentation.models.PlayerStatus
@@ -14,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val trackPlayer: TrackPlayer
+    private val trackPlayer: TrackPlayer,
+    private val favouritesInteractor: FavouritesInteractor
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerScreenState>()
@@ -26,6 +29,11 @@ class PlayerViewModel(
     private var timerJob: Job? = null
 
     private var foundTrack: Track? = null
+
+    private val favouriteDebounce =
+        debounce<Track>(FAV_DEBOUNCE_DELAY, viewModelScope, true) { track ->
+            toggleFavourite(track)
+        }
 
     fun loadTrack(trackId: String) {
         foundTrack = null
@@ -112,6 +120,26 @@ class PlayerViewModel(
 
     }
 
+    fun toggleFavouriteDebounce(track: Track) {
+        favouriteDebounce(track)
+    }
+
+    private fun toggleFavourite(track: Track) {
+        when (track.isFavourite) {
+            true -> viewModelScope.launch {
+                favouritesInteractor.deleteFavourite(track)
+                track.isFavourite = false
+                renderState(PlayerScreenState.Content(track))
+            }
+
+            false -> viewModelScope.launch {
+                favouritesInteractor.saveFavourite(track)
+                track.isFavourite = true
+                renderState(PlayerScreenState.Content(track))
+            }
+        }
+    }
+
     private fun startPlayer() {
         trackPlayer.startPlayer()
         renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
@@ -152,6 +180,7 @@ class PlayerViewModel(
 
     companion object {
         private const val TIMER_DELAY = 300L
+        private const val FAV_DEBOUNCE_DELAY = 2000L
     }
 
 }
