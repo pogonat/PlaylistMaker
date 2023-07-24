@@ -16,7 +16,10 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     private var userInputSearchText: String? = null
 
     private val foundTracks = mutableListOf<Track>()
-    private val historyTracks = initTrackHistory()
+    private val historyTracks = mutableListOf<Track>()
+    init {
+        setTracksHistory()
+    }
 
     private val trackSearchDebounce =
         debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { searchRequestText ->
@@ -78,31 +81,31 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     }
 
     fun saveItem(track: Track) {
-        val history = searchInteractor.saveTrack(track)
-        historyTracks.clear()
-        historyTracks.addAll(history)
-        renderState(
-            SearchScreenState.Success(
-                foundTracks = foundTracks,
-                historyTracks = historyTracks
-            )
-        )
+        searchInteractor.saveTrack(track)
+        getTracksHistory()
     }
-
-    private fun initTrackHistory(): MutableList<Track> {
-        return searchInteractor.getTracksHistory()
+    private fun setTracksHistory() {
+        viewModelScope.launch {
+            searchInteractor.getTracksHistory().collect { history ->
+                historyTracks.clear()
+                historyTracks.addAll(history)
+            }
+        }
     }
 
     fun getTracksHistory() {
-        val history = searchInteractor.getTracksHistory()
-        historyTracks.clear()
-        historyTracks.addAll(history)
-        renderState(
-            SearchScreenState.Success(
-                foundTracks = foundTracks,
-                historyTracks = historyTracks
-            )
-        )
+        viewModelScope.launch {
+            searchInteractor.getTracksHistory().collect { history ->
+                historyTracks.clear()
+                historyTracks.addAll(history)
+                renderState(
+                    SearchScreenState.Success(
+                        foundTracks = foundTracks,
+                        historyTracks = historyTracks
+                    )
+                )
+            }
+        }
     }
 
     fun clearTracksHistory() {

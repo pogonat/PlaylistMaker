@@ -2,8 +2,8 @@ package com.example.playlistmaker.di
 
 import android.media.MediaPlayer
 import com.example.playlistmaker.ThemeManager
-import com.example.playlistmaker.mediaactivity.presentation.FavoritesViewModel
-import com.example.playlistmaker.mediaactivity.ui.PlaylistsViewModel
+import com.example.playlistmaker.media.presentation.FavouritesViewModel
+import com.example.playlistmaker.media.presentation.PlaylistsViewModel
 import com.example.playlistmaker.player.presentation.PlayerViewModel
 import com.example.playlistmaker.player.presentation.TrackPlayer
 import com.example.playlistmaker.player.presentation.TrackPlayerImpl
@@ -23,7 +23,7 @@ val uiModule = module {
     }
 
     viewModel<PlayerViewModel> {
-        PlayerViewModel(playerInteractor = get(), trackPlayer = get())
+        PlayerViewModel(playerInteractor = get(), trackPlayer = get(), favouritesInteractor = get())
     }
 
     viewModel<SearchViewModel> {
@@ -38,8 +38,8 @@ val uiModule = module {
         PlaylistsViewModel()
     }
 
-    viewModel<FavoritesViewModel> {
-        FavoritesViewModel()
+    viewModel<FavouritesViewModel> {
+        FavouritesViewModel(favInteractor = get())
     }
 
     single {

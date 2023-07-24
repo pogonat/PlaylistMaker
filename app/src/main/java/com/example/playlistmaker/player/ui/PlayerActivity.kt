@@ -19,6 +19,8 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding: ActivityPlayerBinding
 
+    private lateinit var track: Track
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,6 +35,10 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.returnArrow.setOnClickListener {
             finish()
+        }
+
+        binding.favlistButton.setOnClickListener{
+            viewModel.toggleFavouriteDebounce(track)
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
@@ -72,21 +78,30 @@ class PlayerActivity : AppCompatActivity() {
         Toast.makeText(this, "Loading Track", Toast.LENGTH_SHORT).show()
     }
 
-    private fun showContent(track: Track) {
-        binding.trackTitle.text = track.trackName
-        binding.artist.text = track.artistName
-        binding.duration.text = track.trackTime
+    private fun showContent(foundTrack: Track) {
+        track = foundTrack
+
+        binding.trackTitle.text = foundTrack.trackName
+        binding.artist.text = foundTrack.artistName
+        binding.duration.text = foundTrack.trackTime
         binding.timeRemained.text = binding.duration.text
-        binding.albumCollection.text = track.collectionName
-        binding.year.text = track.collectionYear
-        binding.genre.text = track.primaryGenreName
-        binding.country.text = track.country
+        binding.albumCollection.text = foundTrack.collectionName
+        binding.year.text = foundTrack.collectionYear
+        binding.genre.text = foundTrack.primaryGenreName
+        binding.country.text = foundTrack.country
         Glide.with(binding.artworkLarge)
-            .load(track.largeArtworkUrl)
+            .load(foundTrack.largeArtworkUrl)
             .centerCrop()
             .transform(RoundedCorners(5))
             .placeholder(R.drawable.placeholder_image)
             .into(binding.artworkLarge)
+
+        if (track.isFavourite) {
+            binding.favlistButton.setImageResource(R.drawable.remove_favlist_icon)
+        } else {
+            binding.favlistButton.setImageResource(R.drawable.add_favlist_icon)
+        }
+
     }
 
     private fun renderPlayer(playerStatus: PlayerStatus) {

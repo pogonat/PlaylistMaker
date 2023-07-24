@@ -1,4 +1,4 @@
-package com.example.playlistmaker.mediaactivity.ui
+package com.example.playlistmaker.media.ui
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -14,7 +14,7 @@ class MediaViewPagerAdapter(supportFragmentManager: FragmentManager, lifecycle: 
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> FavoritesFragment.newInstance()
+            0 -> FavouritesFragment.newInstance()
             else -> PlaylistsFragment.newInstance()
         }
     }

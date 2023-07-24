@@ -1,4 +1,4 @@
-package com.example.playlistmaker.mediaactivity.ui
+package com.example.playlistmaker.media.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,20 +6,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.example.playlistmaker.databinding.FragmentFavoritesBinding
-import com.example.playlistmaker.mediaactivity.presentation.models.FavoritesState
-import com.example.playlistmaker.mediaactivity.presentation.FavoritesViewModel
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.example.playlistmaker.media.presentation.PlaylistsViewModel
+import com.example.playlistmaker.media.presentation.models.PlaylistsState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoritesFragment: Fragment() {
+class PlaylistsFragment : Fragment() {
 
-    private val viewModel by viewModel<FavoritesViewModel>()
+    companion object {
+        fun newInstance() = PlaylistsFragment()
+    }
 
-    private lateinit var binding: FragmentFavoritesBinding
+    private val viewModel by viewModel<PlaylistsViewModel>()
+
+    private lateinit var binding: FragmentPlaylistsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -28,9 +32,9 @@ class FavoritesFragment: Fragment() {
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             when(it) {
-                is FavoritesState.Loading -> showErrorMessage()
-                is FavoritesState.Content -> showErrorMessage()
-                is FavoritesState.Error -> showErrorMessage()
+                is PlaylistsState.Loading -> showErrorMessage()
+                is PlaylistsState.Content -> showErrorMessage()
+                is PlaylistsState.Error -> showErrorMessage()
             }
         }
     }
@@ -41,7 +45,4 @@ class FavoritesFragment: Fragment() {
         }
     }
 
-    companion object {
-        fun newInstance() = FavoritesFragment()
-    }
 }
