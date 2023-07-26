@@ -20,4 +20,6 @@
     <dimen name="media_text_marginTop">16dp</dimen>
     <dimen name="text_marginEnd">8dp</dimen>
     <dimen name="media_placeholder">120dp</dimen>
+    <dimen name="dashed_border_playlist">31dp</dimen>
+    <dimen name="playlist_cover">312dp</dimen>
 </resources>

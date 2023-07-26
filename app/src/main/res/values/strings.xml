@@ -15,6 +15,7 @@
     <string name="clear_icon">Clear Input</string>
     <string name="arrow_back">Return</string>
     <string name="album_artwork">Album Artwork</string>
+    <string name="playlist_cover">Playlist Cover</string>
     <string name="ellipse_icon">Small ellipse icon</string>
     <string name="arrow_forward">More</string>
     <string name="nothing_found">Ничего не нашлось</string>
@@ -38,5 +39,9 @@
     <string name="favorites">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <string name="agreement_header">Соглашение</string>
+    <string name="new_playlist">Новый плейлист</string>
     <string name="player_completed">00:00</string>
+    <string name="playlist_title">Название*</string>
+    <string name="playlist_description">Описание</string>
+    <string name="create">Создать</string>
 </resources>
