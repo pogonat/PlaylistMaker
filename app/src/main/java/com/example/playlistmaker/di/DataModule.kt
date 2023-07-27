@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.playlistmaker.data.network.NetworkSearch
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.data.converters.PlaylistDbConverter
 import com.example.playlistmaker.data.converters.TrackDbConverter
 import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.db.AppDatabase
@@ -16,7 +17,9 @@ import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.data.favourites.FavouritesRepositoryImpl
 import com.example.playlistmaker.domain.FavouritesRepository
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
-import com.example.playlistmaker.search.domain.TrackRepository
+import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.playlist.data.PlaylistRepositoryImpl
+import com.example.playlistmaker.playlist.domain.PlaylistRepository
 import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.example.playlistmaker.settings.data.SettingsStorage
 import com.example.playlistmaker.settings.data.SettingsStorageImpl
@@ -62,6 +65,10 @@ val dataModule = module {
         TrackDbConverter()
     }
 
+    single<PlaylistDbConverter> {
+        PlaylistDbConverter()
+    }
+
     single<TrackStorage> {
         TrackStorageImpl(gson = get(), sharedPrefs = get())
     }
@@ -80,6 +87,10 @@ val dataModule = module {
 
     single<TrackPlayerRepository> {
         TrackRepositoryImpl(networkSearch = get(), trackStorage = get(), mapper = get(), appDatabase = get())
+    }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(appDatabase = get(), playlistDbConverter = get(), gson = get())
     }
 
     single<SettingsStorage> {
