@@ -2,7 +2,6 @@ package com.example.playlistmaker.media.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,7 +66,6 @@ class FavouritesFragment : Fragment() {
         viewModel.getFavouritesList()
 
         viewModel.observeState().observe(viewLifecycleOwner) {
-            Log.d("FavouritesFragment", "State: $it")
             when (it) {
                 is FavouritesState.Loading -> showErrorMessage()
                 is FavouritesState.Content -> renderList(it.favList)
