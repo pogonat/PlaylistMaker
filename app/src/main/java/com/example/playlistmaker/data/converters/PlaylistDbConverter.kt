@@ -7,24 +7,24 @@ class PlaylistDbConverter {
 
     fun map(playlist: Playlist): PlaylistEntity {
         return PlaylistEntity(
-            playlist.playlistId,
-            playlist.playlistName,
-            playlist.playlistDescription,
-            playlist.playlistPath,
-            playlist.trackList,
-            playlist.tracksQuantity,
+            playlistId = playlist.playlistId,
+            playlistName = playlist.playlistName,
+            playlistDescription = playlist.playlistDescription,
+            imagePath = playlist.imagePath,
+            trackList = playlist.trackList,
+            tracksQuantity = playlist.tracksQuantity,
             System.currentTimeMillis()
         )
     }
 
     fun map(playlist: PlaylistEntity): Playlist {
         return Playlist(
-            playlist.playlistId,
-            playlist.playlistName,
-            playlist.playlistDescription,
-            playlist.playlistPath,
-            playlist.trackList,
-            playlist.tracksQuantity
+            playlistId = playlist.playlistId,
+            playlistName = playlist.playlistName,
+            playlistDescription = playlist.playlistDescription,
+            imagePath = playlist.imagePath,
+            trackList = playlist.trackList,
+            tracksQuantity = playlist.tracksQuantity
         )
     }
 

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class PlaylistEntity (
 
     @PrimaryKey(autoGenerate = true)
-    val playlistId: Int,
+    val playlistId: Int? = null,
 
     @ColumnInfo(name = "playlist_title")
     val playlistName: String,
@@ -17,7 +17,7 @@ data class PlaylistEntity (
     val playlistDescription: String,
 
     @ColumnInfo(name = "playlist_path")
-    val playlistPath: String,
+    val imagePath: String,
 
     @ColumnInfo(name = "track_list")
     var trackList: String,
