@@ -52,7 +52,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/playlistCover">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/playlistTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -61,7 +61,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/playlistDescriptionField"
-            style="@style/PlaylistTextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/playlist_input_margin"
@@ -71,7 +71,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/playlistTitleField">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/playlistDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

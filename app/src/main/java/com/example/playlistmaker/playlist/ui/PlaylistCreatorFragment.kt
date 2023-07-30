@@ -1,22 +1,30 @@
 package com.example.playlistmaker.playlist.ui
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColorStateList
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistcreatorBinding
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.util.UUID
 
 class PlaylistCreatorFragment : Fragment() {
 
@@ -28,14 +36,16 @@ class PlaylistCreatorFragment : Fragment() {
     private var titleInputText = ""
     private var descriptionInputText = ""
     private var imageUri: Uri? = null
+    private lateinit var imagePrivateStorageUri: String
 
     private var titleTextWatcher: TextWatcher? = null
     private var descriptionTextWatcher: TextWatcher? = null
 
+    private lateinit var confirmDialog: MaterialAlertDialogBuilder
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentPlaylistcreatorBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -52,88 +62,176 @@ class PlaylistCreatorFragment : Fragment() {
             }
         }
 
+        controlCreateButton()
+
         binding.playlistCover.setImageURI(imageUri)
 
+        setImagePicker()
+
+        setTitleTextWatcher()
+
+        setDescriptionTextWatcher()
+
+        setCreateButton()
+
+        setBackNavigation()
+
+    }
+
+    private fun setBackNavigation() {
+
+        confirmDialog = buildDialog()
+
         binding.backNavBar.setOnClickListener {
-            findNavController().navigateUp()
+            if (titleInputText.isEmpty() && descriptionInputText.isEmpty() && imageUri == null) {
+                findNavController().navigateUp()
+            } else confirmDialog.show()
         }
 
-        if (titleInputText.isNullOrEmpty()) {
-            binding.createButton.isEnabled = false
-        } else {
-            binding.createButton.isEnabled = true
-        }
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (titleInputText.isEmpty() && descriptionInputText.isEmpty() && imageUri == null) {
+                    findNavController().navigateUp()
+                } else confirmDialog.show()
+            }
+        })
+    }
 
+    private fun setCreateButton() {
+        binding.createButton.setOnClickListener {
+            if (titleInputText.isNotEmpty()) {
+                imageUri?.let { saveImageToPrivateStorage(it) }
+
+                viewModel.savePlaylist(titleInputText, descriptionInputText, imagePrivateStorageUri)
+
+                val message =
+                    getString(R.string.playlist_string_piece) + titleInputText + getString(
+                        R.string.created_string_piece
+                    )
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+
+                findNavController().navigateUp()
+            }
+        }
+    }
+
+    private fun setImagePicker() {
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
                     binding.playlistCover.setImageURI(uri)
                     imageUri = uri
-//                    saveImageToPrivateStorage(uri)
                 } else {
-                    Log.d("PlaylistMaker", "No media selected")
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.empty_image_selection),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
         binding.playlistCover.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+    }
 
-
-        titleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val color = if (s.isNullOrEmpty() && !binding.playlistTitleField.isFocused) {
-                    ContextCompat.getColor(requireContext(), R.color.colorSecondaryVariant)
-                } else {
-                    ContextCompat.getColor(requireContext(), R.color.yp_blue)
-                }
-                binding.playlistTitleField.boxStrokeColor = color
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        }
-        titleTextWatcher?.let { binding.playlistTitle.addTextChangedListener(it) }
-
-        binding.playlistTitleField.setOnFocusChangeListener{_, hasFocus, ->
-            if(!hasFocus && !titleInputText.isNullOrEmpty()) {
-                binding.playlistTitle.boxStrokeColor =
-                    ContextCompat.getColor(requireContext(), R.color.yp_blue)
-            }
-        }
-
+    private fun setDescriptionTextWatcher() {
         descriptionTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!s.isNullOrEmpty()) {
-                    descriptionInputText = s.toString()
-                } else {
-                    descriptionInputText = ""
-                }
+                descriptionInputText = s.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
         }
         descriptionTextWatcher?.let { binding.playlistDescription.addTextChangedListener(it) }
+    }
 
+    private fun setTitleTextWatcher() {
+        titleTextWatcher = object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                titleInputText = s.toString()
+                controlCreateButton()
+                if (binding.playlistTitle.text?.isNotEmpty() == true) {
+                    val colorStateList = getColorStateList(
+                        requireContext(), R.color.selector_box_stroke_color_populated
+                    )
+                    if (colorStateList != null) {
+                        binding.playlistTitleField.setBoxStrokeColorStateList(colorStateList)
+                    }
+                } else {
+                    val colorStateList =
+                        getColorStateList(requireContext(), R.color.selector_box_stroke_color)
+                    if (colorStateList != null) {
+                        binding.playlistTitleField.setBoxStrokeColorStateList(colorStateList)
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        }
+        titleTextWatcher?.let { binding.playlistTitle.addTextChangedListener(it) }
+    }
+
+    private fun buildDialog() =
+        MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.finish_playlist_creation))
+            .setMessage(getString(R.string.data_loss_message))
+            .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+            }.setPositiveButton(getString(R.string.finish)) { dialog, which ->
+                findNavController().navigateUp()
+            }
+
+    private fun saveImageToPrivateStorage(uri: Uri) {
+
+        val filePath =
+            File(
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                getString(R.string.playlists_folder_name)
+            )
+
+        if (!filePath.exists()) {
+            filePath.mkdirs()
+        }
+
+        val file = File(
+            filePath, getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(
+                R.string.jpg
+            )
+        )
+
+        val inputStream = requireActivity().contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+
+        BitmapFactory.decodeStream(inputStream)
+            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+
+        imagePrivateStorageUri = file.absolutePath
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(TITLE_TEXT, titleInputText)
         outState.putString(DESCRIPTION_TEXT, descriptionInputText)
-        outState.putString(IMAGE_COVER, imageUri.toString())
+        outState.putString(IMAGE_COVER, imageUri?.let { imageUri.toString() })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        titleTextWatcher?.let { binding.playlistTitle.removeTextChangedListener(it) }
+        descriptionTextWatcher?.let { binding.playlistDescription.removeTextChangedListener(it) }
         _binding = null
+    }
+
+    private fun controlCreateButton() {
+        binding.createButton.isEnabled = titleInputText.isNotEmpty()
     }
 
     companion object {

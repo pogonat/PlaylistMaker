@@ -3,9 +3,18 @@ package com.example.playlistmaker.playlist.domain
 import com.example.playlistmaker.domain.models.Playlist
 import kotlinx.coroutines.flow.Flow
 
-class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository): PlaylistInteractor {
+class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository) :
+    PlaylistInteractor {
 
-    override suspend fun createPlaylist(playlist: Playlist) {
+    override suspend fun createPlaylist(title: String, description: String, imageUri: String) {
+        val playlist = Playlist(
+            playlistId = null,
+            playlistName = title,
+            playlistDescription = description,
+            imagePath = imageUri,
+            trackList = "",
+            tracksQuantity = 0
+        )
         playlistRepository.createPlaylist(playlist)
     }
 

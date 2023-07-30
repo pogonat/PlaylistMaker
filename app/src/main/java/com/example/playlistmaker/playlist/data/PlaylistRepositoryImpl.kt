@@ -22,13 +22,15 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun updatePlaylist(playlist: Playlist, trackId: String) {
-        appDatabase
-            .playListDao()
-            .updatePlaylist(
-                id = playlist.playlistId,
-                quantity = playlist.tracksQuantity + 1,
-                trackList = updateTrackList(playlist.trackList, trackId)
-            )
+        if (playlist.playlistId != null) {
+            appDatabase
+                .playListDao()
+                .updatePlaylist(
+                    id = playlist.playlistId,
+                    quantity = playlist.tracksQuantity + 1,
+                    trackList = updateTrackList(playlist.trackList, trackId)
+                )
+        }
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> = flow {
