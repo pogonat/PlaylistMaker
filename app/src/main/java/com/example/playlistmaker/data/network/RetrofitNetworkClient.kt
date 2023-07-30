@@ -20,10 +20,6 @@ class RetrofitNetworkClient(
             return Response().apply { resultCode = NetworkResultCode.CONNECTION_ERROR }
         }
 
-//        if (dto !is TracksSearchRequest) {
-//            return Response().apply { resultCode = NetworkResultCode.BAD_REQUEST }
-//        }
-
         return withContext(Dispatchers.IO) {
             try {
                 val response = itunesApi.search(dto.expression)
@@ -40,10 +36,6 @@ class RetrofitNetworkClient(
             return Response().apply { resultCode = NetworkResultCode.CONNECTION_ERROR }
         }
 
-//        if (dto !is TracksSearchRequest) {
-//            return Response().apply { resultCode = NetworkResultCode.BAD_REQUEST }
-//        }
-
         return withContext(Dispatchers.IO) {
             try {
                 val response = itunesApi.getTrackDetails(dto.expression)
@@ -53,7 +45,6 @@ class RetrofitNetworkClient(
             }
         }
     }
-
 
     private fun isConnected(): Boolean {
         val connectivityManager = context.getSystemService(
