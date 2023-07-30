@@ -54,4 +54,5 @@
     <string name="playlists_folder_name">playlists</string>
     <string name="playlist_cover_piece">playlist_cover_</string>
     <string name="jpg">.jpg</string>
+    <string name="retry">Повторите попытку</string>
 </resources>

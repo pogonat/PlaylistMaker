@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistcreatorBinding
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
+import com.example.playlistmaker.playlist.presentation.models.PlaylistCreatorState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -62,6 +63,10 @@ class PlaylistCreatorFragment : Fragment() {
             }
         }
 
+        viewModel.observeState().observe(viewLifecycleOwner) { screenState ->
+            render(screenState)
+        }
+
         controlCreateButton()
 
         binding.playlistCover.setImageURI(imageUri)
@@ -75,6 +80,25 @@ class PlaylistCreatorFragment : Fragment() {
         setCreateButton()
 
         setBackNavigation()
+
+    }
+
+    private fun render(screenState: PlaylistCreatorState) {
+        when(screenState) {
+            PlaylistCreatorState.Saving -> {
+                val message =
+                    getString(R.string.playlist_string_piece) + titleInputText + getString(
+                        R.string.created_string_piece
+                    )
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            }
+            PlaylistCreatorState.Success -> {
+                findNavController().navigateUp()
+            }
+            PlaylistCreatorState.Error -> {
+                Toast.makeText(requireContext(), getString(R.string.retry), Toast.LENGTH_LONG).show()
+            }
+        }
 
     }
 
@@ -101,16 +125,7 @@ class PlaylistCreatorFragment : Fragment() {
         binding.createButton.setOnClickListener {
             if (titleInputText.isNotEmpty()) {
                 imageUri?.let { saveImageToPrivateStorage(it) }
-
                 viewModel.savePlaylist(titleInputText, descriptionInputText, imagePrivateStorageUri)
-
-                val message =
-                    getString(R.string.playlist_string_piece) + titleInputText + getString(
-                        R.string.created_string_piece
-                    )
-                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-
-                findNavController().navigateUp()
             }
         }
     }
