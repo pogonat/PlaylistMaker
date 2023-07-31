@@ -13,7 +13,8 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
             playlistDescription = description,
             imagePath = imageUri,
             trackList = "",
-            tracksQuantity = 0
+            tracksQuantity = 0,
+            tracksQuantityText = null
         )
         playlistRepository.createPlaylist(playlist)
     }

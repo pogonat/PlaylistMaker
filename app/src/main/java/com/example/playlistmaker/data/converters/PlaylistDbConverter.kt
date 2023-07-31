@@ -24,7 +24,8 @@ class PlaylistDbConverter {
             playlistDescription = playlist.playlistDescription,
             imagePath = playlist.imagePath,
             trackList = playlist.trackList,
-            tracksQuantity = playlist.tracksQuantity
+            tracksQuantity = playlist.tracksQuantity,
+            tracksQuantityText = null
         )
     }
 

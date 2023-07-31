@@ -45,8 +45,7 @@
     <string name="playlist_description">Описание</string>
     <string name="create">Создать</string>
     <string name="empty_image_selection">Не выбрано изображение</string>
-    <string name="playlist_string_piece">"Плейлист "</string>
-    <string name="created_string_piece">" создан"</string>
+    <string name="playlist_string_piece">"Плейлист %s создан"</string>
     <string name="finish_playlist_creation">Завершить создание плейлиста?</string>
     <string name="data_loss_message">Все несохраненные данные будут потеряны</string>
     <string name="cancel">Отмена</string>
@@ -55,4 +54,8 @@
     <string name="playlist_cover_piece">playlist_cover_</string>
     <string name="jpg">.jpg</string>
     <string name="retry">Повторите попытку</string>
+    <string name="track_quantity">%d %s</string>
+    <string name="track_quantity_default">трек</string>
+    <string name="track_quantity_many">треков</string>
+    <string name="track_quantity_few">трека</string>
 </resources>

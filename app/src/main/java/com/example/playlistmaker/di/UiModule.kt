@@ -36,7 +36,7 @@ val uiModule = module {
     }
 
     viewModel<PlaylistsViewModel> {
-        PlaylistsViewModel()
+        PlaylistsViewModel(playlistInteractor = get())
     }
 
     viewModel<FavouritesViewModel> {
@@ -47,7 +47,7 @@ val uiModule = module {
         PlaylistCreatorViewModel(playlistInteractor = get())
     }
 
-    single {
+    single<ThemeManager> {
         ThemeManager(get())
     }
 

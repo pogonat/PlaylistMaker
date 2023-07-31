@@ -84,19 +84,19 @@ class PlaylistCreatorFragment : Fragment() {
     }
 
     private fun render(screenState: PlaylistCreatorState) {
-        when(screenState) {
+        when (screenState) {
             PlaylistCreatorState.Saving -> {
-                val message =
-                    getString(R.string.playlist_string_piece) + titleInputText + getString(
-                        R.string.created_string_piece
-                    )
+                val message = String.format(getString(R.string.playlist_string_piece), titleInputText)
                 Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             }
+
             PlaylistCreatorState.Success -> {
                 findNavController().navigateUp()
             }
+
             PlaylistCreatorState.Error -> {
-                Toast.makeText(requireContext(), getString(R.string.retry), Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.retry), Toast.LENGTH_LONG)
+                    .show()
             }
         }
 
@@ -206,18 +206,18 @@ class PlaylistCreatorFragment : Fragment() {
 
     private fun saveImageToPrivateStorage(uri: Uri) {
 
-        val filePath =
-            File(
-                requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                getString(R.string.playlists_folder_name)
-            )
+        val filePath = File(
+            requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            getString(R.string.playlists_folder_name)
+        )
 
         if (!filePath.exists()) {
             filePath.mkdirs()
         }
 
         val file = File(
-            filePath, getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(
+            filePath,
+            getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(
                 R.string.jpg
             )
         )
