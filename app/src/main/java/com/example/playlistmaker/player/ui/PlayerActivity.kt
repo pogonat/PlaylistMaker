@@ -1,18 +1,24 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.player.presentation.models.PlayerScreenState
 import com.example.playlistmaker.player.presentation.models.PlayerStatus
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.media.ui.adapters.PlaylistPlayerAdapter
 import com.example.playlistmaker.player.presentation.PlayerViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -20,6 +26,10 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
     private lateinit var track: Track
+
+    private var recycleAdapter: PlaylistPlayerAdapter? = null
+
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +51,8 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.toggleFavouriteDebounce(track)
         }
 
+        setBottomSheet()
+
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
             render(screenState)
         }
@@ -58,6 +70,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        recycleAdapter = null
         viewModel.releasePlayer()
     }
 
@@ -66,12 +79,60 @@ class PlayerActivity : AppCompatActivity() {
         return extras?.getString(KEY_BUNDLE, "") ?: ""
     }
 
+    private fun setBottomSheet() {
+
+        val bottomSheetContainer = binding.playlistsBottomSheet
+
+        val overlay = binding.overlay
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.isVisible = false
+                    }
+                    else -> {
+                        overlay.isVisible = true
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                overlay.alpha = slideOffset
+            }
+        })
+    }
+
     private fun render(state: PlayerScreenState) {
         when (state) {
             is PlayerScreenState.Loading -> showLoading()
             is PlayerScreenState.Content -> showContent(state.track)
             is PlayerScreenState.Destroy -> finishIfTrackNull()
+            is PlayerScreenState.BottomSheet -> showBottomSheet(state.playlist)
         }
+    }
+
+    private fun showBottomSheet(playlists: List<Playlist>) {
+
+        val playlistsList = playlists.map { playlist ->
+            playlist.copy(tracksQuantityText = formatText(playlist.tracksQuantity))
+        }
+        recycleAdapter = PlaylistPlayerAdapter(playlistsList)
+
+        binding.apply {
+
+            recyclerViewPlaylists.layoutManager = LinearLayoutManager(this@PlayerActivity, LinearLayoutManager.VERTICAL, false)
+            recyclerViewPlaylists.adapter = recycleAdapter
+
+        }
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun showLoading() {
@@ -80,15 +141,16 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun showContent(foundTrack: Track) {
         track = foundTrack
-
-        binding.trackTitle.text = foundTrack.trackName
-        binding.artist.text = foundTrack.artistName
-        binding.duration.text = foundTrack.trackTime
-        binding.timeRemained.text = binding.duration.text
-        binding.albumCollection.text = foundTrack.collectionName
-        binding.year.text = foundTrack.collectionYear
-        binding.genre.text = foundTrack.primaryGenreName
-        binding.country.text = foundTrack.country
+        binding.apply {
+            trackTitle.text = foundTrack.trackName
+            artist.text = foundTrack.artistName
+            duration.text = foundTrack.trackTime
+            timeRemained.text = binding.duration.text
+            albumCollection.text = foundTrack.collectionName
+            year.text = foundTrack.collectionYear
+            genre.text = foundTrack.primaryGenreName
+            country.text = foundTrack.country
+        }
         Glide.with(binding.artworkLarge)
             .load(foundTrack.largeArtworkUrl)
             .centerCrop()
@@ -136,6 +198,19 @@ class PlayerActivity : AppCompatActivity() {
     private fun finishIfTrackNull() {
         Toast.makeText(this, "Can\'t load track info", Toast.LENGTH_SHORT).show()
         finish()
+    }
+
+    private fun formatText(quantity: Int): String {
+        val lastDigit = quantity % 10
+        val quantityText = getString(R.string.track_quantity)
+        val stringDefault = getString(R.string.track_quantity_default)
+        val stringFew = getString(R.string.track_quantity_few)
+        val stringMany = getString(R.string.track_quantity_many)
+        return when (lastDigit) {
+            1 -> String.format(quantityText, lastDigit, stringDefault)
+            2, 3, 4 -> String.format(quantityText, lastDigit, stringFew)
+            else -> String.format(quantityText, lastDigit, stringMany)
+        }
     }
 
     companion object {

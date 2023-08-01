@@ -67,7 +67,7 @@ val dataModule = module {
     }
 
     single<PlaylistDbConverter> {
-        PlaylistDbConverter()
+        PlaylistDbConverter(gson = get())
     }
 
     single<TrackStorage> {

@@ -22,6 +22,7 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun updatePlaylist(playlist: Playlist, trackId: String) {
+
         if (playlist.playlistId != null) {
             appDatabase
                 .playListDao()
@@ -48,12 +49,14 @@ class PlaylistRepositoryImpl(
             .copy(createdTimeStamp = System.currentTimeMillis())
     }
 
-    private fun updateTrackList(trackList: String, trackId: String): String {
-        val oldList = ArrayList<String>()
-        if (trackList.isNotEmpty()) {
-            oldList.addAll(gson.fromJson(trackList, Array<String>::class.java))
+    private fun updateTrackList(trackList: List<String>?, trackId: String): String {
+        val newList = ArrayList<String>()
+        if (trackList.isNullOrEmpty()) {
+            newList.add(trackId)
+        } else {
+            newList.addAll(trackList)
+            newList.add(trackId)
         }
-        val newList = oldList.add(trackId)
         return gson.toJson(newList)
     }
 

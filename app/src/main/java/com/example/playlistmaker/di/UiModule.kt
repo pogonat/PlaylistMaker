@@ -24,7 +24,12 @@ val uiModule = module {
     }
 
     viewModel<PlayerViewModel> {
-        PlayerViewModel(playerInteractor = get(), trackPlayer = get(), favouritesInteractor = get())
+        PlayerViewModel(
+            playerInteractor = get(),
+            trackPlayer = get(),
+            favouritesInteractor = get(),
+            playlistInteractor = get()
+        )
     }
 
     viewModel<SearchViewModel> {

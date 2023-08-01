@@ -3,6 +3,7 @@ package com.example.playlistmaker.player.presentation
 import androidx.lifecycle.*
 import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.domain.FavouritesInteractor
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.player.presentation.models.PlayerScreenState
 import com.example.playlistmaker.player.presentation.models.PlayerState
 import com.example.playlistmaker.player.presentation.models.PlayerStatus
@@ -10,6 +11,7 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.domain.PlayerInteractor
+import com.example.playlistmaker.playlist.domain.PlaylistInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,13 +19,14 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val trackPlayer: TrackPlayer,
-    private val favouritesInteractor: FavouritesInteractor
+    private val favouritesInteractor: FavouritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
-    private val stateLiveData = MutableLiveData<PlayerScreenState>()
+    private val screenStateLiveData = MutableLiveData<PlayerScreenState>()
     private val playStatusLiveData = MutableLiveData<PlayerStatus>()
 
-    fun getScreenStateLiveData(): LiveData<PlayerScreenState> = stateLiveData
+    fun getScreenStateLiveData(): LiveData<PlayerScreenState> = screenStateLiveData
     fun getPlayerStateLiveData(): LiveData<PlayerStatus> = playStatusLiveData
 
     private var timerJob: Job? = null
@@ -35,14 +38,27 @@ class PlayerViewModel(
             toggleFavourite(track)
         }
 
+    private val getPlaylistDebounce =
+        debounce(PLAYLIST_DEBOUNCE_DELAY, viewModelScope, true) {
+            getPlaylists()
+        }
+
     fun loadTrack(trackId: String) {
         foundTrack = null
         renderState(PlayerScreenState.Loading)
         getTrackById(trackId)
     }
 
+    fun clickPlaylistDebounce() {
+        getPlaylistDebounce()
+    }
+
+    fun addTrackToPlaylist(track: Track) {
+
+    }
+
     private fun renderState(state: PlayerScreenState) {
-        stateLiveData.postValue(state)
+        screenStateLiveData.postValue(state)
     }
 
     private fun renderPlayer(playerStatus: PlayerStatus) {
@@ -140,6 +156,20 @@ class PlayerViewModel(
         }
     }
 
+
+
+    private fun getPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor
+                .getPlaylists()
+                .collect { foundPlaylist ->
+                    val playlists = mutableListOf<Playlist>()
+                    playlists.addAll(foundPlaylist)
+                    screenStateLiveData.postValue(PlayerScreenState.BottomSheet(playlists))
+                }
+        }
+    }
+
     private fun startPlayer() {
         trackPlayer.startPlayer()
         renderPlayer(PlayerStatus.Playing(progress = trackPlayer.getCurrentPosition()))
@@ -181,6 +211,7 @@ class PlayerViewModel(
     companion object {
         private const val TIMER_DELAY = 300L
         private const val FAV_DEBOUNCE_DELAY = 2000L
+        private const val PLAYLIST_DEBOUNCE_DELAY = 2000L
     }
 
 }

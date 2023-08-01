@@ -25,8 +25,6 @@ class PlaylistsFragment : Fragment() {
 
     private var recycleAdapter: PlaylistAdapter? = null
 
-    private lateinit var playlistsList: List<Playlist>
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,7 +60,7 @@ class PlaylistsFragment : Fragment() {
 
     private fun showContent(playlists: List<Playlist>) {
 
-        playlistsList = playlists.map { playlist ->
+        val playlistsList = playlists.map { playlist ->
             playlist.copy(tracksQuantityText = formatText(playlist.tracksQuantity))
         }
         recycleAdapter = PlaylistAdapter(playlistsList)

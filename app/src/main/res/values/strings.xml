@@ -58,4 +58,5 @@
     <string name="track_quantity_default">трек</string>
     <string name="track_quantity_many">треков</string>
     <string name="track_quantity_few">трека</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
 </resources>
