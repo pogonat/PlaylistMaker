@@ -17,6 +17,7 @@ import com.example.playlistmaker.player.presentation.models.PlayerStatus
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.media.ui.adapters.PlaylistPlayerAdapter
 import com.example.playlistmaker.player.presentation.PlayerViewModel
+import com.example.playlistmaker.playlist.ui.PlaylistCreatorFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -47,8 +48,12 @@ class PlayerActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.favlistButton.setOnClickListener{
+        binding.favlistButton.setOnClickListener {
             viewModel.toggleFavouriteDebounce(track)
+        }
+
+        binding.playlistButton.setOnClickListener {
+            viewModel.clickPlaylistDebounce()
         }
 
         setBottomSheet()
@@ -80,6 +85,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setBottomSheet() {
+        val playlistCreationFragment = PlaylistCreatorFragment()
 
         val bottomSheetContainer = binding.playlistsBottomSheet
 
@@ -89,7 +95,8 @@ class PlayerActivity : AppCompatActivity() {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
@@ -97,6 +104,7 @@ class PlayerActivity : AppCompatActivity() {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         overlay.isVisible = false
                     }
+
                     else -> {
                         overlay.isVisible = true
                     }
@@ -107,6 +115,16 @@ class PlayerActivity : AppCompatActivity() {
                 overlay.alpha = slideOffset
             }
         })
+
+        binding.newPlaylistButton.setOnClickListener {
+
+            binding.scrollView.isVisible = false
+            binding.playlistsBottomSheet.isVisible = false
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, playlistCreationFragment)
+                .commit()
+        }
     }
 
     private fun render(state: PlayerScreenState) {
@@ -115,7 +133,33 @@ class PlayerActivity : AppCompatActivity() {
             is PlayerScreenState.Content -> showContent(state.track)
             is PlayerScreenState.Destroy -> finishIfTrackNull()
             is PlayerScreenState.BottomSheet -> showBottomSheet(state.playlist)
+            is PlayerScreenState.BottomSheetHidden -> hideBottomSheet(state.playlistTitle)
+            is PlayerScreenState.ShowMessage -> processMessage(state.playlistTitle)
         }
+    }
+
+    private fun processMessage(playlistTitle: String?) {
+        when (playlistTitle) {
+            null -> {
+                Toast
+                    .makeText(this, getString(R.string.playlist_update_error), Toast.LENGTH_LONG)
+                    .show()
+            }
+            else -> {
+                showMessage(getString(R.string.add_track_error), playlistTitle)
+            }
+        }
+    }
+
+    private fun hideBottomSheet(playlistTitle: String) {
+        showMessage(getString(R.string.track_added), playlistTitle)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+    }
+
+    private fun showMessage(messageString: String, playlistTitle: String) {
+        val message = String.format(messageString, playlistTitle)
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun showBottomSheet(playlists: List<Playlist>) {
@@ -123,11 +167,20 @@ class PlayerActivity : AppCompatActivity() {
         val playlistsList = playlists.map { playlist ->
             playlist.copy(tracksQuantityText = formatText(playlist.tracksQuantity))
         }
-        recycleAdapter = PlaylistPlayerAdapter(playlistsList)
+
+        recycleAdapter = PlaylistPlayerAdapter(
+            playlistsList,
+            object : PlaylistPlayerAdapter.PlaylistClickListener {
+                override fun onPlaylistClick(playlist: Playlist) {
+                    viewModel.addTrackToPlaylist(playlist, track)
+                }
+            }
+        )
 
         binding.apply {
 
-            recyclerViewPlaylists.layoutManager = LinearLayoutManager(this@PlayerActivity, LinearLayoutManager.VERTICAL, false)
+            recyclerViewPlaylists.layoutManager =
+                LinearLayoutManager(this@PlayerActivity, LinearLayoutManager.VERTICAL, false)
             recyclerViewPlaylists.adapter = recycleAdapter
 
         }

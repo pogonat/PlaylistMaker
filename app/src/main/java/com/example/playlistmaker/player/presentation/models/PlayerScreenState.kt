@@ -12,4 +12,8 @@ sealed class PlayerScreenState {
 
     data class BottomSheet(val playlist: List<Playlist>) : PlayerScreenState()
 
+    data class BottomSheetHidden(val playlistTitle: String) : PlayerScreenState()
+
+    data class ShowMessage(val playlistTitle: String?) : PlayerScreenState()
+
 }

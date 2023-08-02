@@ -91,7 +91,7 @@ val dataModule = module {
     }
 
     single<PlaylistRepository> {
-        PlaylistRepositoryImpl(appDatabase = get(), playlistDbConverter = get(), gson = get())
+        PlaylistRepositoryImpl(appDatabase = get(), playlistDbConverter = get(), trackDbConverter = get(), gson = get())
     }
 
     single<SettingsStorage> {

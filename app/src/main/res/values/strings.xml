@@ -59,4 +59,7 @@
     <string name="track_quantity_many">треков</string>
     <string name="track_quantity_few">трека</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="add_track_error">Трек уже добавлен в плейлист %s</string>
+    <string name="track_added">Добавлено в плейлист %s</string>
+    <string name="playlist_update_error">Повторите попытку</string>
 </resources>

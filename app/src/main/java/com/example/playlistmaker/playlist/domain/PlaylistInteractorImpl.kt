@@ -1,6 +1,7 @@
 package com.example.playlistmaker.playlist.domain
 
 import com.example.playlistmaker.domain.models.Playlist
+import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository) :
@@ -12,15 +13,15 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
             playlistName = title,
             playlistDescription = description,
             imagePath = imageUri,
-            trackList = "",
+            trackList = null,
             tracksQuantity = 0,
             tracksQuantityText = null
         )
         playlistRepository.createPlaylist(playlist)
     }
 
-    override suspend fun updatePlaylist(playlist: Playlist, trackId: String) {
-        playlistRepository.updatePlaylist(playlist, trackId)
+    override fun updatePlaylist(playlist: Playlist, track: Track): Flow<Boolean> {
+        return playlistRepository.updatePlaylist(playlist, track)
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {

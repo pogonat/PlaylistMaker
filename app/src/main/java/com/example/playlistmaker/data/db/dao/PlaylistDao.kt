@@ -13,7 +13,7 @@ interface PlaylistDao {
     suspend fun insertPlaylist(playlist: PlaylistEntity)
 
     @Query("UPDATE playlist_table SET track_list=:trackList, tracks_quantity=:quantity WHERE playlistId=:id")
-    suspend fun updatePlaylist(trackList: String, quantity: Int, id: Int)
+    fun updatePlaylist(trackList: String, quantity: Int, id: Int): Int
 
     @Query("SELECT * FROM playlist_table ORDER BY playlist_title ASC")
     suspend fun getPlaylists(): List<PlaylistEntity>

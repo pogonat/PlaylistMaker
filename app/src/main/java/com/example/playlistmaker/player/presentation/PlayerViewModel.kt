@@ -12,6 +12,7 @@ import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.playlist.domain.PlaylistInteractor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,8 +54,34 @@ class PlayerViewModel(
         getPlaylistDebounce()
     }
 
-    fun addTrackToPlaylist(track: Track) {
+    fun addTrackToPlaylist(playlist: Playlist, track: Track) {
+        val trackIsInPlaylist = checkPlaylist(playlist, track.trackId)
+        if (trackIsInPlaylist) {
+            screenStateLiveData.postValue(PlayerScreenState.ShowMessage(playlist.playlistName))
+        } else {
+            viewModelScope.launch(Dispatchers.IO) {
+                playlistInteractor
+                    .updatePlaylist(playlist, track)
+                    .collect { result ->
+                        when (result) {
+                            true -> {
+                                screenStateLiveData
+                                    .postValue(PlayerScreenState.BottomSheetHidden(playlist.playlistName))
+                            }
 
+                            false -> {
+                                screenStateLiveData
+                                    .postValue(PlayerScreenState.ShowMessage(playlistTitle = null))
+                            }
+                        }
+                    }
+            }
+
+        }
+    }
+
+    private fun checkPlaylist(playlist: Playlist, trackId: String): Boolean {
+        return playlist.trackList?.toSet()?.contains(trackId) ?: false
     }
 
     private fun renderState(state: PlayerScreenState) {
