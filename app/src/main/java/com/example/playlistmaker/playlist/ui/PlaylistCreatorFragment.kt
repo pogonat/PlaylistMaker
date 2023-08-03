@@ -37,7 +37,7 @@ class PlaylistCreatorFragment : Fragment() {
     private var titleInputText = ""
     private var descriptionInputText = ""
     private var imageUri: Uri? = null
-    private lateinit var imagePrivateStorageUri: String
+    private var imagePrivateStorageUri = ""
 
     private var titleTextWatcher: TextWatcher? = null
     private var descriptionTextWatcher: TextWatcher? = null
