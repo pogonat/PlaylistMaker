@@ -18,12 +18,14 @@ class PlaylistPlayerViewHolder (
 
         binding.tracksQuantity.text = playlist.tracksQuantityText
 
-        Glide.with(binding.playlistCover)
-            .load(playlist.imagePath)
-            .centerCrop()
-            .transform(RoundedCorners(4))
-            .placeholder(R.drawable.placeholder_image)
-            .into(binding.playlistCover)
+        if (playlist.imagePath.isNotEmpty()) {
+            Glide.with(binding.playlistCover)
+                .load(playlist.imagePath)
+                .centerCrop()
+                .transform(RoundedCorners(8))
+                .placeholder(R.drawable.placeholder_image)
+                .into(binding.playlistCover)
+        }
 
         itemView.setOnClickListener { clickListener.onPlaylistClick(playlist = playlist) }
     }
