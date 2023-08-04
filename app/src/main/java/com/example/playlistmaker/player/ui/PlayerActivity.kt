@@ -38,7 +38,7 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.loadTrack(getTrackIdFromIntent())
+        loadTrack()
 
         binding.playControlButton.setOnClickListener {
             viewModel.playBackControl()
@@ -79,13 +79,21 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.releasePlayer()
     }
 
+    private fun loadTrack() {
+        val trackId = getTrackIdFromIntent()
+        if (trackId.isEmpty()) {
+            finish()
+        } else {
+            viewModel.loadTrack(trackId)
+        }
+    }
+
     private fun getTrackIdFromIntent(): String {
         val extras = intent.extras
         return extras?.getString(KEY_BUNDLE, "") ?: ""
     }
 
     private fun setBottomSheet() {
-        val playlistCreationFragment = PlaylistCreatorFragment()
 
         val bottomSheetContainer = binding.playlistsBottomSheet
 
@@ -118,8 +126,14 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.newPlaylistButton.setOnClickListener {
 
+            val playlistCreationFragment = PlaylistCreatorFragment()
+            val argTrackId = Bundle()
+            argTrackId.putString(KEY_BUNDLE, track.trackId)
+            playlistCreationFragment.arguments = argTrackId
+
             binding.scrollView.isVisible = false
             binding.playlistsBottomSheet.isVisible = false
+            binding.overlay.isVisible = false
 
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, playlistCreationFragment)
@@ -188,9 +202,7 @@ class PlayerActivity : AppCompatActivity() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    private fun showLoading() {
-        Toast.makeText(this, "Loading Track", Toast.LENGTH_SHORT).show()
-    }
+    private fun showLoading() {}
 
     private fun showContent(foundTrack: Track) {
         track = foundTrack
@@ -267,6 +279,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val KEY_BUNDLE = "KEY_BUNDLE"
+        const val KEY_BUNDLE = "TRACK_ID"
     }
 }

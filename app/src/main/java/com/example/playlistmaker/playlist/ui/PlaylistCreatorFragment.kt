@@ -1,5 +1,6 @@
 package com.example.playlistmaker.playlist.ui
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistcreatorBinding
+import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
 import com.example.playlistmaker.playlist.presentation.models.PlaylistCreatorState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -86,12 +88,13 @@ class PlaylistCreatorFragment : Fragment() {
     private fun render(screenState: PlaylistCreatorState) {
         when (screenState) {
             PlaylistCreatorState.Saving -> {
-                val message = String.format(getString(R.string.playlist_string_piece), titleInputText)
+                val message =
+                    String.format(getString(R.string.playlist_string_piece), titleInputText)
                 Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             }
 
             PlaylistCreatorState.Success -> {
-                findNavController().navigateUp()
+                navigateOut()
             }
 
             PlaylistCreatorState.Error -> {
@@ -108,14 +111,14 @@ class PlaylistCreatorFragment : Fragment() {
 
         binding.backNavBar.setOnClickListener {
             if (titleInputText.isEmpty() && descriptionInputText.isEmpty() && imageUri == null) {
-                findNavController().navigateUp()
+                navigateOut()
             } else confirmDialog.show()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (titleInputText.isEmpty() && descriptionInputText.isEmpty() && imageUri == null) {
-                    findNavController().navigateUp()
+                    navigateOut()
                 } else confirmDialog.show()
             }
         })
@@ -201,7 +204,7 @@ class PlaylistCreatorFragment : Fragment() {
             .setMessage(getString(R.string.data_loss_message))
             .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
             }.setPositiveButton(getString(R.string.finish)) { dialog, which ->
-                findNavController().navigateUp()
+                navigateOut()
             }
 
     private fun saveImageToPrivateStorage(uri: Uri) {
@@ -249,8 +252,21 @@ class PlaylistCreatorFragment : Fragment() {
         binding.createButton.isEnabled = titleInputText.isNotEmpty()
     }
 
+    private fun navigateOut() {
+        val trackId = arguments?.getString(TRACK_ID)
+        if (trackId.isNullOrEmpty()) {
+            findNavController().navigateUp()
+        } else {
+            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
+            playerIntent.putExtra(TRACK_ID, trackId)
+            startActivity(playerIntent)
+            activity?.finish()
+        }
+    }
+
     companion object {
 
+        const val TRACK_ID = "TRACK_ID"
         private const val TITLE_TEXT = "TITLE_TEXT"
         private const val DESCRIPTION_TEXT = "DESCRIPTION_TEXT"
         private const val IMAGE_COVER = "IMAGE_COVER"
