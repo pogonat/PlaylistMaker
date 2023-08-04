@@ -22,7 +22,7 @@ class PlaylistPlayerViewHolder (
             Glide.with(binding.playlistCover)
                 .load(playlist.imagePath)
                 .centerCrop()
-                .transform(RoundedCorners(8))
+                .transform(RoundedCorners(15))
                 .placeholder(R.drawable.placeholder_image)
                 .into(binding.playlistCover)
         }

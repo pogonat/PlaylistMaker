@@ -219,7 +219,7 @@ class PlayerActivity : AppCompatActivity() {
         Glide.with(binding.artworkLarge)
             .load(foundTrack.largeArtworkUrl)
             .centerCrop()
-            .transform(RoundedCorners(5))
+            .transform(RoundedCorners(15))
             .placeholder(R.drawable.placeholder_image)
             .into(binding.artworkLarge)
 
