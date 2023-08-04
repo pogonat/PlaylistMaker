@@ -283,23 +283,28 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="20dp"
             android:text="@string/newPlayList"
-            app:layout_constraintBottom_toTopOf="@id/recyclerViewPlaylists"
+            app:layout_constraintBottom_toTopOf="@id/scrollViewBottomSheet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/message"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewPlaylists"
+        <ScrollView
+            android:id="@+id/scrollViewBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/newPlaylistButton"
-            tools:listitem="@layout/list_item_playlist_player" />
+            app:layout_constraintTop_toBottomOf="@id/newPlaylistButton">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewPlaylists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:listitem="@layout/list_item_playlist_player" />
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
