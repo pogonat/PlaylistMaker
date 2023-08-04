@@ -147,11 +147,10 @@
         <item name="fontWeight">500</item>
     </style>
 
-    <style name="PlaylistTextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
-        <item name="android:textSize">16sp</item>
+    <style name="TextInputOutlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="hintTextColor">@color/yp_blue</item>
+        <item name="android:textColorHint">?attr/colorSecondaryVariant</item>
+        <item name="boxStrokeColor">@color/selector_box_stroke_color_initial</item>
     </style>
 
 </resources>

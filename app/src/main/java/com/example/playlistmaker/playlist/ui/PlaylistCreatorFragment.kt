@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat.getColorStateList
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -177,27 +177,16 @@ class PlaylistCreatorFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 titleInputText = s.toString()
                 controlCreateButton()
-                if (binding.playlistTitle.text?.isNotEmpty() == true) {
-                    val colorStateList = getColorStateList(
-                        requireContext(), R.color.selector_box_stroke_color_populated
-                    )
-                    if (colorStateList != null) {
-                        binding.playlistTitleField.setBoxStrokeColorStateList(colorStateList)
-                    }
-                } else {
-                    val colorStateList =
-                        getColorStateList(requireContext(), R.color.selector_box_stroke_color)
-                    if (colorStateList != null) {
-                        binding.playlistTitleField.setBoxStrokeColorStateList(colorStateList)
-                    }
-                }
+                setTextInputViewColors()
             }
 
             override fun afterTextChanged(s: Editable?) {
+                setTextInputViewColors()
             }
         }
         titleTextWatcher?.let { binding.playlistTitle.addTextChangedListener(it) }
     }
+
 
     private fun buildDialog() =
         MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.finish_playlist_creation))
@@ -220,9 +209,7 @@ class PlaylistCreatorFragment : Fragment() {
 
         val file = File(
             filePath,
-            getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(
-                R.string.jpg
-            )
+            getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(R.string.jpg)
         )
 
         val inputStream = requireActivity().contentResolver.openInputStream(uri)
@@ -261,6 +248,28 @@ class PlaylistCreatorFragment : Fragment() {
             playerIntent.putExtra(TRACK_ID, trackId)
             startActivity(playerIntent)
             activity?.finish()
+        }
+    }
+
+    private fun setTextInputViewColors() {
+        if (!binding.playlistTitle.text.isNullOrEmpty()) {
+            val colorStateList = ResourcesCompat.getColorStateList(
+                resources, R.color.selector_box_stroke_color, requireContext().theme
+            )
+            colorStateList?.let {
+                binding.playlistTitleField.setBoxStrokeColorStateList(it)
+                binding.playlistTitleField.hintTextColor = it
+                binding.playlistTitleField.defaultHintTextColor = it
+            }
+        } else {
+            val colorStateList = ResourcesCompat.getColorStateList(
+                resources, R.color.selector_box_stroke_color_initial, requireContext().theme
+            )
+            colorStateList?.let {
+                binding.playlistTitleField.setBoxStrokeColorStateList(it)
+                binding.playlistTitleField.hintTextColor = it
+                binding.playlistTitleField.defaultHintTextColor = it
+            }
         }
     }
 
