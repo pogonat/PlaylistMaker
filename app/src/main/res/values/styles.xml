@@ -149,7 +149,7 @@
 
     <style name="TextInputOutlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="hintTextColor">@color/yp_blue</item>
-        <item name="android:textColorHint">?attr/colorSecondaryVariant</item>
+        <item name="android:textColorHint">?attr/colorOnSecondary</item>
         <item name="boxStrokeColor">@color/selector_box_stroke_color_initial</item>
     </style>
 

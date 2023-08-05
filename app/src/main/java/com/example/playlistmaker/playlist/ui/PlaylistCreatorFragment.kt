@@ -24,6 +24,7 @@ import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
 import com.example.playlistmaker.playlist.presentation.models.PlaylistCreatorState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -163,6 +164,7 @@ class PlaylistCreatorFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                setTextInputViewColors(binding.playlistDescriptionField, descriptionInputText)
             }
         }
         descriptionTextWatcher?.let { binding.playlistDescription.addTextChangedListener(it) }
@@ -177,11 +179,10 @@ class PlaylistCreatorFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 titleInputText = s.toString()
                 controlCreateButton()
-                setTextInputViewColors()
             }
 
             override fun afterTextChanged(s: Editable?) {
-                setTextInputViewColors()
+                setTextInputViewColors(binding.playlistTitleField, titleInputText)
             }
         }
         titleTextWatcher?.let { binding.playlistTitle.addTextChangedListener(it) }
@@ -209,7 +210,8 @@ class PlaylistCreatorFragment : Fragment() {
 
         val file = File(
             filePath,
-            getString(R.string.playlist_cover_piece) + UUID.randomUUID().toString() + getString(R.string.jpg)
+            getString(R.string.playlist_cover_piece) + UUID.randomUUID()
+                .toString() + getString(R.string.jpg)
         )
 
         val inputStream = requireActivity().contentResolver.openInputStream(uri)
@@ -251,27 +253,30 @@ class PlaylistCreatorFragment : Fragment() {
         }
     }
 
-    private fun setTextInputViewColors() {
-        if (!binding.playlistTitle.text.isNullOrEmpty()) {
-            val colorStateList = ResourcesCompat.getColorStateList(
-                resources, R.color.selector_box_stroke_color, requireContext().theme
-            )
-            colorStateList?.let {
-                binding.playlistTitleField.setBoxStrokeColorStateList(it)
-                binding.playlistTitleField.hintTextColor = it
-                binding.playlistTitleField.defaultHintTextColor = it
-            }
+    private fun setTextInputViewColors(textInputField: TextInputLayout, text: String) {
+        val strokeColorRes = if (text.isEmpty()) {
+            R.color.selector_box_stroke_color_initial
         } else {
-            val colorStateList = ResourcesCompat.getColorStateList(
-                resources, R.color.selector_box_stroke_color_initial, requireContext().theme
-            )
-            colorStateList?.let {
-                binding.playlistTitleField.setBoxStrokeColorStateList(it)
-                binding.playlistTitleField.hintTextColor = it
-                binding.playlistTitleField.defaultHintTextColor = it
-            }
+            R.color.selector_box_stroke_color
         }
+        val hintTextColorRes = if (text.isEmpty()) {
+            R.color.selector_hint_text_color
+        } else {
+            strokeColorRes
+        }
+        val colorStateList =
+            ResourcesCompat.getColorStateList(resources, strokeColorRes, requireContext().theme)
+        val colorHintList =
+            ResourcesCompat.getColorStateList(resources, hintTextColorRes, requireContext().theme)
+
+
+        if (colorStateList != null) {
+            textInputField.setBoxStrokeColorStateList(colorStateList)
+            textInputField.hintTextColor = colorStateList
+        }
+        if (colorStateList != null) textInputField.defaultHintTextColor = colorHintList
     }
+
 
     companion object {
 
