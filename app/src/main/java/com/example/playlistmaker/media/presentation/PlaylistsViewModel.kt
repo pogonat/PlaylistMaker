@@ -29,7 +29,7 @@ class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : V
     }
 
     private fun render(playlists: List<Playlist>?) {
-        if (playlists == null) {
+        if (playlists.isNullOrEmpty()) {
             stateLiveData.postValue(PlaylistsState.Error)
         } else {
             stateLiveData.postValue(PlaylistsState.Content(playlists))
