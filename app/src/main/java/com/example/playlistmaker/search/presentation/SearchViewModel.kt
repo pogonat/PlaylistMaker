@@ -22,7 +22,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     }
 
     private val trackSearchDebounce =
-        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { searchRequestText ->
+        debounce<String>(SEARCH_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { searchRequestText ->
             searchTracks(searchRequestText)
         }
 
@@ -135,7 +135,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     companion object {
 
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val SEARCH_DEBOUNCE_DELAY_MILLIS = 2000L
 
     }
 

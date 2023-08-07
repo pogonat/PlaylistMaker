@@ -41,7 +41,7 @@ class FavouritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         onTrackClickDebounce = debounce<Track>(
-            CLICK_DEBOUNCE_DELAY,
+            CLICK_DEBOUNCE_DELAY_MILLIS,
             viewLifecycleOwner.lifecycleScope,
             false
         ) { track ->
@@ -103,7 +103,7 @@ class FavouritesFragment : Fragment() {
 
     companion object {
         fun newInstance() = FavouritesFragment()
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY_MILLIS = 1000L
 
     }
 }

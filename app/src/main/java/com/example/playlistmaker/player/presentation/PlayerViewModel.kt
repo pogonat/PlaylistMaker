@@ -35,12 +35,12 @@ class PlayerViewModel(
     private var foundTrack: Track? = null
 
     private val favouriteDebounce =
-        debounce<Track>(FAV_DEBOUNCE_DELAY, viewModelScope, true) { track ->
+        debounce<Track>(FAV_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { track ->
             toggleFavourite(track)
         }
 
     private val getPlaylistDebounce =
-        debounce(PLAYLIST_DEBOUNCE_DELAY, viewModelScope, true) {
+        debounce(PLAYLIST_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) {
             getPlaylists()
         }
 
@@ -220,7 +220,7 @@ class PlayerViewModel(
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (getPlayerState() == PlayerState.STATE_PLAYING) {
-                delay(TIMER_DELAY)
+                delay(TIMER_DELAY_MILLIS)
                 renderCurrentPosition()
             }
         }
@@ -236,9 +236,9 @@ class PlayerViewModel(
     }
 
     companion object {
-        private const val TIMER_DELAY = 300L
-        private const val FAV_DEBOUNCE_DELAY = 2000L
-        private const val PLAYLIST_DEBOUNCE_DELAY = 2000L
+        private const val TIMER_DELAY_MILLIS = 300L
+        private const val FAV_DEBOUNCE_DELAY_MILLIS = 2000L
+        private const val PLAYLIST_DEBOUNCE_DELAY_MILLIS = 2000L
     }
 
 }
