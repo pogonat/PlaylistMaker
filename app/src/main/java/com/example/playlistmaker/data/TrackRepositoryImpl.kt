@@ -7,10 +7,10 @@ import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.models.TracksSearchRequest
 import com.example.playlistmaker.data.network.NetworkSearch
+import com.example.playlistmaker.domain.TrackRepository
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
-import com.example.playlistmaker.search.domain.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.collections.ArrayList

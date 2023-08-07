@@ -35,9 +35,9 @@
             android:ellipsize="end"
             android:lines="1"
             app:layout_constrainedWidth="true"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
+            app:layout_constraintEnd_toStartOf="@id/imageView2"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toEndOf="@+id/albumArt"
+            app:layout_constraintStart_toEndOf="@id/albumArt"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -67,8 +67,8 @@
             app:layout_constraintEnd_toStartOf="@id/imageView3"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@+id/albumArt"
-            app:layout_constraintTop_toBottomOf="@+id/trackName" />
+            app:layout_constraintStart_toEndOf="@id/albumArt"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
 
         <ImageView
             android:id="@+id/imageView3"
@@ -79,9 +79,9 @@
             android:layout_marginTop="5dp"
             android:contentDescription="@string/ellipse_icon"
             android:src="@drawable/ellipse_icon"
-            app:layout_constraintEnd_toStartOf="@+id/trackDuration"
-            app:layout_constraintStart_toEndOf="@+id/artistName"
-            app:layout_constraintTop_toBottomOf="@+id/trackName" />
+            app:layout_constraintEnd_toStartOf="@id/trackDuration"
+            app:layout_constraintStart_toEndOf="@id/artistName"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
 
         <TextView
             android:id="@+id/trackDuration"
@@ -91,8 +91,8 @@
             android:layout_marginStart="5dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toStartOf="@id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageView3"
-            app:layout_constraintTop_toBottomOf="@+id/trackName" />
+            app:layout_constraintStart_toEndOf="@id/imageView3"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

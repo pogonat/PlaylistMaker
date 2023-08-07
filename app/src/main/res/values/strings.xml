@@ -15,6 +15,7 @@
     <string name="clear_icon">Clear Input</string>
     <string name="arrow_back">Return</string>
     <string name="album_artwork">Album Artwork</string>
+    <string name="playlist_cover">Playlist Cover</string>
     <string name="ellipse_icon">Small ellipse icon</string>
     <string name="arrow_forward">More</string>
     <string name="nothing_found">Ничего не нашлось</string>
@@ -38,5 +39,27 @@
     <string name="favorites">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <string name="agreement_header">Соглашение</string>
+    <string name="new_playlist">Новый плейлист</string>
     <string name="player_completed">00:00</string>
+    <string name="playlist_title">Название*</string>
+    <string name="playlist_description">Описание</string>
+    <string name="create">Создать</string>
+    <string name="empty_image_selection">Не выбрано изображение</string>
+    <string name="playlist_string_piece">"Плейлист %s создан"</string>
+    <string name="finish_playlist_creation">Завершить создание плейлиста?</string>
+    <string name="data_loss_message">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
+    <string name="playlists_folder_name">playlists</string>
+    <string name="playlist_cover_piece">playlist_cover_</string>
+    <string name="jpg">.jpg</string>
+    <string name="retry">Повторите попытку</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="add_track_error">Трек уже добавлен в плейлист %s</string>
+    <string name="track_added">Добавлено в плейлист %s</string>
+    <string name="playlist_update_error">Повторите попытку</string>
+    <plurals name="tracks_quantity_plurals">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
 </resources>

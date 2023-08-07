@@ -2,7 +2,6 @@ package com.example.playlistmaker.media.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +41,7 @@ class FavouritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         onTrackClickDebounce = debounce<Track>(
-            CLICK_DEBOUNCE_DELAY,
+            CLICK_DEBOUNCE_DELAY_MILLIS,
             viewLifecycleOwner.lifecycleScope,
             false
         ) { track ->
@@ -67,7 +66,6 @@ class FavouritesFragment : Fragment() {
         viewModel.getFavouritesList()
 
         viewModel.observeState().observe(viewLifecycleOwner) {
-            Log.d("FavouritesFragment", "State: $it")
             when (it) {
                 is FavouritesState.Loading -> showErrorMessage()
                 is FavouritesState.Content -> renderList(it.favList)
@@ -105,7 +103,7 @@ class FavouritesFragment : Fragment() {
 
     companion object {
         fun newInstance() = FavouritesFragment()
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY_MILLIS = 1000L
 
     }
 }

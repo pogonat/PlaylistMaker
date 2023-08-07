@@ -43,7 +43,7 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -56,7 +56,7 @@ class SearchFragment : Fragment() {
             binding.inputEditText.setText(userInputSearchText)
         }
 
-        onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+        onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY_MILLIS, viewLifecycleOwner.lifecycleScope, false) { track ->
             viewModel.saveItem(track)
             val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
             val trackId = track.trackId
@@ -227,7 +227,7 @@ class SearchFragment : Fragment() {
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val CLICK_DEBOUNCE_DELAY = 300L
+        private const val CLICK_DEBOUNCE_DELAY_MILLIS = 300L
 
     }
 

@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.playlistmaker.data.network.NetworkSearch
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.TrackStorage
+import com.example.playlistmaker.data.converters.PlaylistDbConverter
 import com.example.playlistmaker.data.converters.TrackDbConverter
 import com.example.playlistmaker.data.converters.TracksResponseToTrackMapper
 import com.example.playlistmaker.data.db.AppDatabase
@@ -16,7 +17,9 @@ import com.example.playlistmaker.domain.models.StorageKeys
 import com.example.playlistmaker.data.favourites.FavouritesRepositoryImpl
 import com.example.playlistmaker.domain.FavouritesRepository
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
-import com.example.playlistmaker.search.domain.TrackRepository
+import com.example.playlistmaker.domain.TrackRepository
+import com.example.playlistmaker.playlist.data.PlaylistRepositoryImpl
+import com.example.playlistmaker.playlist.domain.PlaylistRepository
 import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.example.playlistmaker.settings.data.SettingsStorage
 import com.example.playlistmaker.settings.data.SettingsStorageImpl
@@ -51,6 +54,7 @@ val dataModule = module {
 
     single<AppDatabase> {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -60,6 +64,10 @@ val dataModule = module {
 
     single<TrackDbConverter> {
         TrackDbConverter()
+    }
+
+    single<PlaylistDbConverter> {
+        PlaylistDbConverter(gson = get())
     }
 
     single<TrackStorage> {
@@ -80,6 +88,10 @@ val dataModule = module {
 
     single<TrackPlayerRepository> {
         TrackRepositoryImpl(networkSearch = get(), trackStorage = get(), mapper = get(), appDatabase = get())
+    }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(appDatabase = get(), playlistDbConverter = get(), trackDbConverter = get(), gson = get())
     }
 
     single<SettingsStorage> {
