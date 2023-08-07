@@ -91,19 +91,14 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun formatText(quantity: Int): String {
-        val lastDigit = quantity % 10
-        val quantityText = requireContext().getString(R.string.track_quantity)
-        val stringDefault = requireContext().getString(R.string.track_quantity_default)
-        val stringFew = requireContext().getString(R.string.track_quantity_few)
-        val stringMany = requireContext().getString(R.string.track_quantity_many)
-        return when (lastDigit) {
-            1 -> String.format(quantityText, lastDigit, stringDefault)
-            2, 3, 4 -> String.format(quantityText, lastDigit, stringFew)
-            else -> String.format(quantityText, lastDigit, stringMany)
-        }
+
+            return resources.getQuantityString(R.plurals.tracks_quantity_plurals, quantity, quantity)
+
     }
 
     companion object {
-        fun newInstance() = PlaylistsFragment()
+        fun newInstance(): PlaylistsFragment {
+            return PlaylistsFragment()
+        }
     }
 }

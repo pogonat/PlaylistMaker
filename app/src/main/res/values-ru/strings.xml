@@ -59,7 +59,11 @@
     <string name="track_added">Добавлено в плейлист %s</string>
     <string name="playlist_update_error">Повторите попытку</string>
     <plurals name="tracks_quantity_plurals">
-        <item quantity="one">%d track</item>
-        <item quantity="other">%d tracks</item>
+        <item quantity="zero">%d треков</item>
+        <item quantity="one">%d трек</item>
+        <item quantity="two">%d трека</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
     </plurals>
 </resources>
