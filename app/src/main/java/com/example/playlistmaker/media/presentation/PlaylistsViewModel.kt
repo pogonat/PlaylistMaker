@@ -11,13 +11,17 @@ import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
 
-    private val stateLiveData = MutableLiveData<PlaylistsState>()
-    fun observeState(): LiveData<PlaylistsState> = stateLiveData
+    private val _state = MutableLiveData<PlaylistsState>()
+    val state = _state
+
+    fun observeState(): LiveData<PlaylistsState> {
+        return state
+    }
 
     fun getPlaylists() {
         viewModelScope.launch {
 
-            stateLiveData.postValue(PlaylistsState.Loading)
+            state.postValue(PlaylistsState.Loading)
 
             playlistInteractor
                 .getPlaylists()
@@ -30,9 +34,9 @@ class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : V
 
     private fun render(playlists: List<Playlist>?) {
         if (playlists.isNullOrEmpty()) {
-            stateLiveData.postValue(PlaylistsState.Error)
+            state.postValue(PlaylistsState.Error)
         } else {
-            stateLiveData.postValue(PlaylistsState.Content(playlists))
+            state.postValue(PlaylistsState.Content(playlists))
         }
     }
 
