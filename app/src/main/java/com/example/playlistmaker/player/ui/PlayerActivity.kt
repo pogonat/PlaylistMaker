@@ -266,16 +266,9 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun formatText(quantity: Int): String {
-        val lastDigit = quantity % 10
-        val quantityText = getString(R.string.track_quantity)
-        val stringDefault = getString(R.string.track_quantity_default)
-        val stringFew = getString(R.string.track_quantity_few)
-        val stringMany = getString(R.string.track_quantity_many)
-        return when (lastDigit) {
-            1 -> String.format(quantityText, lastDigit, stringDefault)
-            2, 3, 4 -> String.format(quantityText, lastDigit, stringFew)
-            else -> String.format(quantityText, lastDigit, stringMany)
-        }
+
+        return resources.getQuantityString(R.plurals.tracks_quantity_plurals, quantity, quantity)
+
     }
 
     companion object {
