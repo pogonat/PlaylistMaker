@@ -10,7 +10,7 @@ interface SearchInteractor {
 
     fun saveTrack(track: Track)
 
-    fun getTracksHistory(): Flow<ArrayList<Track>>
+    fun getTracksHistory(): Flow<List<Track>>
 
     fun clearTracksHistory()
 
