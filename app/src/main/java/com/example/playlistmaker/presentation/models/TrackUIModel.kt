@@ -1,10 +1,11 @@
-package com.example.playlistmaker.domain.models
+package com.example.playlistmaker.presentation.models
 
-data class Track(
+data class TrackUIModel (
     val trackId: String,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: String,
+    val trackDurationFormatted: String,
     val artworkUrl100: String,
     val collectionName: String,
     val releaseDate: String,
@@ -13,5 +14,5 @@ data class Track(
     val previewUrl: String,
     val largeArtworkUrl: String,
     val collectionYear: String,
-    var isFavourite: Boolean = false
+    var isFavourite: Boolean
 )

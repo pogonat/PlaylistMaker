@@ -14,10 +14,10 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.player.presentation.models.PlayerScreenState
 import com.example.playlistmaker.player.presentation.models.PlayerStatus
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.media.ui.adapters.PlaylistPlayerAdapter
 import com.example.playlistmaker.player.presentation.PlayerViewModel
 import com.example.playlistmaker.playlist.ui.PlaylistCreatorFragment
+import com.example.playlistmaker.presentation.models.TrackUIModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,7 +26,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding: ActivityPlayerBinding
 
-    private lateinit var track: Track
+    private lateinit var track: TrackUIModel
 
     private var recycleAdapter: PlaylistPlayerAdapter? = null
 
@@ -204,12 +204,12 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun showLoading() {}
 
-    private fun showContent(foundTrack: Track) {
+    private fun showContent(foundTrack: TrackUIModel) {
         track = foundTrack
         binding.apply {
             trackTitle.text = foundTrack.trackName
             artist.text = foundTrack.artistName
-            duration.text = foundTrack.trackTime
+            duration.text = foundTrack.trackDurationFormatted
             timeRemained.text = binding.duration.text
             albumCollection.text = foundTrack.collectionName
             year.text = foundTrack.collectionYear

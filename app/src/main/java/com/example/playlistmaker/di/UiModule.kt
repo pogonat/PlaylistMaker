@@ -8,6 +8,7 @@ import com.example.playlistmaker.player.presentation.PlayerViewModel
 import com.example.playlistmaker.player.presentation.TrackPlayer
 import com.example.playlistmaker.player.presentation.TrackPlayerImpl
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
+import com.example.playlistmaker.presentation.models.TrackToTrackUIModelConverter
 import com.example.playlistmaker.search.presentation.SearchViewModel
 import com.example.playlistmaker.settings.presentation.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -28,12 +29,13 @@ val uiModule = module {
             playerInteractor = get(),
             trackPlayer = get(),
             favouritesInteractor = get(),
-            playlistInteractor = get()
+            playlistInteractor = get(),
+            trackToTrackUIModelConverter = get()
         )
     }
 
     viewModel<SearchViewModel> {
-        SearchViewModel(searchInteractor = get())
+        SearchViewModel(searchInteractor = get(), trackToTrackUIModelConverter = get())
     }
 
     viewModel<SettingsViewModel> {
@@ -45,7 +47,7 @@ val uiModule = module {
     }
 
     viewModel<FavouritesViewModel> {
-        FavouritesViewModel(favInteractor = get())
+        FavouritesViewModel(favInteractor = get(), trackToTrackUIModelConverter = get())
     }
 
     viewModel<PlaylistCreatorViewModel> {
@@ -54,6 +56,10 @@ val uiModule = module {
 
     single<ThemeManager> {
         ThemeManager(get())
+    }
+
+    single<TrackToTrackUIModelConverter> {
+        TrackToTrackUIModelConverter()
     }
 
 }

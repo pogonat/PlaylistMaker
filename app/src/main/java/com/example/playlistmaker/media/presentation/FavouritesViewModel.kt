@@ -5,13 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.FavouritesInteractor
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.media.presentation.models.FavouritesState
+import com.example.playlistmaker.presentation.models.TrackToTrackUIModelConverter
 import kotlinx.coroutines.launch
 
-class FavouritesViewModel(private val favInteractor: FavouritesInteractor) : ViewModel() {
-    private val favouritesState = MutableLiveData<FavouritesState>()
-    fun observeState(): LiveData<FavouritesState> = favouritesState
+class FavouritesViewModel(
+    private val favInteractor: FavouritesInteractor,
+    private val trackToTrackUIModelConverter: TrackToTrackUIModelConverter
+) : ViewModel() {
+    private val _state = MutableLiveData<FavouritesState>()
+    private val state = _state
+
+    fun observeState(): LiveData<FavouritesState> {
+        return state
+    }
 
     init {
         getFavouritesList()
@@ -19,13 +26,12 @@ class FavouritesViewModel(private val favInteractor: FavouritesInteractor) : Vie
 
     fun getFavouritesList() {
         viewModelScope.launch {
-            favInteractor.getFavourites().collect{list ->
-                val favList = mutableListOf<Track>()
-                favList.addAll(list)
-                if (favList.isNotEmpty()) {
-                    favouritesState.postValue(FavouritesState.Content(favList))
+            favInteractor.getFavourites().collect { list ->
+                if (list.isNotEmpty()) {
+                    val favList = trackToTrackUIModelConverter.mapListToTrackUIModels(list)
+                    state.postValue(FavouritesState.Content(favList))
                 } else {
-                    favouritesState.postValue(FavouritesState.Error)
+                    state.postValue(FavouritesState.Error)
                 }
             }
         }

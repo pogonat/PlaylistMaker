@@ -8,18 +8,18 @@ class TrackDbConverter {
 
     fun map(track: Track): TrackEntity {
         return TrackEntity(
-            track.trackId,
-            track.artworkUrl100,
-            track.largeArtworkUrl,
-            track.trackName,
-            track.artistName,
-            track.collectionName,
-            track.releaseDate,
-            track.primaryGenreName,
-            track.country,
-            track.trackTime,
-            track.previewUrl,
-            System.currentTimeMillis()
+            trackId = track.trackId,
+            artworkUrl100 = track.artworkUrl100,
+            largeArtworkUrl = track.largeArtworkUrl,
+            trackName = track.trackName,
+            artistName = track.artistName,
+            collectionName = track.collectionName,
+            releaseDate = track.releaseDate,
+            primaryGenreName = track.primaryGenreName,
+            country = track.country,
+            trackDurationMillis = track.trackTimeMillis,
+            previewUrl = track.previewUrl,
+            createdTimeStamp = System.currentTimeMillis()
         )
     }
 
@@ -28,7 +28,7 @@ class TrackDbConverter {
             track.trackId,
             track.trackName ?: "",
             track.artistName ?: "",
-            track.trackTime ?: "",
+            track.trackDurationMillis ?: "",
             track.artworkUrl100 ?: "",
             track.collectionName ?: "",
             track.releaseDate ?: "",
@@ -51,7 +51,7 @@ class TrackDbConverter {
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.trackTime,
+            track.trackTimeMillis,
             track.previewUrl,
             System.currentTimeMillis()
         )
