@@ -36,7 +36,7 @@ data class TrackEntity(
     val country: String?,
 
     @ColumnInfo(name = "track_duration")
-    val trackTime: String?,
+    val trackDurationMillis: String?,
 
     @ColumnInfo(name = "track_sample_url")
     val previewUrl: String?,
