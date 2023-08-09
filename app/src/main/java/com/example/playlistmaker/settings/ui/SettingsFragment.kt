@@ -24,7 +24,7 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,7 +50,7 @@ class SettingsFragment : Fragment() {
                 findNavController().navigate(R.id.action_settingsFragment_to_agreementFragment)
         }
 
-        viewModel.getSwitcherStateLiveData().observe(viewLifecycleOwner) { switcherState ->
+        viewModel.state.observe(viewLifecycleOwner) { switcherState ->
             render(switcherState)
         }
 

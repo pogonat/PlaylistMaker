@@ -137,7 +137,7 @@ class SearchFragment : Fragment() {
             binding.searchHistory.isVisible = false
         }
 
-        viewModel.getScreenStateLiveData().observe(viewLifecycleOwner) { screenState ->
+        viewModel.state.observe(viewLifecycleOwner) { screenState ->
             render(screenState)
         }
     }

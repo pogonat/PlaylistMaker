@@ -43,7 +43,7 @@ class PlaylistsFragment : Fragment() {
 
         viewModel.getPlaylists()
 
-        viewModel.observeState().observe(viewLifecycleOwner) {
+        viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistsState.Loading -> showLoading()
                 is PlaylistsState.Content -> showContent(it.playlists)

@@ -14,11 +14,8 @@ class FavouritesViewModel(
     private val trackToTrackUIModelConverter: TrackToTrackUIModelConverter
 ) : ViewModel() {
     private val _state = MutableLiveData<FavouritesState>()
-    private val state = _state
+    val state: LiveData<FavouritesState> get() = _state
 
-    fun observeState(): LiveData<FavouritesState> {
-        return state
-    }
 
     init {
         getFavouritesList()
@@ -29,9 +26,9 @@ class FavouritesViewModel(
             favInteractor.getFavourites().collect { list ->
                 if (list.isNotEmpty()) {
                     val favList = trackToTrackUIModelConverter.mapListToTrackUIModels(list)
-                    state.postValue(FavouritesState.Content(favList))
+                    _state.postValue(FavouritesState.Content(favList))
                 } else {
-                    state.postValue(FavouritesState.Error)
+                    _state.postValue(FavouritesState.Error)
                 }
             }
         }

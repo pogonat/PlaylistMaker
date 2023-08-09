@@ -65,7 +65,7 @@ class FavouritesFragment : Fragment() {
 
         viewModel.getFavouritesList()
 
-        viewModel.observeState().observe(viewLifecycleOwner) {
+        viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is FavouritesState.Loading -> showErrorMessage()
                 is FavouritesState.Content -> renderList(it.favList)

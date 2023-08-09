@@ -15,7 +15,8 @@ class SearchViewModel(
     private val trackToTrackUIModelConverter: TrackToTrackUIModelConverter
     ) : ViewModel() {
 
-    private val stateLiveData = MutableLiveData<SearchScreenState>()
+    private val _state = MutableLiveData<SearchScreenState>()
+    val state: LiveData<SearchScreenState> get() = _state
 
     private var userInputSearchText: String? = null
 
@@ -29,8 +30,6 @@ class SearchViewModel(
         debounce<String>(SEARCH_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { searchRequestText ->
             searchTracks(searchRequestText)
         }
-
-    fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     private fun searchTracks(searchRequestText: String) {
 
@@ -138,7 +137,7 @@ class SearchViewModel(
     }
 
     private fun renderState(state: SearchScreenState) {
-        stateLiveData.postValue(state)
+        _state.postValue(state)
     }
 
     companion object {

@@ -66,7 +66,7 @@ class PlaylistCreatorFragment : Fragment() {
             }
         }
 
-        viewModel.observeState().observe(viewLifecycleOwner) { screenState ->
+        viewModel.state.observe(viewLifecycleOwner) { screenState ->
             render(screenState)
         }
 
