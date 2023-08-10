@@ -12,6 +12,5 @@ data class Track(
     val country: String,
     val previewUrl: String,
     val largeArtworkUrl: String,
-    val collectionYear: String,
     var isFavourite: Boolean = false
 )
