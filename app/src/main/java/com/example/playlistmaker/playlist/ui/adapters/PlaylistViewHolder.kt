@@ -8,7 +8,8 @@ import com.example.playlistmaker.databinding.ListItemPlaylistBinding
 import com.example.playlistmaker.domain.models.Playlist
 
 class PlaylistViewHolder(
-    private val binding: ListItemPlaylistBinding
+    private val binding: ListItemPlaylistBinding,
+    private val clickListener: PlaylistAdapter.PlaylistClickListener
 ): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(playlist: Playlist) {
@@ -23,6 +24,8 @@ class PlaylistViewHolder(
             .transform(RoundedCorners(5))
             .placeholder(R.drawable.placeholder_image)
             .into(binding.playlistCover)
+
+        itemView.setOnClickListener{ clickListener.onPlaylistClick(playlist = playlist) }
 
     }
 
