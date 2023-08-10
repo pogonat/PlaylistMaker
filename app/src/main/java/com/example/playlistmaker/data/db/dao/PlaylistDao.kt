@@ -16,6 +16,8 @@ interface PlaylistDao {
     fun updatePlaylist(trackList: String, quantity: Int, id: Int): Int
 
     @Query("SELECT * FROM playlist_table ORDER BY created_at DESC")
-    suspend fun getPlaylists(): List<PlaylistEntity>
+    fun getPlaylists(): List<PlaylistEntity>
 
+    @Query("SELECT * FROM playlist_table WHERE playlistId=:id")
+    fun getPlaylistById(id: Int): PlaylistEntity
 }
