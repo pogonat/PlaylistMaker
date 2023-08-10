@@ -1,6 +1,5 @@
 package com.example.playlistmaker.data.converters
 
-import com.example.playlistmaker.core.DateTimeUtil
 import com.example.playlistmaker.data.models.TracksResponse
 import com.example.playlistmaker.domain.models.Track
 
@@ -20,8 +19,7 @@ class TracksResponseToTrackMapper: (TracksResponse) -> List<Track> {
                 country = it.country ?: "",
                 previewUrl = it.previewUrl ?: "",
                 largeArtworkUrl =
-                    it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: "",
-                collectionYear = DateTimeUtil.formatCollectionYear(it.releaseDate)
+                    it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: ""
             )
         }
     }
