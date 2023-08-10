@@ -6,14 +6,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.ListItemPlaylistBinding
 import com.example.playlistmaker.domain.models.Playlist
 
-class PlaylistAdapter(private val playlists: List<Playlist>): RecyclerView.Adapter<PlaylistViewHolder>() {
+class PlaylistAdapter(
+    private val playlists: List<Playlist>,
+    private val clickListener: PlaylistClickListener): RecyclerView.Adapter<PlaylistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
 
         val view = LayoutInflater.from(parent.context)
 
         return PlaylistViewHolder(
-            ListItemPlaylistBinding.inflate(view, parent, false)
+            ListItemPlaylistBinding.inflate(view, parent, false),
+            clickListener
         )
     }
 
@@ -23,6 +26,12 @@ class PlaylistAdapter(private val playlists: List<Playlist>): RecyclerView.Adapt
 
     override fun getItemCount(): Int {
         return playlists.size
+    }
+
+    interface PlaylistClickListener {
+
+        fun onPlaylistClick(playlist: Playlist)
+
     }
 
 }
