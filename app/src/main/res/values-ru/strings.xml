@@ -58,6 +58,11 @@
     <string name="add_track_error">Трек уже добавлен в плейлист %s</string>
     <string name="track_added">Добавлено в плейлист %s</string>
     <string name="playlist_update_error">Повторите попытку</string>
+    <string name="delete_track_question">Хотите удалить трек?</string>
+    <string name="answer_negative">Нет</string>
+    <string name="answer_positive">Да</string>
+    <string name="share_icon">Share icon</string>
+    <string name="menu_icon">Settings</string>
     <plurals name="tracks_quantity_plurals">
         <item quantity="zero">%d треков</item>
         <item quantity="one">%d трек</item>
@@ -65,5 +70,13 @@
         <item quantity="few">%d трека</item>
         <item quantity="many">%d треков</item>
         <item quantity="other">%d треков</item>
+    </plurals>
+    <plurals name="playlist_duration_plurals">
+        <item quantity="zero">%d минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="two">%d минуты</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
     </plurals>
 </resources>
