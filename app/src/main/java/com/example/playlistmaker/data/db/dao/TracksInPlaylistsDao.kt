@@ -12,7 +12,7 @@ interface TracksInPlaylistsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertTrack(track: TracksInPlaylistsEntity): Long
 
-    @Query("SELECT id FROM track_table")
-    suspend fun getTrackIdsFromPlaylists(): List<String>
+    @Query("SELECT * FROM tracks_in_playlists_table")
+    fun getTracksFromPlaylists(): List<TracksInPlaylistsEntity>
 
 }
