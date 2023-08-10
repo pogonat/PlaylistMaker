@@ -15,6 +15,13 @@ object DateTimeUtil {
         ).format(trackTime?.toLong() ?: 0f)
     }
 
+    fun formatDurationMillisToTime(durationMillis: Long): String {
+        return SimpleDateFormat(
+            "mm",
+            Locale.getDefault()
+        ).format(durationMillis)
+    }
+
     fun formatCollectionYear(releaseDate: String?): String {
         return releaseDate?.substring(YEAR_INDEX_STARTING, YEAR_INDEX_ENDING) ?: ""
     }
