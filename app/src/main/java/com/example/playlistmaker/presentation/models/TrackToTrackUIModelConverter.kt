@@ -19,7 +19,7 @@ class TrackToTrackUIModelConverter {
             country = track.country,
             previewUrl = track.previewUrl,
             largeArtworkUrl = track.largeArtworkUrl,
-            collectionYear = track.collectionYear,
+            collectionYear = DateTimeUtil.formatCollectionYear(track.releaseDate),
             isFavourite = track.isFavourite
         )
     }
@@ -36,8 +36,7 @@ class TrackToTrackUIModelConverter {
             primaryGenreName = trackUIModel.primaryGenreName,
             country = trackUIModel.country,
             previewUrl = trackUIModel.previewUrl,
-            largeArtworkUrl = trackUIModel.largeArtworkUrl,
-            collectionYear = trackUIModel.collectionYear
+            largeArtworkUrl = trackUIModel.largeArtworkUrl
         )
     }
 
