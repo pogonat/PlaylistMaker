@@ -35,25 +35,41 @@ class TrackDbConverter {
             track.primaryGenreName ?: "",
             track.country ?: "",
             track.previewUrl ?: "",
-            track.largeArtworkUrl ?: "",
-            track.releaseDate ?: ""
+            track.largeArtworkUrl ?: ""
         )
     }
 
     fun mapToTracksInPlaylistsEntity(track: Track): TracksInPlaylistsEntity {
         return TracksInPlaylistsEntity(
-            track.trackId,
-            track.artworkUrl100,
-            track.largeArtworkUrl,
-            track.trackName,
-            track.artistName,
-            track.collectionName,
-            track.releaseDate,
-            track.primaryGenreName,
-            track.country,
-            track.trackTimeMillis,
-            track.previewUrl,
-            System.currentTimeMillis()
+            trackId = track.trackId,
+            artworkUrl100 = track.artworkUrl100,
+            largeArtworkUrl = track.largeArtworkUrl,
+            trackName = track.trackName,
+            artistName = track.artistName,
+            collectionName = track.collectionName,
+            releaseDate = track.releaseDate,
+            primaryGenreName = track.primaryGenreName,
+            country = track.country,
+            trackTime = track.trackTimeMillis,
+            previewUrl = track.previewUrl,
+            createdTimeStamp = System.currentTimeMillis()
         )
     }
+
+    fun mapFromTracksInPlaylistsEntity(tracksInPlaylistsEntity: TracksInPlaylistsEntity): Track {
+        return Track(
+            tracksInPlaylistsEntity.trackId,
+            tracksInPlaylistsEntity.trackName ?: "",
+            tracksInPlaylistsEntity.artistName ?: "",
+            tracksInPlaylistsEntity.trackTime ?: "",
+            tracksInPlaylistsEntity.artworkUrl100 ?: "",
+            tracksInPlaylistsEntity.collectionName ?: "",
+            tracksInPlaylistsEntity.releaseDate ?: "",
+            tracksInPlaylistsEntity.primaryGenreName ?: "",
+            tracksInPlaylistsEntity.country ?: "",
+            tracksInPlaylistsEntity.previewUrl ?: "",
+            tracksInPlaylistsEntity.largeArtworkUrl ?: ""
+        )
+    }
+
 }
