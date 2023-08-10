@@ -160,26 +160,24 @@
         android:orientation="horizontal"
         android:visibility="gone"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="176dp"
+        app:behavior_peekHeight="220dp"
         android:minHeight="96dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <ScrollView
-            android:id="@+id/scrollViewBottomSheet"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewTracks"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:visibility="visible"
+                android:layout_marginTop="24dp"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/list_item_track" />
-        </ScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
