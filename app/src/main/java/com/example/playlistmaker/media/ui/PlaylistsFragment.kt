@@ -72,6 +72,11 @@ class PlaylistsFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getPlaylists()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         recycleAdapter = null
