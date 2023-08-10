@@ -13,6 +13,6 @@ interface TracksInPlaylistsDao {
     fun insertTrack(track: TracksInPlaylistsEntity): Long
 
     @Query("SELECT * FROM tracks_in_playlists_table")
-    fun getTracksFromPlaylists(): List<TracksInPlaylistsEntity>
+    suspend fun getTracksFromPlaylists(): List<TracksInPlaylistsEntity>
 
 }

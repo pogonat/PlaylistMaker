@@ -53,6 +53,17 @@ class PlaylistRepositoryImpl(
         emit(convertFromPlaylistEntity(playlists))
     }
 
+    override fun getPlaylistById(playlistId: Int): Flow<Playlist> = flow {
+        val playlist = appDatabase.playListDao().getPlaylistById(playlistId)
+        emit(playlistDbConverter.map(playlist))
+    }
+
+    override fun getTracksFromPlaylists(trackIds: List<String>): Flow<List<Track>> = flow {
+        val tracksFromPlaylistsList = appDatabase.tracksInPlaylistsDao().getTracksFromPlaylists()
+        val tracksInPlaylist = tracksFromPlaylistsList.filter { it.trackId in trackIds }
+        emit(tracksInPlaylist.map { convertToTrack(it) })
+    }
+
     private fun convertFromPlaylistEntity(playlists: List<PlaylistEntity>): List<Playlist> {
         return playlists.map { playlist -> playlistDbConverter.map(playlist) }
     }
@@ -65,6 +76,10 @@ class PlaylistRepositoryImpl(
 
     private fun convertTrackToEntity(track: Track): TracksInPlaylistsEntity {
         return trackDbConverter.mapToTracksInPlaylistsEntity(track)
+    }
+
+    private fun convertToTrack(tracksInPlaylistsEntity: TracksInPlaylistsEntity): Track {
+        return trackDbConverter.mapFromTracksInPlaylistsEntity(tracksInPlaylistsEntity)
     }
 
     private fun updateTrackList(trackList: List<String>?, trackId: String): String {
