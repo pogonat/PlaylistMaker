@@ -46,6 +46,8 @@ class PlaylistsFragment : Fragment() {
             findNavController().navigate(R.id.action_mediaFragment_to_playlistCreatorFragment)
         }
 
+        setAdapter()
+
         viewModel.getPlaylists()
 
         viewModel.state.observe(viewLifecycleOwner) {
@@ -55,7 +57,9 @@ class PlaylistsFragment : Fragment() {
                 is PlaylistsState.Error -> showErrorMessage()
             }
         }
+    }
 
+    private fun setAdapter() {
         onPlaylistClickDebounce = debounce<Playlist>(
             CLICK_DEBOUNCE_DELAY_MILLIS,
             viewLifecycleOwner.lifecycleScope,
@@ -70,6 +74,15 @@ class PlaylistsFragment : Fragment() {
             }
         }
 
+        recycleAdapter = PlaylistAdapter(
+            object : PlaylistAdapter.PlaylistClickListener {
+                override fun onPlaylistClick(playlist: Playlist) {
+                    onPlaylistClickDebounce(playlist)
+                }
+            }
+        )
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerView.adapter = recycleAdapter
     }
 
     override fun onResume() {
@@ -89,24 +102,12 @@ class PlaylistsFragment : Fragment() {
             playlist.copy(tracksQuantityText = formatText(playlist.tracksQuantity))
         }
 
-        recycleAdapter = PlaylistAdapter(
-            playlistsList,
-            object : PlaylistAdapter.PlaylistClickListener {
-                override fun onPlaylistClick(playlist: Playlist) {
-                    onPlaylistClickDebounce(playlist)
-                }
-            }
-        )
+        recycleAdapter?.updateAdapter(playlistsList)
 
         binding.apply {
-
-            recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
-            recyclerView.adapter = recycleAdapter
-
             placeholderErrorImage.isVisible = false
             placeholderMessage.isVisible = false
         }
-
     }
 
     private fun showLoading() {

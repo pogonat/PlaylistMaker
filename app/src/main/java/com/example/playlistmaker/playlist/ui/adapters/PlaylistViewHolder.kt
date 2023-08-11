@@ -1,5 +1,6 @@
 package com.example.playlistmaker.playlist.ui.adapters
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -18,14 +19,16 @@ class PlaylistViewHolder(
 
         binding.tracksQuantity.text = playlist.tracksQuantityText
 
-        Glide.with(binding.playlistCover)
-            .load(playlist.imagePath)
-            .centerCrop()
-            .transform(RoundedCorners(5))
-            .placeholder(R.drawable.placeholder_image)
-            .into(binding.playlistCover)
-
-        itemView.setOnClickListener{ clickListener.onPlaylistClick(playlist = playlist) }
+        if (playlist.imagePath.isNotEmpty()) {
+            Glide.with(binding.playlistCover)
+                .load(playlist.imagePath)
+                .centerCrop()
+                .transform(RoundedCorners(5))
+                .placeholder(R.drawable.placeholder_image)
+                .into(binding.playlistCover)
+        }
+        itemView.setOnClickListener{ clickListener.onPlaylistClick(playlist = playlist)
+        Log.e("CLICKED", "${playlist}")}
 
     }
 

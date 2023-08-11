@@ -7,8 +7,9 @@ import com.example.playlistmaker.databinding.ListItemPlaylistBinding
 import com.example.playlistmaker.domain.models.Playlist
 
 class PlaylistAdapter(
-    private val playlists: List<Playlist>,
     private val clickListener: PlaylistClickListener): RecyclerView.Adapter<PlaylistViewHolder>() {
+
+    private val playlists = ArrayList<Playlist>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
 
@@ -26,6 +27,12 @@ class PlaylistAdapter(
 
     override fun getItemCount(): Int {
         return playlists.size
+    }
+
+    fun updateAdapter(playlistsList: List<Playlist>) {
+        playlists.clear()
+        playlists.addAll(playlistsList)
+        notifyDataSetChanged()
     }
 
     interface PlaylistClickListener {
