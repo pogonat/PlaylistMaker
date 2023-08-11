@@ -202,11 +202,14 @@ class PlayerActivity : AppCompatActivity() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    private fun showLoading() {}
+    private fun showLoading() {
+        binding.progressBar.isVisible = true
+    }
 
     private fun showContent(foundTrack: TrackUIModel) {
         track = foundTrack
         binding.apply {
+            progressBar.isVisible = false
             trackTitle.text = foundTrack.trackName
             artist.text = foundTrack.artistName
             duration.text = foundTrack.trackDurationFormatted
