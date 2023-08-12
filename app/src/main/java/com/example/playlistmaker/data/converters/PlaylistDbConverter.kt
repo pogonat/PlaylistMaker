@@ -24,7 +24,7 @@ class PlaylistDbConverter(private val gson: Gson) {
             playlistName = playlist.playlistName,
             playlistDescription = playlist.playlistDescription,
             imagePath = playlist.imagePath,
-            trackList = convertFromString(playlist.trackList),
+            trackList = convertFromJsonToStringList(playlist.trackList),
             tracksQuantity = playlist.tracksQuantity,
             tracksQuantityText = null
         )
@@ -39,7 +39,7 @@ class PlaylistDbConverter(private val gson: Gson) {
         }
     }
 
-    private fun convertFromString(trackList: String): List<String>? {
+    fun convertFromJsonToStringList(trackList: String): List<String>? {
         return when (trackList) {
             "" -> null
             else -> { gson.fromJson(trackList, Array<String>::class.java).toList()
