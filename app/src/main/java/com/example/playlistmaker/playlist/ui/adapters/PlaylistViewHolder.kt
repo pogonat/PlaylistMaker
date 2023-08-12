@@ -19,7 +19,7 @@ class PlaylistViewHolder(
         binding.tracksQuantity.text = playlist.tracksQuantityText
 
 
-        if (playlist.imagePath.isNotEmpty() == true) {
+        if (playlist.imagePath.isNotEmpty()) {
             Glide.with(binding.playlistCover)
                 .load(playlist.imagePath)
                 .centerCrop()
