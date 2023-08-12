@@ -20,27 +20,21 @@ class PlaylistRepositoryImpl(
 ) : PlaylistRepository {
 
     override suspend fun createPlaylist(playlist: Playlist) {
-        appDatabase
-            .playListDao()
-            .insertPlaylist(convertToPlaylistEntity(playlist))
+        appDatabase.playListDao().insertPlaylist(convertToPlaylistEntity(playlist))
     }
 
-    override fun updatePlaylist(playlist: Playlist, track: Track): Flow<Boolean> = flow {
+    override fun addPlaylist(playlist: Playlist, track: Track): Flow<Boolean> = flow {
         if (playlist.playlistId == null) {
             emit(false)
         } else {
-            val updateResult =
-                appDatabase.playListDao()
-                    .updatePlaylist(
-                        trackList = updateTrackList(playlist.trackList, track.trackId),
-                        quantity = playlist.tracksQuantity + 1,
-                        id = playlist.playlistId,
-                    )
+            val updateResult = appDatabase.playListDao().updatePlaylist(
+                trackList = getUpdatedTrackListJson(playlist.trackList, track.trackId),
+                quantity = (playlist.trackList?.size ?: 0) + 1,
+                id = playlist.playlistId
+            )
 
             if (updateResult != NUMBER_OF_LINES_WHEN_UPDATE_FAILED) {
-                appDatabase
-                    .tracksInPlaylistsDao()
-                    .insertTrack(convertTrackToEntity(track))
+                appDatabase.tracksInPlaylistsDao().insertTrack(convertTrackToEntity(track))
                 emit(true)
             } else {
                 emit(false)
@@ -58,10 +52,102 @@ class PlaylistRepositoryImpl(
         emit(playlistDbConverter.map(playlist))
     }
 
-    override fun getTracksFromPlaylists(trackIds: List<String>): Flow<List<Track>> = flow {
-        val tracksFromPlaylistsList = appDatabase.tracksInPlaylistsDao().getTracksFromPlaylists()
-        val tracksInPlaylist = tracksFromPlaylistsList.filter { it.trackId in trackIds }
-        emit(tracksInPlaylist.map { convertToTrack(it) })
+    override fun getTracksFromPlaylist(trackIds: List<String>): Flow<List<Track>> = flow {
+        val tracks = appDatabase.tracksInPlaylistsDao().getTracksFromPlaylists()
+        val tracksFiltered = filterTracksByListIds(trackIds, tracks)
+        emit(tracksFiltered.map { convertToTrack(it) })
+    }
+
+    override fun deleteTrackAndGetUpdatedList(
+        playlistId: Int,
+        trackId: String
+    ): Flow<List<Track>?> = flow {
+        val playlistEntity = appDatabase.playListDao().getPlaylistById(playlistId)
+        val playlist = playlistDbConverter.map(playlistEntity)
+
+        if (playlist.trackList.isNullOrEmpty()) {
+            emit(null)
+        } else {
+
+            val upatedTrackList: List<String> = deleteFromTrackList(playlist.trackList!!, trackId)
+            val updateResult: Int = appDatabase.playListDao().updatePlaylist(
+                trackList = gson.toJson(upatedTrackList),
+                quantity = upatedTrackList.size,
+                id = playlistId
+            )
+
+            if (updateResult != NUMBER_OF_LINES_WHEN_UPDATE_FAILED) {
+                deleteTrackFromBaseOfAllTracks(trackId)
+
+                if (upatedTrackList.isNotEmpty()) {
+                    val tracksFromPlaylists: List<TracksInPlaylistsEntity> =
+                        appDatabase.tracksInPlaylistsDao().getTracksFromPlaylists()
+
+                    val tracksInPlaylist: List<TracksInPlaylistsEntity> =
+                        filterTracksByListIds(upatedTrackList, tracksFromPlaylists)
+
+                    val updatedListOfTracks: List<Track> = tracksInPlaylist.map { convertToTrack(it) }
+                    emit(updatedListOfTracks)
+                } else {
+                    emit(emptyList<Track>())
+                }
+            } else {
+                emit(null)
+            }
+        }
+    }
+
+    private fun getUpdatedTrackListJson(trackList: List<String>?, trackId: String): String {
+        val newList = mutableListOf<String>()
+        trackList?.let { newList.addAll(trackList) }
+        newList.add(trackId)
+        return gson.toJson(newList)
+    }
+
+    private fun filterTracksByListIds(
+        trackIds: List<String>,
+        trackList: List<TracksInPlaylistsEntity>
+    ): List<TracksInPlaylistsEntity> {
+        val resultList = mutableListOf<TracksInPlaylistsEntity>()
+        for (id in trackIds) {
+            for (track in trackList) {
+                if (track.trackId == id) {
+                    resultList.add(track)
+                    break
+                }
+            }
+        }
+        return resultList
+    }
+
+    private fun deleteFromTrackList(trackList: List<String>, trackId: String): List<String> {
+        return trackList.filter { it != trackId }
+    }
+
+    private fun checkTrackInPlaylists(trackId: String, playlists: List<PlaylistEntity>): Boolean {
+        for (playlist in playlists) {
+            val trackList = playlistDbConverter.convertFromJsonToStringList(playlist.trackList)
+            if (!trackList.isNullOrEmpty()) {
+                if (trackId in trackList) return true
+            }
+        }
+        return false
+    }
+
+    private suspend fun deleteTrackFromBaseOfAllTracks(id: String) {
+        val playlists = appDatabase.playListDao().getPlaylists()
+        val isInAnyPlaylist = checkTrackInPlaylists(id, playlists)
+
+        if (isInAnyPlaylist) return
+
+        val tracksFromPlaylistsList =
+            appDatabase.tracksInPlaylistsDao().getTracksFromPlaylists()
+        for (entity in tracksFromPlaylistsList) {
+            if (id == entity.trackId) {
+                appDatabase.tracksInPlaylistsDao().deleteTrack(entity)
+                break
+            }
+        }
     }
 
     private fun convertFromPlaylistEntity(playlists: List<PlaylistEntity>): List<Playlist> {
@@ -80,17 +166,6 @@ class PlaylistRepositoryImpl(
 
     private fun convertToTrack(tracksInPlaylistsEntity: TracksInPlaylistsEntity): Track {
         return trackDbConverter.mapFromTracksInPlaylistsEntity(tracksInPlaylistsEntity)
-    }
-
-    private fun updateTrackList(trackList: List<String>?, trackId: String): String {
-        val newList = ArrayList<String>()
-        if (trackList.isNullOrEmpty()) {
-            newList.add(trackId)
-        } else {
-            newList.addAll(trackList)
-            newList.add(trackId)
-        }
-        return gson.toJson(newList)
     }
 
     companion object {

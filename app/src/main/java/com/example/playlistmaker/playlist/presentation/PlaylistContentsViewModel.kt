@@ -25,9 +25,9 @@ class PlaylistContentsViewModel(
 
     fun getPlaylistById(playlistId: Int) {
 
-        _state.postValue(PlaylistContentsState.Loading)
-
         viewModelScope.launch {
+
+            _state.postValue(PlaylistContentsState.Loading)
 
             var foundPlaylist: Playlist? = null
             var foundTrackList: List<Track>? = null
@@ -37,16 +37,34 @@ class PlaylistContentsViewModel(
                     foundPlaylist = playlist
                 }
 
-            if (foundPlaylist != null && !foundPlaylist!!.trackList.isNullOrEmpty()) {
-                val trackIds = foundPlaylist!!.trackList
-                if (!trackIds.isNullOrEmpty()) {
-                    playlistInteractor.getTracksFromPlaylists(trackIds)
-                        .collect { trackList ->
-                            foundTrackList = trackList
-                        }
-                }
+            val trackIds = foundPlaylist?.trackList
+            if (!trackIds.isNullOrEmpty()) {
+                playlistInteractor.getTracksFromPlaylist(trackIds)
+                    .collect { trackList ->
+                        foundTrackList = trackList
+                    }
             }
             renderState(foundPlaylist, foundTrackList)
+        }
+    }
+
+    fun deleteTrackFromPlaylist(playlistId: Int, trackId: String) {
+        viewModelScope.launch {
+            playlistInteractor.deleteTrackAndGetUpdatedList(playlistId, trackId).collect { trackList ->
+                trackList?.let{
+                    val trackUIModelList = mapTotrackUIModels(trackList).reversed()
+                    val playlistDuration = getPlaylistDurationString(trackUIModelList.toSet())
+
+                    _state.postValue(
+                        PlaylistContentsState.UpdatePlaylist(
+                            trackList = trackUIModelList,
+                            playlistDuration = playlistDuration
+                        )
+                    )
+                } ?: run {
+                    _state.postValue(PlaylistContentsState.Error)
+                }
+            }
         }
     }
 
@@ -56,7 +74,7 @@ class PlaylistContentsViewModel(
                 _state.postValue(PlaylistContentsState.Content(foundPlaylist, null, null))
             } else {
 
-                val trackUIModelList = foundTrackList.map { trackUIModelConverter.map(it) }
+                val trackUIModelList = mapTotrackUIModels(foundTrackList).reversed()
                 val playlistDuration = getPlaylistDurationString(trackUIModelList.toSet())
 
                 _state.postValue(
@@ -71,6 +89,10 @@ class PlaylistContentsViewModel(
         } ?: run {
             _state.postValue(PlaylistContentsState.Error)
         }
+    }
+
+    private fun mapTotrackUIModels(trackList: List<Track>): List<TrackUIModel> {
+        return trackList.map { trackUIModelConverter.map(it) }
     }
 
     private fun getPlaylistDurationString(trackUIModelList: Set<TrackUIModel>): String {

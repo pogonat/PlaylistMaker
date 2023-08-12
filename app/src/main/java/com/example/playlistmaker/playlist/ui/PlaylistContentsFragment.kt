@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.databinding.FragmentPlaylistcontentsBinding
@@ -53,7 +55,15 @@ class PlaylistContentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeViewModel()
+        setBottomSheet()
+        setBackNavigation()
+        setRecyclerView()
+        viewModel.getPlaylistById(getIdFromArgs())
 
+    }
+
+    private fun setRecyclerView() {
 
         onTrackClickDebounce = debounce<TrackUIModel>(
             CLICK_DEBOUNCE_DELAY_MILLIS,
@@ -66,15 +76,37 @@ class PlaylistContentsFragment : Fragment() {
             startActivity(playerIntent)
         }
 
-        viewModel.getPlaylistById(getIdFromArgs())
+        recycleAdapter = PlaylistContentsAdapter(
+            object : PlaylistContentsAdapter.TrackClickListener {
+                override fun onTrackClick(track: TrackUIModel) {
+                    onTrackClickDebounce(track)
+                }
+            },
+            object : PlaylistContentsAdapter.TrackLongClickListener {
+                override fun onLongTrackClick(track: TrackUIModel) {
+                    val confirmDialog = buildDialog(track.trackId)
+                    confirmDialog.show()
+                }
+            }
+        )
 
-        setBottomSheet()
-        setBackNavigation()
+        binding.apply {
+            recyclerViewTracks.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            recyclerViewTracks.adapter = recycleAdapter
+        }
+    }
 
+    private fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistContentsState.Error -> renderError()
                 is PlaylistContentsState.Loading -> showLoading()
+                is PlaylistContentsState.UpdatePlaylist -> renderTrackListInfo(
+                    it.playlistDuration,
+                    it.trackList
+                )
+
                 is PlaylistContentsState.Content -> showContent(
                     it.playlist,
                     it.trackList,
@@ -109,61 +141,59 @@ class PlaylistContentsFragment : Fragment() {
     }
 
     private fun renderError() {
+        binding.progressBar.isVisible = false
         Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
         findNavController().navigateUp()
     }
 
-    private fun showLoading() {}
+    private fun showLoading() {
+        binding.progressBar.isVisible = true
+    }
 
     private fun showContent(
         foundPlaylist: Playlist,
         foundTracks: List<TrackUIModel>?,
         duration: String?
     ) {
+        binding.progressBar.isVisible = false
         playlist = foundPlaylist
-        foundTracks?.let {
-            showTracks(foundTracks)
-        }
 
+        renderPlaylistInfo()
+        renderTrackListInfo(duration, foundTracks)
+    }
+
+    private fun renderPlaylistInfo() {
         binding.apply {
             playlistTitle.text = playlist.playlistName
             descriptionPlaylist.text = playlist.playlistDescription
-            playlistDuration.text = formatDurationText(duration)
-            trackQuantity.text = formatQuantityText(playlist.tracksQuantity)
         }
+        Glide.with(binding.artworkLarge)
+            .load(playlist.imagePath)
+            .centerCrop()
+            .transform(RoundedCorners(15))
+            .placeholder(R.drawable.placeholder_image)
+            .into(binding.artworkLarge)
     }
 
-    private fun showTracks(foundTracks: List<TrackUIModel>) {
-        recycleAdapter = PlaylistContentsAdapter(
-            foundTracks,
-            object : PlaylistContentsAdapter.TrackClickListener {
-                override fun onTrackClick(track: TrackUIModel) {
-                    onTrackClickDebounce(track)
-                }
-            },
-            object : PlaylistContentsAdapter.TrackLongClickListener {
-                override fun onLongTrackClick(track: TrackUIModel) {
-                    buildDialog(track.trackId)
-                }
-            }
-        )
+    private fun renderTrackListInfo(duration: String?, trackList: List<TrackUIModel>?) {
 
-        binding.apply {
-            recyclerViewTracks.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            recyclerViewTracks.adapter = recycleAdapter
-            tracksBottomSheet.isVisible = true
+        binding.playlistDuration.text = formatDurationText(duration)
+
+        if (trackList.isNullOrEmpty()) {
+            recycleAdapter?.updateAdapter(emptyList<TrackUIModel>())
+            binding.trackQuantity.text = formatQuantityText(0)
+            binding.tracksBottomSheet.isVisible = false
+        } else {
+            binding.trackQuantity.text = formatQuantityText(trackList.size)
+            recycleAdapter?.updateAdapter(trackList)
+            binding.tracksBottomSheet.isVisible = true
         }
-
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
     }
 
     private fun setBackNavigation() {
 
         binding.returnArrow.setOnClickListener {
             findNavController().navigateUp()
-
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -174,11 +204,11 @@ class PlaylistContentsFragment : Fragment() {
             })
     }
 
-    private fun buildDialog(trackId: String) {
-        MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.delete_track_question))
+    private fun buildDialog(trackId: String): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.delete_track_question))
             .setNeutralButton(getString(R.string.answer_negative)) { dialog, which ->
             }.setPositiveButton(getString(R.string.answer_positive)) { dialog, which ->
-                TODO()
+                playlist.playlistId?.let { viewModel.deleteTrackFromPlaylist(it, trackId) }
             }
     }
 

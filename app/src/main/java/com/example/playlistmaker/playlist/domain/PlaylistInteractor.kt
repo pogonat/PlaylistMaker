@@ -14,6 +14,8 @@ interface PlaylistInteractor {
 
     fun getPlaylistById(playlistId: Int): Flow<Playlist>
 
-    fun getTracksFromPlaylists(trackIds: List<String>): Flow<List<Track>>
+    fun getTracksFromPlaylist(trackIds: List<String>): Flow<List<Track>>
+
+    fun deleteTrackAndGetUpdatedList(playlistId: Int, trackId: String): Flow<List<Track>?>
 
 }
