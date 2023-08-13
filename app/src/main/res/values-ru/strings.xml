@@ -64,6 +64,9 @@
     <string name="share_icon">Share icon</string>
     <string name="menu_icon">Settings</string>
     <string name="nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share_playlist_from_menu">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
     <plurals name="tracks_quantity_plurals">
         <item quantity="zero">%d треков</item>
         <item quantity="one">%d трек</item>
