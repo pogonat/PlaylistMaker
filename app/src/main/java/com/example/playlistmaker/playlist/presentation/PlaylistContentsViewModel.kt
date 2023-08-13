@@ -1,10 +1,12 @@
 package com.example.playlistmaker.playlist.presentation
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.core.DateTimeUtil
+import com.example.playlistmaker.core.SingleLiveEvent
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.playlist.presentation.models.PlaylistContentsState
@@ -17,11 +19,13 @@ import kotlinx.coroutines.launch
 class PlaylistContentsViewModel(
     private val playlistInteractor: PlaylistInteractor,
     private val trackUIModelConverter: TrackToTrackUIModelConverter,
-    private val sharingInteractor: SharingInteractor,
+    private val sharingInteractor: SharingInteractor
 ) : ViewModel() {
 
     private val _state = MutableLiveData<PlaylistContentsState>()
     val state: LiveData<PlaylistContentsState> get() = _state
+
+    val navigationEvent = SingleLiveEvent<Intent>()
 
     fun getPlaylistById(playlistId: Int) {
 
@@ -68,6 +72,30 @@ class PlaylistContentsViewModel(
         }
     }
 
+    fun sharePlaylist(playlistId: Int, quantityText: String, tracks: List<TrackUIModel>) {
+        var message = ""
+        viewModelScope.launch {
+            playlistInteractor.getPlaylistById(playlistId)
+                .collect { playlist ->
+                    message = buildMessage(playlist, quantityText, tracks)
+                }
+            val intent = sharingInteractor.shareApp(message)
+            navigationEvent.postValue(intent)
+        }
+    }
+
+    private fun buildMessage(
+        playlist: Playlist,
+        quantityText: String,
+        tracks: List<TrackUIModel>
+    ): String {
+        var resultString = "${playlist.playlistName}\n${playlist.playlistDescription}\n$quantityText\n"
+        for (i in tracks.indices) {
+            resultString += "${i+1}. ${tracks[i].artistName} - ${tracks[i].trackName} (${tracks[i].trackDurationFormatted})\n"
+        }
+        return resultString
+    }
+
     private fun renderState(foundPlaylist: Playlist?, foundTrackList: List<Track>?) {
         foundPlaylist?.let {
             if (foundTrackList.isNullOrEmpty()) {
@@ -104,5 +132,4 @@ class PlaylistContentsViewModel(
         }
         return DateTimeUtil.formatDurationMillisToTime(duration)
     }
-
 }

@@ -44,6 +44,8 @@ class PlaylistContentsFragment : Fragment() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
+    private val trackUIModelList = mutableListOf<TrackUIModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,8 +61,40 @@ class PlaylistContentsFragment : Fragment() {
         setBottomSheet()
         setBackNavigation()
         setRecyclerView()
+        setButtonListeners()
         viewModel.getPlaylistById(getIdFromArgs())
 
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { intent ->
+            startActivity(intent)
+        }
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recycleAdapter = null
+        _binding = null
+    }
+
+    private fun setButtonListeners() {
+        binding.shareButton.setOnClickListener {
+            if (trackUIModelList.isEmpty()) {
+
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.nothing_to_share),
+                    Toast.LENGTH_LONG
+                ).show()
+
+            } else {
+                val trackQuantintyTextFormatted = formatQuantityText(trackUIModelList.size)
+                viewModel.sharePlaylist(
+                    playlist.playlistId!!,
+                    trackQuantintyTextFormatted,
+                    trackUIModelList
+                )
+            }
+        }
     }
 
     private fun setRecyclerView() {
@@ -114,12 +148,6 @@ class PlaylistContentsFragment : Fragment() {
                 )
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        recycleAdapter = null
-        _binding = null
     }
 
     private fun setBottomSheet() {
@@ -177,6 +205,8 @@ class PlaylistContentsFragment : Fragment() {
 
     private fun renderTrackListInfo(duration: String?, trackList: List<TrackUIModel>?) {
 
+        trackUIModelList.clear()
+
         binding.playlistDuration.text = formatDurationText(duration)
 
         if (trackList.isNullOrEmpty()) {
@@ -184,6 +214,7 @@ class PlaylistContentsFragment : Fragment() {
             binding.trackQuantity.text = formatQuantityText(0)
             binding.tracksBottomSheet.isVisible = false
         } else {
+            trackUIModelList.addAll(trackList)
             binding.trackQuantity.text = formatQuantityText(trackList.size)
             recycleAdapter?.updateAdapter(trackList)
             binding.tracksBottomSheet.isVisible = true

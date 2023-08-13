@@ -63,6 +63,7 @@
     <string name="delete_track_question">Хотите удалить трек?</string>
     <string name="answer_negative">Нет</string>
     <string name="answer_positive">Да</string>
+    <string name="nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
     <plurals name="tracks_quantity_plurals">
         <item quantity="one">%d track</item>
         <item quantity="other">%d tracks</item>

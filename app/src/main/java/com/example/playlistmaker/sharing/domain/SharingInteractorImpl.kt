@@ -13,6 +13,10 @@ class SharingInteractorImpl(
         return externalNavigator.shareLink(getShareAppLink())
     }
 
+    override fun shareApp(message: String): Intent {
+        return externalNavigator.shareLink(message)
+    }
+
     override fun openTerms(): Intent {
         return externalNavigator.openLink(getTermsLink())
     }
