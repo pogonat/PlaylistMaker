@@ -35,7 +35,6 @@
 
             <ImageButton
                 android:id="@+id/returnArrow"
-                style="@style/ArrowBack"
                 android:layout_width="@dimen/arrow_back_size"
                 android:layout_height="@dimen/arrow_back_size"
                 android:layout_margin="20dp"
@@ -43,7 +42,8 @@
                 android:elevation="5dp"
                 android:src="@drawable/arrow_back_icon"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/yp_black" />
 
             <ImageView
                 android:id="@+id/artworkLarge"
