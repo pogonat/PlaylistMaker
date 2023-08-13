@@ -43,4 +43,8 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
         return playlistRepository.deleteTrackAndGetUpdatedList(playlistId, trackId)
     }
 
+    override fun deletePlaylistAndItsTracks(playlistId: Int): Flow<Boolean> {
+        return playlistRepository.deletePlaylistAndItsTracks(playlistId)
+    }
+
 }

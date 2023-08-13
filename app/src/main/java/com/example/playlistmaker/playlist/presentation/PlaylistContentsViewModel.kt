@@ -54,21 +54,22 @@ class PlaylistContentsViewModel(
 
     fun deleteTrackFromPlaylist(playlistId: Int, trackId: String) {
         viewModelScope.launch {
-            playlistInteractor.deleteTrackAndGetUpdatedList(playlistId, trackId).collect { trackList ->
-                trackList?.let{
-                    val trackUIModelList = mapTotrackUIModels(trackList).reversed()
-                    val playlistDuration = getPlaylistDurationString(trackUIModelList.toSet())
+            playlistInteractor.deleteTrackAndGetUpdatedList(playlistId, trackId)
+                .collect { trackList ->
+                    trackList?.let {
+                        val trackUIModelList = mapTotrackUIModels(trackList).reversed()
+                        val playlistDuration = getPlaylistDurationString(trackUIModelList.toSet())
 
-                    _state.postValue(
-                        PlaylistContentsState.UpdatePlaylist(
-                            trackList = trackUIModelList,
-                            playlistDuration = playlistDuration
+                        _state.postValue(
+                            PlaylistContentsState.UpdatePlaylist(
+                                trackList = trackUIModelList,
+                                playlistDuration = playlistDuration
+                            )
                         )
-                    )
-                } ?: run {
-                    _state.postValue(PlaylistContentsState.Error)
+                    } ?: run {
+                        _state.postValue(PlaylistContentsState.Error)
+                    }
                 }
-            }
         }
     }
 
@@ -89,9 +90,10 @@ class PlaylistContentsViewModel(
         quantityText: String,
         tracks: List<TrackUIModel>
     ): String {
-        var resultString = "${playlist.playlistName}\n${playlist.playlistDescription}\n$quantityText\n"
+        var resultString =
+            "${playlist.playlistName}\n${playlist.playlistDescription}\n$quantityText\n"
         for (i in tracks.indices) {
-            resultString += "${i+1}. ${tracks[i].artistName} - ${tracks[i].trackName} (${tracks[i].trackDurationFormatted})\n"
+            resultString += "${i + 1}. ${tracks[i].artistName} - ${tracks[i].trackName} (${tracks[i].trackDurationFormatted})\n"
         }
         return resultString
     }
@@ -116,6 +118,18 @@ class PlaylistContentsViewModel(
             }
         } ?: run {
             _state.postValue(PlaylistContentsState.Error)
+        }
+    }
+
+    fun deletePlaylist(playlistId: Int) {
+        viewModelScope.launch {
+            playlistInteractor.deletePlaylistAndItsTracks(playlistId).collect { isDeleted ->
+                if (isDeleted) {
+                    _state.postValue(PlaylistContentsState.PlaylistDeleted)
+                } else {
+                    _state.postValue(PlaylistContentsState.Error)
+                }
+            }
         }
     }
 

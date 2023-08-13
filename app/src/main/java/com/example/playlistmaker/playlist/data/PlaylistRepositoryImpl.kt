@@ -86,7 +86,8 @@ class PlaylistRepositoryImpl(
                     val tracksInPlaylist: List<TracksInPlaylistsEntity> =
                         filterTracksByListIds(upatedTrackList, tracksFromPlaylists)
 
-                    val updatedListOfTracks: List<Track> = tracksInPlaylist.map { convertToTrack(it) }
+                    val updatedListOfTracks: List<Track> =
+                        tracksInPlaylist.map { convertToTrack(it) }
                     emit(updatedListOfTracks)
                 } else {
                     emit(emptyList<Track>())
@@ -94,6 +95,20 @@ class PlaylistRepositoryImpl(
             } else {
                 emit(null)
             }
+        }
+    }
+
+    override fun deletePlaylistAndItsTracks(playlistId: Int): Flow<Boolean> = flow {
+        val playlistEntity = appDatabase.playListDao().getPlaylistById(playlistId)
+        val trackList = playlistDbConverter.convertFromJsonToStringList(playlistEntity.trackList)
+        val resultDeletePlaylist: Int = appDatabase.playListDao().deletePlaylist(playlistEntity)
+        if (resultDeletePlaylist != NUMBER_OF_LINES_WHEN_UPDATE_FAILED) {
+            trackList?.let {
+                for (trackId in trackList) deleteTrackFromBaseOfAllTracks(trackId)
+            }
+            emit(true)
+        } else {
+            emit(false)
         }
     }
 

@@ -42,7 +42,8 @@ class PlaylistContentsFragment : Fragment() {
 
     private var recycleAdapter: PlaylistContentsAdapter? = null
 
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private val trackUIModelList = mutableListOf<TrackUIModel>()
 
@@ -57,11 +58,14 @@ class PlaylistContentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         observeViewModel()
-        setBottomSheet()
+        setTracksBottomSheet()
+        setMenuBottomSheet()
         setBackNavigation()
         setRecyclerView()
         setButtonListeners()
+
         viewModel.getPlaylistById(getIdFromArgs())
 
         viewModel.navigationEvent.observe(viewLifecycleOwner) { intent ->
@@ -77,7 +81,30 @@ class PlaylistContentsFragment : Fragment() {
     }
 
     private fun setButtonListeners() {
-        binding.shareButton.setOnClickListener {
+        setShareCLickListener(binding.shareButton)
+        setShareCLickListener(binding.shareMenuButton)
+
+        binding.menuButton.setOnClickListener {
+            menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.deletePlaylistButton.setOnClickListener {
+            val message =
+                String.format(getString(R.string.delete_playlist_named), playlist.playlistName)
+            val deletePlaylistDialog: MaterialAlertDialogBuilder =
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(message)
+                    .setNeutralButton(getString(R.string.answer_negative)) { dialog, which ->
+                    }.setPositiveButton(getString(R.string.answer_positive)) { dialog, which ->
+                        playlist.playlistId?.let { viewModel.deletePlaylist(it) }
+                    }
+            deletePlaylistDialog.show()
+        }
+    }
+
+    private fun setShareCLickListener(view: View) {
+
+        view.setOnClickListener {
             if (trackUIModelList.isEmpty()) {
 
                 Toast.makeText(
@@ -87,10 +114,10 @@ class PlaylistContentsFragment : Fragment() {
                 ).show()
 
             } else {
-                val trackQuantintyTextFormatted = formatQuantityText(trackUIModelList.size)
+                val trackQuantityTextFormatted = formatQuantityText(trackUIModelList.size)
                 viewModel.sharePlaylist(
                     playlist.playlistId!!,
-                    trackQuantintyTextFormatted,
+                    trackQuantityTextFormatted,
                     trackUIModelList
                 )
             }
@@ -131,11 +158,76 @@ class PlaylistContentsFragment : Fragment() {
         }
     }
 
+    private fun setTracksBottomSheet() {
+
+        val bottomSheetContainer = binding.tracksBottomSheet
+
+        tracksBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        tracksBottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+        })
+    }
+
+    private fun setMenuBottomSheet() {
+
+        val bottomSheetContainer = binding.menuBottomSheet
+
+        val overlay = binding.overlay
+
+        menuBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        menuBottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.isVisible = false
+                    }
+
+                    else -> {
+                        overlay.isVisible = true
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                overlay.alpha = slideOffset
+            }
+        })
+    }
+
+    private fun setBackNavigation() {
+
+        binding.returnArrow.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigateUp()
+                }
+            })
+    }
+
     private fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistContentsState.Error -> renderError()
                 is PlaylistContentsState.Loading -> showLoading()
+                is PlaylistContentsState.PlaylistDeleted -> findNavController().navigateUp()
                 is PlaylistContentsState.UpdatePlaylist -> renderTrackListInfo(
                     it.playlistDuration,
                     it.trackList
@@ -148,24 +240,6 @@ class PlaylistContentsFragment : Fragment() {
                 )
             }
         }
-    }
-
-    private fun setBottomSheet() {
-
-        val bottomSheetContainer = binding.tracksBottomSheet
-
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
-            state = BottomSheetBehavior.STATE_HIDDEN
-        }
-
-        bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-
-            override fun onStateChanged(bottomSheet: View, newState: Int) {}
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-
-        })
     }
 
     private fun renderError() {
@@ -194,6 +268,7 @@ class PlaylistContentsFragment : Fragment() {
         binding.apply {
             playlistTitle.text = playlist.playlistName
             descriptionPlaylist.text = playlist.playlistDescription
+            playlistCard.playlistTitle.text = playlist.playlistName
         }
         Glide.with(binding.artworkLarge)
             .load(playlist.imagePath)
@@ -201,6 +276,13 @@ class PlaylistContentsFragment : Fragment() {
             .transform(RoundedCorners(15))
             .placeholder(R.drawable.placeholder_image)
             .into(binding.artworkLarge)
+
+        Glide.with(binding.playlistCard.playlistCover)
+            .load(playlist.imagePath)
+            .centerCrop()
+            .transform(RoundedCorners(15))
+            .placeholder(R.drawable.placeholder_image)
+            .into(binding.playlistCard.playlistCover)
     }
 
     private fun renderTrackListInfo(duration: String?, trackList: List<TrackUIModel>?) {
@@ -211,28 +293,18 @@ class PlaylistContentsFragment : Fragment() {
 
         if (trackList.isNullOrEmpty()) {
             recycleAdapter?.updateAdapter(emptyList<TrackUIModel>())
-            binding.trackQuantity.text = formatQuantityText(0)
+            val quantityText = formatQuantityText(0)
+            binding.trackQuantity.text = quantityText
             binding.tracksBottomSheet.isVisible = false
+            binding.playlistCard.tracksQuantity.text = quantityText
         } else {
             trackUIModelList.addAll(trackList)
-            binding.trackQuantity.text = formatQuantityText(trackList.size)
+            val quantityText = formatQuantityText(trackList.size)
+            binding.trackQuantity.text = quantityText
+            binding.playlistCard.tracksQuantity.text = quantityText
             recycleAdapter?.updateAdapter(trackList)
             binding.tracksBottomSheet.isVisible = true
         }
-    }
-
-    private fun setBackNavigation() {
-
-        binding.returnArrow.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigateUp()
-                }
-            })
     }
 
     private fun buildDialog(trackId: String): MaterialAlertDialogBuilder {

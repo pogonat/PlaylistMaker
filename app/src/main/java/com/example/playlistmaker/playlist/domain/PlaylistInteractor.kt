@@ -18,4 +18,6 @@ interface PlaylistInteractor {
 
     fun deleteTrackAndGetUpdatedList(playlistId: Int, trackId: String): Flow<List<Track>?>
 
+    fun deletePlaylistAndItsTracks(playlistId: Int): Flow<Boolean>
+
 }

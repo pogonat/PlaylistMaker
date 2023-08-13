@@ -14,6 +14,11 @@ sealed class PlaylistContentsState {
         val playlistDuration: String?
     ) : PlaylistContentsState()
 
-    data class UpdatePlaylist(val trackList: List<TrackUIModel>, val playlistDuration: String?) : PlaylistContentsState()
+    data class UpdatePlaylist(
+        val trackList: List<TrackUIModel>,
+        val playlistDuration: String?
+    ) : PlaylistContentsState()
+
+    object PlaylistDeleted : PlaylistContentsState()
 
 }
