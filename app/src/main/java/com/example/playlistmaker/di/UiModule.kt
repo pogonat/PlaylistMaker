@@ -9,6 +9,7 @@ import com.example.playlistmaker.player.presentation.TrackPlayer
 import com.example.playlistmaker.player.presentation.TrackPlayerImpl
 import com.example.playlistmaker.playlist.presentation.PlaylistContentsViewModel
 import com.example.playlistmaker.playlist.presentation.PlaylistCreatorViewModel
+import com.example.playlistmaker.playlist.presentation.PlaylistEditorViewModel
 import com.example.playlistmaker.presentation.models.TrackToTrackUIModelConverter
 import com.example.playlistmaker.search.presentation.SearchViewModel
 import com.example.playlistmaker.settings.presentation.SettingsViewModel
@@ -53,6 +54,10 @@ val uiModule = module {
 
     viewModel<PlaylistCreatorViewModel> {
         PlaylistCreatorViewModel(playlistInteractor = get())
+    }
+
+    viewModel<PlaylistEditorViewModel> {
+        PlaylistEditorViewModel(playlistInteractor = get())
     }
 
     viewModel<PlaylistContentsViewModel>() {

@@ -88,6 +88,16 @@ class PlaylistContentsFragment : Fragment() {
             menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
+        binding.editPlaylistButton.setOnClickListener {
+            playlist.playlistId?.let {
+                findNavController().navigate(
+                    R.id.action_playlistContentsFragment_to_playlistEditorFragment,
+                    PlaylistEditorFragment.createArgs(it)
+                )
+            }
+
+        }
+
         binding.deletePlaylistButton.setOnClickListener {
             val message =
                 String.format(getString(R.string.delete_playlist_named), playlist.playlistName)

@@ -8,10 +8,10 @@ import com.example.playlistmaker.playlist.domain.PlaylistInteractor
 import com.example.playlistmaker.playlist.presentation.models.PlaylistCreatorState
 import kotlinx.coroutines.launch
 
-class PlaylistCreatorViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
+open class PlaylistCreatorViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
 
     private val _state = MutableLiveData<PlaylistCreatorState>()
-    val state: LiveData<PlaylistCreatorState> get() = _state
+    open val state: LiveData<PlaylistCreatorState> get() = _state
 
     fun savePlaylist(title: String, description: String, imageUri: String) {
         viewModelScope.launch {
