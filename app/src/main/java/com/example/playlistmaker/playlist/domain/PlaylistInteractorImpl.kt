@@ -47,4 +47,8 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
         return playlistRepository.deletePlaylistAndItsTracks(playlistId)
     }
 
+    override fun updateEditedPlaylist(title: String, description: String, path: String, id: Int): Flow<Boolean> {
+        return playlistRepository.updateEditedPlaylist(title, description, path, id)
+    }
+
 }

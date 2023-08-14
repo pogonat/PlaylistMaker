@@ -23,4 +23,17 @@ class PlaylistEditorViewModel(
         }
     }
 
+    fun saveChanges(title: String, description: String, path: String, id: Int) {
+
+        viewModelScope.launch {
+            playlistInteractor.updateEditedPlaylist(title, description, path, id)
+                .collect {isSaved ->
+                    when(isSaved) {
+                        true -> _state.postValue(PlaylistEditorState.PlaylistSaved)
+                        false -> _state.postValue(PlaylistEditorState.Error)
+                    }
+                }
+        }
+    }
+
 }

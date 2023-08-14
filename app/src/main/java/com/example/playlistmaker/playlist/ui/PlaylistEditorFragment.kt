@@ -1,7 +1,9 @@
 package com.example.playlistmaker.playlist.ui
+
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
@@ -27,11 +29,26 @@ class PlaylistEditorFragment : PlaylistCreatorFragment() {
         viewModel.editorState.observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistEditorState.Content -> renderCurrentPlaylistInfo(it.playlist)
+                is PlaylistEditorState.Error -> showErrorToast()
+                is PlaylistEditorState.PlaylistSaved -> navigateBackToPlaylist()
             }
         }
 
         viewModel.getPlaylistById(playlistId)
 
+    }
+
+    private fun navigateBackToPlaylist() {
+        playlist.playlistId?.let {
+            findNavController().navigate(
+                R.id.action_playlistEditorFragment_to_playlistContentsFragment,
+                PlaylistContentsFragment.createArgs(it)
+            )
+        }
+    }
+
+    private fun showErrorToast() {
+        Toast.makeText(requireContext(), getString(R.string.try_again), Toast.LENGTH_LONG).show()
     }
 
     private fun renderCurrentPlaylistInfo(foundPlaylist: Playlist) {
@@ -45,13 +62,29 @@ class PlaylistEditorFragment : PlaylistCreatorFragment() {
             createButton.text = getString(R.string.save)
             playlistTitle.setText(titleInputText)
             playlistDescription.setText(descriptionInputText)
+        }
+        Glide.with(binding.playlistCover)
+            .load(imagePrivateStorageUri)
+            .centerCrop()
+            .transform(RoundedCorners(15))
+            .placeholder(R.drawable.placeholder_image)
+            .into(binding.playlistCover)
 
-            Glide.with(playlistCover)
-                .load(imageUri)
-                .centerCrop()
-                .transform(RoundedCorners(15))
-                .placeholder(R.drawable.placeholder_image)
-                .into(playlistCover)
+    }
+
+    override fun setCreateButton() {
+        binding.createButton.setOnClickListener {
+            playlist.playlistId?.let {
+                if (titleInputText.isNotEmpty()) {
+                    val imagePath = chooseImagePath()
+                    viewModel.saveChanges(
+                        titleInputText,
+                        descriptionInputText,
+                        imagePath,
+                        it
+                    )
+                }
+            }
         }
     }
 
@@ -65,6 +98,17 @@ class PlaylistEditorFragment : PlaylistCreatorFragment() {
                 findNavController().navigateUp()
             }
         })
+    }
+
+    private fun chooseImagePath(): String {
+        return if (imageUri.toString() == imagePrivateStorageUri) {
+            imagePrivateStorageUri
+        } else {
+            imageUri?.let {
+                saveImageToPrivateStorage(imageUri!!)
+                imagePrivateStorageUri
+            } ?: ""
+        }
     }
 
     private fun getIdFromArgs(): Int {

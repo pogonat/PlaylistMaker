@@ -69,5 +69,11 @@
         android:id="@+id/playlistEditorFragment"
         android:name="com.example.playlistmaker.playlist.ui.PlaylistEditorFragment"
         android:label="PlaylistEditorFragment"
-        tools:layout="@layout/fragment_playlistcreator"/>
+        tools:layout="@layout/fragment_playlistcreator">
+        <action
+            android:id="@+id/action_playlistEditorFragment_to_playlistContentsFragment"
+            app:destination="@id/playlistContentsFragment"
+            app:popUpTo="@id/playlistContentsFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>

@@ -112,6 +112,21 @@ class PlaylistRepositoryImpl(
         }
     }
 
+    override fun updateEditedPlaylist(
+        title: String,
+        description: String,
+        path: String,
+        id: Int
+    ): Flow<Boolean> = flow {
+        val result = appDatabase.playListDao().updateEditedPlaylist(title, description, path, id)
+
+        when (result) {
+            NUMBER_OF_LINES_WHEN_UPDATE_FAILED -> { emit(false) }
+            else -> { emit(true) }
+        }
+
+    }
+
     private fun getUpdatedTrackListJson(trackList: List<String>?, trackId: String): String {
         val newList = mutableListOf<String>()
         trackList?.let { newList.addAll(trackList) }

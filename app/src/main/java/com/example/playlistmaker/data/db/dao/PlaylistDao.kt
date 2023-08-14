@@ -24,4 +24,7 @@ interface PlaylistDao {
 
     @Delete
     suspend fun deletePlaylist(playlist: PlaylistEntity): Int
+
+    @Query("UPDATE playlist_table SET playlist_title=:title, playlist_description=:description, playlist_path=:path WHERE playlistId=:id")
+    suspend fun updateEditedPlaylist(title: String, description: String, path: String ,id: Int): Int
 }

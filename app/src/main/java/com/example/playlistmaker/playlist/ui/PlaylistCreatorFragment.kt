@@ -125,7 +125,7 @@ open class PlaylistCreatorFragment : Fragment() {
         })
     }
 
-    private fun setCreateButton() {
+    open fun setCreateButton() {
         binding.createButton.setOnClickListener {
             if (titleInputText.isNotEmpty()) {
                 imageUri?.let { saveImageToPrivateStorage(it) }
@@ -197,7 +197,7 @@ open class PlaylistCreatorFragment : Fragment() {
                 navigateOut()
             }
 
-    private fun saveImageToPrivateStorage(uri: Uri) {
+    protected fun saveImageToPrivateStorage(uri: Uri) {
 
         val filePath = File(
             requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
