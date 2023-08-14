@@ -304,9 +304,13 @@ class PlaylistContentsFragment : Fragment() {
         if (trackList.isNullOrEmpty()) {
             recycleAdapter?.updateAdapter(emptyList<TrackUIModel>())
             val quantityText = formatQuantityText(0)
-            binding.trackQuantity.text = quantityText
-            binding.tracksBottomSheet.isVisible = false
-            binding.playlistCard.tracksQuantity.text = quantityText
+            binding. apply {
+                trackQuantity.text = quantityText
+                tracksBottomSheet.isVisible = false
+                playlistCard.tracksQuantity.text = quantityText
+                emptyPlaylistMessage.isVisible = true
+            }
+
         } else {
             trackUIModelList.addAll(trackList)
             val quantityText = formatQuantityText(trackList.size)
@@ -314,6 +318,7 @@ class PlaylistContentsFragment : Fragment() {
             binding.playlistCard.tracksQuantity.text = quantityText
             recycleAdapter?.updateAdapter(trackList)
             binding.tracksBottomSheet.isVisible = true
+            binding.emptyPlaylistMessage.isVisible = false
         }
     }
 
