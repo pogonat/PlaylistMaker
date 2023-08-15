@@ -48,8 +48,6 @@ class PlaylistsFragment : Fragment() {
 
         setAdapter()
 
-        viewModel.getPlaylists()
-
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistsState.Loading -> showLoading()
@@ -57,6 +55,8 @@ class PlaylistsFragment : Fragment() {
                 is PlaylistsState.Error -> showErrorMessage()
             }
         }
+
+        viewModel.getPlaylists()
     }
 
     private fun setAdapter() {
@@ -83,11 +83,6 @@ class PlaylistsFragment : Fragment() {
         )
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerView.adapter = recycleAdapter
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getPlaylists()
     }
 
     override fun onDestroyView() {
@@ -118,6 +113,7 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun showErrorMessage() {
+        recycleAdapter?.updateAdapter(emptyList())
         binding.apply {
             placeholderErrorImage.isVisible = true
             placeholderMessage.isVisible = true
