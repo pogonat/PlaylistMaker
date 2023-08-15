@@ -38,6 +38,7 @@
                 android:layout_width="@dimen/arrow_back_size"
                 android:layout_height="@dimen/arrow_back_size"
                 android:layout_margin="20dp"
+                android:background="@android:color/transparent"
                 android:contentDescription="@string/arrow_back"
                 android:elevation="5dp"
                 android:src="@drawable/arrow_back_icon"
