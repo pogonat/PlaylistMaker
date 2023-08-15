@@ -36,7 +36,8 @@ class TrackToTrackUIModelConverter {
             primaryGenreName = trackUIModel.primaryGenreName,
             country = trackUIModel.country,
             previewUrl = trackUIModel.previewUrl,
-            largeArtworkUrl = trackUIModel.largeArtworkUrl
+            largeArtworkUrl = trackUIModel.largeArtworkUrl,
+            isFavourite = trackUIModel.isFavourite
         )
     }
 

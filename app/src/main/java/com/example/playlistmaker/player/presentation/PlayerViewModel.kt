@@ -38,7 +38,7 @@ class PlayerViewModel(
     private var foundTrack: TrackUIModel? = null
 
     private val favouriteDebounce =
-        debounce<Track>(FAV_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { track ->
+        debounce<Track>(FAV_DEBOUNCE_DELAY_MILLIS, viewModelScope, false) { track ->
             toggleFavourite(track)
         }
 
@@ -247,7 +247,7 @@ class PlayerViewModel(
 
     companion object {
         private const val TIMER_DELAY_MILLIS = 300L
-        private const val FAV_DEBOUNCE_DELAY_MILLIS = 2000L
+        private const val FAV_DEBOUNCE_DELAY_MILLIS = 1000L
         private const val PLAYLIST_DEBOUNCE_DELAY_MILLIS = 2000L
     }
 
