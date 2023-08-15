@@ -19,23 +19,25 @@ class TrackDbConverter {
             country = track.country,
             trackDurationMillis = track.trackTimeMillis,
             previewUrl = track.previewUrl,
-            createdTimeStamp = System.currentTimeMillis()
+            createdTimeStamp = System.currentTimeMillis(),
+            artworkUrl60 = track.artworkUrl60
         )
     }
 
     fun map(track: TrackEntity): Track {
         return Track(
-            track.trackId,
-            track.trackName ?: "",
-            track.artistName ?: "",
-            track.trackDurationMillis ?: "",
-            track.artworkUrl100 ?: "",
-            track.collectionName ?: "",
-            track.releaseDate ?: "",
-            track.primaryGenreName ?: "",
-            track.country ?: "",
-            track.previewUrl ?: "",
-            track.largeArtworkUrl ?: ""
+            trackId = track.trackId,
+            trackName = track.trackName ?: "",
+            artistName = track.artistName ?: "",
+            trackTimeMillis = track.trackDurationMillis ?: "",
+            artworkUrl100 = track.artworkUrl100 ?: "",
+            collectionName = track.collectionName ?: "",
+            releaseDate = track.releaseDate ?: "",
+            primaryGenreName = track.primaryGenreName ?: "",
+            country = track.country ?: "",
+            previewUrl = track.previewUrl ?: "",
+            largeArtworkUrl = track.largeArtworkUrl ?: "",
+            artworkUrl60 = track.artworkUrl60 ?: ""
         )
     }
 
@@ -52,23 +54,25 @@ class TrackDbConverter {
             country = track.country,
             trackTime = track.trackTimeMillis,
             previewUrl = track.previewUrl,
-            createdTimeStamp = System.currentTimeMillis()
+            createdTimeStamp = System.currentTimeMillis(),
+            artworkUrl60 = track.artworkUrl60
         )
     }
 
     fun mapFromTracksInPlaylistsEntity(tracksInPlaylistsEntity: TracksInPlaylistsEntity): Track {
         return Track(
-            tracksInPlaylistsEntity.trackId,
-            tracksInPlaylistsEntity.trackName ?: "",
-            tracksInPlaylistsEntity.artistName ?: "",
-            tracksInPlaylistsEntity.trackTime ?: "",
-            tracksInPlaylistsEntity.artworkUrl100 ?: "",
-            tracksInPlaylistsEntity.collectionName ?: "",
-            tracksInPlaylistsEntity.releaseDate ?: "",
-            tracksInPlaylistsEntity.primaryGenreName ?: "",
-            tracksInPlaylistsEntity.country ?: "",
-            tracksInPlaylistsEntity.previewUrl ?: "",
-            tracksInPlaylistsEntity.largeArtworkUrl ?: ""
+            trackId = tracksInPlaylistsEntity.trackId,
+            trackName = tracksInPlaylistsEntity.trackName ?: "",
+            artistName = tracksInPlaylistsEntity.artistName ?: "",
+            trackTimeMillis = tracksInPlaylistsEntity.trackTime ?: "",
+            artworkUrl100 = tracksInPlaylistsEntity.artworkUrl100 ?: "",
+            collectionName = tracksInPlaylistsEntity.collectionName ?: "",
+            releaseDate = tracksInPlaylistsEntity.releaseDate ?: "",
+            primaryGenreName = tracksInPlaylistsEntity.primaryGenreName ?: "",
+            country = tracksInPlaylistsEntity.country ?: "",
+            previewUrl = tracksInPlaylistsEntity.previewUrl ?: "",
+            largeArtworkUrl = tracksInPlaylistsEntity.largeArtworkUrl ?: "",
+            artworkUrl60 = tracksInPlaylistsEntity.artworkUrl60 ?: ""
         )
     }
 

@@ -19,7 +19,8 @@ class TracksResponseToTrackMapper: (TracksResponse) -> List<Track> {
                 country = it.country ?: "",
                 previewUrl = it.previewUrl ?: "",
                 largeArtworkUrl =
-                    it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: ""
+                    it.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: "",
+                artworkUrl60 = it.artworkUrl60 ?: ""
             )
         }
     }

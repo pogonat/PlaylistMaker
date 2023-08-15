@@ -18,7 +18,7 @@ class TrackViewHolder(
         binding.trackDuration.text = item.trackDurationFormatted
 
         Glide.with(itemView)
-            .load(item.artworkUrl100)
+            .load(item.artworkUrl60)
             .centerCrop()
             .transform(RoundedCorners(5))
             .placeholder(R.drawable.placeholder_image)
