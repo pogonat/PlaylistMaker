@@ -30,17 +30,17 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-class PlaylistCreatorFragment : Fragment() {
+open class PlaylistCreatorFragment : Fragment() {
 
-    private val viewModel by viewModel<PlaylistCreatorViewModel>()
+    open val viewModel by viewModel<PlaylistCreatorViewModel>()
 
     private var _binding: FragmentPlaylistcreatorBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
-    private var titleInputText = ""
-    private var descriptionInputText = ""
-    private var imageUri: Uri? = null
-    private var imagePrivateStorageUri = ""
+    open var titleInputText = ""
+    open var descriptionInputText = ""
+    open var imageUri: Uri? = null
+    open var imagePrivateStorageUri = ""
 
     private var titleTextWatcher: TextWatcher? = null
     private var descriptionTextWatcher: TextWatcher? = null
@@ -66,7 +66,7 @@ class PlaylistCreatorFragment : Fragment() {
             }
         }
 
-        viewModel.observeState().observe(viewLifecycleOwner) { screenState ->
+        viewModel.state.observe(viewLifecycleOwner) { screenState ->
             render(screenState)
         }
 
@@ -106,7 +106,7 @@ class PlaylistCreatorFragment : Fragment() {
 
     }
 
-    private fun setBackNavigation() {
+    open fun setBackNavigation() {
 
         confirmDialog = buildDialog()
 
@@ -125,7 +125,7 @@ class PlaylistCreatorFragment : Fragment() {
         })
     }
 
-    private fun setCreateButton() {
+    open fun setCreateButton() {
         binding.createButton.setOnClickListener {
             if (titleInputText.isNotEmpty()) {
                 imageUri?.let { saveImageToPrivateStorage(it) }
@@ -197,7 +197,7 @@ class PlaylistCreatorFragment : Fragment() {
                 navigateOut()
             }
 
-    private fun saveImageToPrivateStorage(uri: Uri) {
+    protected fun saveImageToPrivateStorage(uri: Uri) {
 
         val filePath = File(
             requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),

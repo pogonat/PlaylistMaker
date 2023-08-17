@@ -1,6 +1,6 @@
 package com.example.playlistmaker.search.presentation.models
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.models.TrackUIModel
 
 sealed class SearchScreenState {
 
@@ -9,7 +9,7 @@ sealed class SearchScreenState {
     object NothingFound : SearchScreenState()
 
     data class Success(
-        val foundTracks: List<Track>,
-        val historyTracks: List<Track>
+        val foundTracks: List<TrackUIModel>,
+        val historyTracks: List<TrackUIModel>
         ) : SearchScreenState()
 }

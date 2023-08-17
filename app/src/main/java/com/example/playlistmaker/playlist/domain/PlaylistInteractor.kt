@@ -12,4 +12,14 @@ interface PlaylistInteractor {
 
     fun getPlaylists(): Flow<List<Playlist>>
 
+    fun getPlaylistById(playlistId: Int): Flow<Playlist>
+
+    fun getTracksFromPlaylist(trackIds: List<String>): Flow<List<Track>>
+
+    fun deleteTrackAndGetUpdatedList(playlistId: Int, trackId: String): Flow<List<Track>?>
+
+    fun deletePlaylistAndItsTracks(playlistId: Int): Flow<Boolean>
+
+    fun updateEditedPlaylist(title: String, description: String, path: String ,id: Int): Flow<Boolean>
+
 }

@@ -14,13 +14,13 @@ class SettingsViewModel(
     private val sharingInteractor: SharingInteractor
 ) : ViewModel() {
 
-    private val switcherLiveData = MutableLiveData<SettingsSwitcherState>()
-    fun getSwitcherStateLiveData(): LiveData<SettingsSwitcherState> = switcherLiveData
+    private val _state = MutableLiveData<SettingsSwitcherState>()
+    val state: LiveData<SettingsSwitcherState> get() = _state
 
     val navigationEvent = SingleLiveEvent<Intent>()
 
     private fun renderState(state: SettingsSwitcherState) {
-        switcherLiveData.postValue(state)
+        _state.postValue(state)
     }
 
     fun getTheme() {

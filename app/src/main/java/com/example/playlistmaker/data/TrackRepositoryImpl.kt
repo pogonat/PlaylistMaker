@@ -13,7 +13,6 @@ import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.player.domain.TrackPlayerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlin.collections.ArrayList
 
 class TrackRepositoryImpl(
     private val networkSearch: NetworkSearch,
@@ -73,7 +72,7 @@ class TrackRepositoryImpl(
         trackStorage.saveTrack(newTrack = track)
     }
 
-    override fun getTracksHistory(): Flow<ArrayList<Track>> = flow {
+    override fun getTracksHistory(): Flow<List<Track>> = flow {
         emit(trackStorage.getTracksHistory())
     }
 

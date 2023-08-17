@@ -36,12 +36,15 @@ data class TrackEntity(
     val country: String?,
 
     @ColumnInfo(name = "track_duration")
-    val trackTime: String?,
+    val trackDurationMillis: String?,
 
     @ColumnInfo(name = "track_sample_url")
     val previewUrl: String?,
 
     @ColumnInfo(name = "created_at")
-    val createdTimeStamp: Long
+    val createdTimeStamp: Long,
+
+    @ColumnInfo(name = "cover_image_url_60")
+    val artworkUrl60: String?
 
 )

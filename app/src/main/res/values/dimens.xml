@@ -23,4 +23,6 @@
     <dimen name="dashed_border_playlist">32dp</dimen>
     <dimen name="playlist_cover">312dp</dimen>
     <dimen name="playlist_input_margin">16dp</dimen>
+    <dimen name="icons_playlist">24dp</dimen>
+    <dimen name="image_size_playlist_item">160dp</dimen>
 </resources>

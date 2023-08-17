@@ -7,10 +7,10 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ListItemPlaylistPlayerBinding
 import com.example.playlistmaker.domain.models.Playlist
 
-class PlaylistPlayerViewHolder (
+class PlaylistPlayerViewHolder(
     private val binding: ListItemPlaylistPlayerBinding,
     private val clickListener: PlaylistPlayerAdapter.PlaylistClickListener
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(playlist: Playlist) {
 
@@ -18,14 +18,14 @@ class PlaylistPlayerViewHolder (
 
         binding.tracksQuantity.text = playlist.tracksQuantityText
 
-        if (playlist.imagePath.isNotEmpty()) {
-            Glide.with(binding.playlistCover)
-                .load(playlist.imagePath)
-                .centerCrop()
-                .transform(RoundedCorners(15))
-                .placeholder(R.drawable.placeholder_image)
-                .into(binding.playlistCover)
-        }
+
+        Glide.with(binding.playlistCover)
+            .load(playlist.imagePath)
+            .centerCrop()
+            .transform(RoundedCorners(15))
+            .placeholder(R.drawable.placeholder_image)
+            .into(binding.playlistCover)
+
 
         itemView.setOnClickListener { clickListener.onPlaylistClick(playlist = playlist) }
     }

@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.databinding.FragmentSearchBinding
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.presentation.models.TrackUIModel
 import com.example.playlistmaker.search.presentation.SearchViewModel
 import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
 import com.example.playlistmaker.search.presentation.models.SearchScreenState
@@ -31,7 +31,7 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var onTrackClickDebounce: (TrackUIModel) -> Unit
 
     private var searchResultsAdapter: SearchTracksAdapter? = null
     private var searchHistoryAdapter: SearchTracksAdapter? = null
@@ -56,7 +56,7 @@ class SearchFragment : Fragment() {
             binding.inputEditText.setText(userInputSearchText)
         }
 
-        onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY_MILLIS, viewLifecycleOwner.lifecycleScope, false) { track ->
+        onTrackClickDebounce = debounce<TrackUIModel>(CLICK_DEBOUNCE_DELAY_MILLIS, viewLifecycleOwner.lifecycleScope, false) { track ->
             viewModel.saveItem(track)
             val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
             val trackId = track.trackId
@@ -66,7 +66,7 @@ class SearchFragment : Fragment() {
 
         searchResultsAdapter = SearchTracksAdapter(
             object : SearchTracksAdapter.TrackClickListener {
-                override fun onTrackClick(track: Track) {
+                override fun onTrackClick(track: TrackUIModel) {
                     onTrackClickDebounce(track)
                 }
             }
@@ -74,7 +74,7 @@ class SearchFragment : Fragment() {
 
         searchHistoryAdapter = SearchTracksAdapter(
             object : SearchTracksAdapter.TrackClickListener {
-                override fun onTrackClick(track: Track) {
+                override fun onTrackClick(track: TrackUIModel) {
                     onTrackClickDebounce(track)
                 }
             }
@@ -137,7 +137,7 @@ class SearchFragment : Fragment() {
             binding.searchHistory.isVisible = false
         }
 
-        viewModel.getScreenStateLiveData().observe(viewLifecycleOwner) { screenState ->
+        viewModel.state.observe(viewLifecycleOwner) { screenState ->
             render(screenState)
         }
     }
@@ -180,49 +180,62 @@ class SearchFragment : Fragment() {
     }
 
     private fun showLoading() {
-        binding.progressBar.isVisible = true
-        binding.errorPlaceholder.isVisible = false
-        binding.searchHistory.isVisible = false
-        binding.recyclerViewResultsItems.isVisible = false
+        binding.apply {
+            progressBar.isVisible = true
+            errorPlaceholder.isVisible = false
+            searchHistory.isVisible = false
+            recyclerViewResultsItems.isVisible = false
+        }
+
     }
 
     private fun showErrorConnection() {
-        binding.placeholderMessage.text = getString(R.string.no_connection)
-        binding.placeholderErrorImage.setImageResource(R.drawable.no_connection)
-        binding.placeholderErrorImage.isVisible = true
-        binding.renewButton.isVisible = true
+        binding.apply {
+            placeholderMessage.text = getString(R.string.no_connection)
+            placeholderErrorImage.setImageResource(R.drawable.no_connection)
+            placeholderErrorImage.isVisible = true
+            renewButton.isVisible = true
 
-        binding.progressBar.isVisible = false
-        binding.errorPlaceholder.isVisible = true
-        binding.searchHistory.isVisible = false
-        binding.recyclerViewResultsItems.isVisible = false
+            progressBar.isVisible = false
+            errorPlaceholder.isVisible = true
+            searchHistory.isVisible = false
+            recyclerViewResultsItems.isVisible = false
+        }
+
     }
 
     private fun showNothingFound() {
-        binding.placeholderMessage.text = getString(R.string.nothing_found)
-        binding.placeholderErrorImage.setImageResource(R.drawable.nothing_found)
-        binding.renewButton.isVisible = false
+        binding.apply {
+            placeholderMessage.text = getString(R.string.nothing_found)
+            placeholderErrorImage.setImageResource(R.drawable.nothing_found)
+            renewButton.isVisible = false
 
-        binding.progressBar.isVisible = false
-        binding.errorPlaceholder.isVisible = true
-        binding.searchHistory.isVisible = false
-        binding.recyclerViewResultsItems.isVisible = false
+            progressBar.isVisible = false
+            errorPlaceholder.isVisible = true
+            searchHistory.isVisible = false
+            recyclerViewResultsItems.isVisible = false
+        }
+
     }
 
-    private fun showSearchResults(foundTracks: List<Track>, historyTracks: List<Track>) {
+    private fun showSearchResults(foundTracks: List<TrackUIModel>, historyTracks: List<TrackUIModel>) {
         searchResultsAdapter?.tracks?.clear()
         searchResultsAdapter?.tracks?.addAll(foundTracks)
         searchResultsAdapter?.notifyDataSetChanged()
+
         searchHistoryAdapter?.tracks?.clear()
         searchHistoryAdapter?.tracks?.addAll(historyTracks)
         searchHistoryAdapter?.notifyDataSetChanged()
 
+        binding.apply {
+            progressBar.isVisible = false
+            errorPlaceholder.isVisible = false
+            searchHistory.isVisible = userInputSearchText.isEmpty() &&
+                                      historyTracks.isNotEmpty() &&
+                                      binding.inputEditText.hasFocus()
+            recyclerViewResultsItems.isVisible = true
+        }
 
-        binding.progressBar.isVisible = false
-        binding.errorPlaceholder.isVisible = false
-        binding.searchHistory.isVisible =
-            (userInputSearchText == "" && historyTracks.isNotEmpty() && binding.inputEditText.hasFocus())
-        binding.recyclerViewResultsItems.isVisible = true
     }
 
     companion object {

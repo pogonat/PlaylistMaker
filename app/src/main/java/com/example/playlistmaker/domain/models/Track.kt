@@ -4,7 +4,7 @@ data class Track(
     val trackId: String,
     val trackName: String,
     val artistName: String,
-    val trackTime: String,
+    val trackTimeMillis: String,
     val artworkUrl100: String,
     val collectionName: String,
     val releaseDate: String,
@@ -12,6 +12,6 @@ data class Track(
     val country: String,
     val previewUrl: String,
     val largeArtworkUrl: String,
-    val collectionYear: String,
-    var isFavourite: Boolean = false
+    var isFavourite: Boolean = false,
+    val artworkUrl60: String
 )

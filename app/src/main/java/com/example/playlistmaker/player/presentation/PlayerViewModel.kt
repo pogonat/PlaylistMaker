@@ -12,6 +12,8 @@ import com.example.playlistmaker.domain.models.SearchTrackResult
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.playlist.domain.PlaylistInteractor
+import com.example.playlistmaker.presentation.models.TrackToTrackUIModelConverter
+import com.example.playlistmaker.presentation.models.TrackUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,7 +23,8 @@ class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val trackPlayer: TrackPlayer,
     private val favouritesInteractor: FavouritesInteractor,
-    private val playlistInteractor: PlaylistInteractor
+    private val playlistInteractor: PlaylistInteractor,
+    private val trackToTrackUIModelConverter: TrackToTrackUIModelConverter
 ) : ViewModel() {
 
     private val screenStateLiveData = MutableLiveData<PlayerScreenState>()
@@ -32,15 +35,15 @@ class PlayerViewModel(
 
     private var timerJob: Job? = null
 
-    private var foundTrack: Track? = null
+    private var foundTrack: TrackUIModel? = null
 
     private val favouriteDebounce =
-        debounce<Track>(FAV_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { track ->
+        debounce<Track>(FAV_DEBOUNCE_DELAY_MILLIS, viewModelScope, false) { track ->
             toggleFavourite(track)
         }
 
     private val getPlaylistDebounce =
-        debounce(PLAYLIST_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) {
+        debounce(PLAYLIST_DEBOUNCE_DELAY_MILLIS, viewModelScope, false) {
             getPlaylists()
         }
 
@@ -54,11 +57,12 @@ class PlayerViewModel(
         getPlaylistDebounce()
     }
 
-    fun addTrackToPlaylist(playlist: Playlist, track: Track) {
-        val trackIsInPlaylist = checkPlaylist(playlist, track.trackId)
+    fun addTrackToPlaylist(playlist: Playlist, trackUIModel: TrackUIModel) {
+        val trackIsInPlaylist = checkPlaylist(playlist, trackUIModel.trackId)
         if (trackIsInPlaylist) {
             screenStateLiveData.postValue(PlayerScreenState.ShowMessage(playlist.playlistName))
         } else {
+            val track = trackToTrackUIModelConverter.map(trackUIModel)
             viewModelScope.launch(Dispatchers.IO) {
                 playlistInteractor
                     .updatePlaylist(playlist, track)
@@ -101,9 +105,10 @@ class PlayerViewModel(
                         if (result == null) {
                             searchTrackById(trackId)
                         } else {
-                            foundTrack = result
-                            renderState(PlayerScreenState.Content(result))
-                            trackPlayer.preparePlayer(result.previewUrl)
+                            val trackUIModel = trackToTrackUIModelConverter.map(result)
+                            foundTrack = trackUIModel
+                            renderState(PlayerScreenState.Content(trackUIModel))
+                            trackPlayer.preparePlayer(trackUIModel.previewUrl)
                         }
                     }
             }
@@ -133,9 +138,11 @@ class PlayerViewModel(
 
             SearchResultStatus.SUCCESS -> {
                 if (searchResult.resultTrackList != null) {
-                    foundTrack = searchResult.resultTrackList[0]
-                    renderState(PlayerScreenState.Content(foundTrack!!))
-                    trackPlayer.preparePlayer(foundTrack!!.previewUrl)
+                    val trackFromResult = searchResult.resultTrackList[0]
+                    val trackUIModel = trackToTrackUIModelConverter.map(trackFromResult)
+                    foundTrack = trackUIModel
+                    renderState(PlayerScreenState.Content(trackUIModel))
+                    trackPlayer.preparePlayer(trackUIModel.previewUrl)
                 }
             }
         }
@@ -163,7 +170,8 @@ class PlayerViewModel(
 
     }
 
-    fun toggleFavouriteDebounce(track: Track) {
+    fun toggleFavouriteDebounce(trackUIModel: TrackUIModel) {
+        val track = trackToTrackUIModelConverter.map(trackUIModel)
         favouriteDebounce(track)
     }
 
@@ -172,13 +180,15 @@ class PlayerViewModel(
             true -> viewModelScope.launch {
                 favouritesInteractor.deleteFavourite(track)
                 track.isFavourite = false
-                renderState(PlayerScreenState.Content(track))
+                val trackUIModel = trackToTrackUIModelConverter.map(track)
+                renderState(PlayerScreenState.Content(trackUIModel))
             }
 
             false -> viewModelScope.launch {
                 favouritesInteractor.saveFavourite(track)
                 track.isFavourite = true
-                renderState(PlayerScreenState.Content(track))
+                val trackUIModel = trackToTrackUIModelConverter.map(track)
+                renderState(PlayerScreenState.Content(trackUIModel))
             }
         }
     }
@@ -192,7 +202,7 @@ class PlayerViewModel(
                 .collect { foundPlaylist ->
                     val playlists = mutableListOf<Playlist>()
                     playlists.addAll(foundPlaylist)
-                    screenStateLiveData.postValue(PlayerScreenState.BottomSheet(playlists))
+                    screenStateLiveData.postValue(PlayerScreenState.BottomSheet(playlists.toList()))
                 }
         }
     }
@@ -237,8 +247,8 @@ class PlayerViewModel(
 
     companion object {
         private const val TIMER_DELAY_MILLIS = 300L
-        private const val FAV_DEBOUNCE_DELAY_MILLIS = 2000L
-        private const val PLAYLIST_DEBOUNCE_DELAY_MILLIS = 2000L
+        private const val FAV_DEBOUNCE_DELAY_MILLIS = 1000L
+        private const val PLAYLIST_DEBOUNCE_DELAY_MILLIS = 500L
     }
 
 }

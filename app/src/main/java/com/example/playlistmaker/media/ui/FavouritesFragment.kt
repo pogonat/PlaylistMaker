@@ -11,10 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.core.debounce
 import com.example.playlistmaker.databinding.FragmentFavoritesBinding
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.media.presentation.models.FavouritesState
 import com.example.playlistmaker.media.presentation.FavouritesViewModel
 import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.presentation.models.TrackUIModel
 import com.example.playlistmaker.search.ui.adapters.SearchTracksAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,7 +25,7 @@ class FavouritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var onTrackClickDebounce: (TrackUIModel) -> Unit
 
     private var favListAdapter: SearchTracksAdapter? = null
 
@@ -40,7 +40,7 @@ class FavouritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onTrackClickDebounce = debounce<Track>(
+        onTrackClickDebounce = debounce<TrackUIModel>(
             CLICK_DEBOUNCE_DELAY_MILLIS,
             viewLifecycleOwner.lifecycleScope,
             false
@@ -53,7 +53,7 @@ class FavouritesFragment : Fragment() {
 
         favListAdapter = SearchTracksAdapter(
             object : SearchTracksAdapter.TrackClickListener {
-                override fun onTrackClick(track: Track) {
+                override fun onTrackClick(track: TrackUIModel) {
                     onTrackClickDebounce(track)
                 }
             }
@@ -65,7 +65,7 @@ class FavouritesFragment : Fragment() {
 
         viewModel.getFavouritesList()
 
-        viewModel.observeState().observe(viewLifecycleOwner) {
+        viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is FavouritesState.Loading -> showErrorMessage()
                 is FavouritesState.Content -> renderList(it.favList)
@@ -81,7 +81,7 @@ class FavouritesFragment : Fragment() {
         _binding = null
     }
 
-    private fun renderList(favList: List<Track>) {
+    private fun renderList(favList: List<TrackUIModel>) {
         favListAdapter?.tracks?.clear()
         favListAdapter?.tracks?.addAll(favList)
         favListAdapter?.notifyDataSetChanged()

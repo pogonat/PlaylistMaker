@@ -2,21 +2,26 @@ package com.example.playlistmaker.search.presentation
 
 import androidx.lifecycle.*
 import com.example.playlistmaker.core.debounce
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.models.SearchResultStatus
 import com.example.playlistmaker.domain.models.SearchTrackResult
+import com.example.playlistmaker.presentation.models.TrackToTrackUIModelConverter
+import com.example.playlistmaker.presentation.models.TrackUIModel
 import com.example.playlistmaker.search.domain.SearchInteractor
 import com.example.playlistmaker.search.presentation.models.SearchScreenState
 import kotlinx.coroutines.launch
 
-class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
+class SearchViewModel(
+    private val searchInteractor: SearchInteractor,
+    private val trackToTrackUIModelConverter: TrackToTrackUIModelConverter
+    ) : ViewModel() {
 
-    private val stateLiveData = MutableLiveData<SearchScreenState>()
+    private val _state = MutableLiveData<SearchScreenState>()
+    val state: LiveData<SearchScreenState> get() = _state
 
     private var userInputSearchText: String? = null
 
-    private val foundTracks = mutableListOf<Track>()
-    private val historyTracks = mutableListOf<Track>()
+    private val foundTracks = mutableListOf<TrackUIModel>()
+    private val historyTracks = mutableListOf<TrackUIModel>()
     init {
         setTracksHistory()
     }
@@ -25,8 +30,6 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         debounce<String>(SEARCH_DEBOUNCE_DELAY_MILLIS, viewModelScope, true) { searchRequestText ->
             searchTracks(searchRequestText)
         }
-
-    fun getScreenStateLiveData(): LiveData<SearchScreenState> = stateLiveData
 
     private fun searchTracks(searchRequestText: String) {
 
@@ -49,7 +52,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     private fun processResult(searchResult: SearchTrackResult) {
 
         if (searchResult.resultTrackList != null) {
-            foundTracks.addAll(searchResult.resultTrackList)
+            val foundTrackUIModels = trackToTrackUIModelConverter.mapListToTrackUIModels(searchResult.resultTrackList)
+            foundTracks.addAll(foundTrackUIModels)
         }
 
         when (searchResult.searchResultStatus) {
@@ -65,8 +69,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
             SearchResultStatus.SUCCESS -> {
                 renderState(
                     SearchScreenState.Success(
-                        foundTracks = foundTracks,
-                        historyTracks = historyTracks
+                        foundTracks = foundTracks.toList(),
+                        historyTracks = historyTracks.toList()
                     )
                 )
             }
@@ -80,7 +84,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
-    fun saveItem(track: Track) {
+    fun saveItem(trackUIModel: TrackUIModel) {
+        val track = trackToTrackUIModelConverter.map(trackUIModel)
         searchInteractor.saveTrack(track)
         getTracksHistory()
     }
@@ -88,7 +93,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         viewModelScope.launch {
             searchInteractor.getTracksHistory().collect { history ->
                 historyTracks.clear()
-                historyTracks.addAll(history)
+                val historyTrackUIModels = trackToTrackUIModelConverter.mapListToTrackUIModels(history)
+                historyTracks.addAll(historyTrackUIModels)
             }
         }
     }
@@ -97,11 +103,12 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         viewModelScope.launch {
             searchInteractor.getTracksHistory().collect { history ->
                 historyTracks.clear()
-                historyTracks.addAll(history)
+                val historyTrackUIModels = trackToTrackUIModelConverter.mapListToTrackUIModels(history)
+                historyTracks.addAll(historyTrackUIModels)
                 renderState(
                     SearchScreenState.Success(
-                        foundTracks = foundTracks,
-                        historyTracks = historyTracks
+                        foundTracks = foundTracks.toList(),
+                        historyTracks = historyTracks.toList()
                     )
                 )
             }
@@ -113,8 +120,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         historyTracks.clear()
         renderState(
             SearchScreenState.Success(
-                foundTracks = foundTracks,
-                historyTracks = historyTracks
+                foundTracks = foundTracks.toList(),
+                historyTracks = historyTracks.toList()
             )
         )
     }
@@ -123,14 +130,14 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         foundTracks.clear()
         renderState(
             SearchScreenState.Success(
-                foundTracks = foundTracks,
-                historyTracks = historyTracks
+                foundTracks = foundTracks.toList(),
+                historyTracks = historyTracks.toList()
             )
         )
     }
 
     private fun renderState(state: SearchScreenState) {
-        stateLiveData.postValue(state)
+        _state.postValue(state)
     }
 
     companion object {
