@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    context=".SearchActivity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="?attr/colorSecondary"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/albumArt"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginVertical="8dp"
+            android:layout_marginStart="13dp"
+            android:contentDescription="@string/album_artwork"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/trackName"
+            style="@style/SearchTrackNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="@dimen/text_marginEnd"
+            android:ellipsize="end"
+            android:lines="1"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/imageView2"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/albumArt"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            style="@style/SearchItemIcon"
+            android:layout_width="8dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="@string/arrow_forward"
+            android:src="@drawable/arrow_forward_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/artistName"
+            style="@style/SearchItemSecondLineText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="@dimen/text_marginEnd"
+            android:ellipsize="end"
+            android:lines="1"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/imageView3"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/albumArt"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            style="@style/SearchItemIcon"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="5dp"
+            android:contentDescription="@string/ellipse_icon"
+            android:src="@drawable/ellipse_icon"
+            app:layout_constraintEnd_toStartOf="@id/trackDuration"
+            app:layout_constraintStart_toEndOf="@id/artistName"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
+
+        <TextView
+            android:id="@+id/trackDuration"
+            style="@style/SearchItemSecondLineText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/imageView2"
+            app:layout_constraintStart_toEndOf="@id/imageView3"
+            app:layout_constraintTop_toBottomOf="@id/trackName" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

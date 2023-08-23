@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_navigation_graph"
+    app:startDestination="@id/mediaFragment">
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.playlistmaker.search.ui.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/mediaFragment"
+        android:name="com.example.playlistmaker.media.ui.MediaFragment"
+        android:label="fragment_media"
+        tools:layout="@layout/fragment_media" >
+        <action
+            android:id="@+id/action_mediaFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
+        <action
+            android:id="@+id/action_mediaFragment_to_playlistCreatorFragment"
+            app:destination="@id/playlistCreatorFragment" />
+        <action
+            android:id="@+id/action_mediaFragment_to_playlistContentsFragment"
+            app:destination="@id/playlistContentsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_agreementFragment"
+            app:destination="@id/agreementFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/playerActivity"
+        android:name="com.example.playlistmaker.player.ui.PlayerActivity"
+        android:label="activity_player"
+        tools:layout="@layout/activity_player" />
+    <fragment
+        android:id="@+id/agreementFragment"
+        android:name="com.example.playlistmaker.settings.ui.AgreementFragment"
+        android:label="fragment_agreement"
+        tools:layout="@layout/fragment_agreement" />
+    <fragment
+        android:id="@+id/playlistCreatorFragment"
+        android:name="com.example.playlistmaker.playlist.ui.PlaylistCreatorFragment"
+        android:label="PlaylistCreatorFragment"
+        tools:layout="@layout/fragment_playlistcreator"/>
+    <fragment
+        android:id="@+id/playlistContentsFragment"
+        android:name="com.example.playlistmaker.playlist.ui.PlaylistContentsFragment"
+        tools:layout="@layout/fragment_playlistcontents"
+        android:label="PlaylistContentsFragment" >
+        <action
+            android:id="@+id/action_playlistContentsFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
+        <action
+            android:id="@+id/action_playlistContentsFragment_to_playlistEditorFragment"
+            app:destination="@id/playlistEditorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playlistEditorFragment"
+        android:name="com.example.playlistmaker.playlist.ui.PlaylistEditorFragment"
+        android:label="PlaylistEditorFragment"
+        tools:layout="@layout/fragment_playlistcreator">
+        <action
+            android:id="@+id/action_playlistEditorFragment_to_playlistContentsFragment"
+            app:destination="@id/playlistContentsFragment"
+            app:popUpTo="@id/playlistContentsFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+</navigation>

@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/dashed_border"
+        android:width="@dimen/playlist_cover"
+        android:height="@dimen/playlist_cover"
+        android:gravity="center"/>
+
+    <item android:drawable="@drawable/add_playlist_cover"
+        android:gravity="center" />
+
+</layer-list>
